@@ -4,7 +4,7 @@ export default function setup(x) {
 
   var orig = x.addGui;
   x.addGui = function(rec) {
-    var orig_fn = rec.fn;
+    var orig_fn = rec.fn || function() {};
     var itsme = false;
     x.trackParam( rec.name, function() {
       if (!itsme) {

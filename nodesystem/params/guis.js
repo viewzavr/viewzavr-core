@@ -6,9 +6,11 @@ export default function setup(x) {
   x.guis = {};
 
   x.addGui = function(rec) {
+    if (!rec.fn) rec.fn = function() {};
+  
     rec.setValue = function(val) {
       rec.value = val;
-      if (rec.fn) rec.fn( val );
+      rec.fn( val );
     }
 
     x.guis[ rec.name ] = rec;
