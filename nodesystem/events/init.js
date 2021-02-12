@@ -11,9 +11,15 @@ export function setup_item(x) {
   x.untrack = function(name,fn) {
     x.events_dic.removeEventListener(name,fn);
   }
+  
   x.signal = function(name,arg1) {
     x.events_dic.dispatchEvent( new CustomEvent(name, {detail: arg1} ) );
   }
+  /*
+  x.emit = x.signal;
+  x.on = x.track;
+  x.off = x.untrack;
+  */
 
   return x;
 }

@@ -17,7 +17,7 @@ export default function setup( m ) {
   m.createSyncFromDump = function( dump, _existingObj, parent, desiredName )
   {
     var obj = _existingObj;
-    if (!obj || (dump.type && obj.type != dump.type && dump.manual)) {
+    if (!obj || (dump.type && obj.historicalType != dump.type && dump.manual)) {
       if (!obj || obj.ns.parent) {  // пусть это работает пока не для корня дерева - там непонятно мне пока
          // var opts = { parent: parent, type: dump.type, name: dump.name }
          var opts = Object.assign( {}, dump, { parent: parent, name: desiredName } );
