@@ -1,6 +1,8 @@
 # viewzavr-core
 a viewzavr core library - objects and their properties, tree, types
 
+# Object creation and types
+
 ## vz.createObj( options )
 creates new Viewzavr object.
 possible options are:
@@ -21,3 +23,9 @@ Example:
 ```
   var myobj = vz.createObjByType({ parent: someotherobj, type: "bg-image"})
 ```
+
+# Parameters
+
+# Gui
+
+# Events
