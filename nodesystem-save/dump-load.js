@@ -30,7 +30,14 @@ export default function setup( m ) {
       }
     }
     // в dump должно быть поле type, оно нам все и создаст что надо
-
+    
+    obj.restoreFromDump( dump );
+    
+    return obj;
+  }
+  
+  // this is made specially so obj.restoreFromDump may be overriden
+  m.restoreObjFromDump = function( dump, obj ) {
     var h = dump.params || {};
     var keys = Object.keys(h);
 
@@ -41,8 +48,6 @@ export default function setup( m ) {
 
     m.removeChildrenByDump( dump, obj );
     m.createChildrenByDump( dump, obj );
-
-    return obj;
   }
   
   m.removeChildrenByDump = function( dump, obj )
@@ -143,6 +148,10 @@ m.chain("create_obj",function( obj, opts ) {
 
   obj.dump = function() {
     return m.dumpObj( obj );
+  }
+  
+  obj.restoreFromDump = function ( dump ) {
+    return m.restoreObjFromDump( dump, obj );
   }
   
   if (opts.manual) obj.manuallyInserted = true;

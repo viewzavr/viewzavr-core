@@ -5,24 +5,11 @@
 
 export default function setup(vz, x) {
   
-  x.addObjectRef = function( name, value, crit_fn, fn ) {
+  x.addObjRef = function( name, value, crit_fn, fn ) {
     var rec = x.addGui( { type: "objref", name: name, value: value, crit_fn: crit_fn, fn: fn } );
-/*    
-    var orig = rec.setValue;
-    rec.setValue = function(v) {
-      x.setReference( name, v );
-      orig(v);
-    }
-    var origfn = rec.fn;
-    rec.fn = function(v) {
-      x.setReference( name, v );
-      origfn(v);
-
-    };
-*/
-    
     return rec;
   }
+  x.addObjectRef = x.addObjRef;
   
   x.chain("setParam",function (name, value) {
     if (x.references && x.references[name]) {

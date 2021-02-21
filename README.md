@@ -29,3 +29,16 @@ Example:
 # Gui
 
 # Events
+
+# Parameters
+
+## addObjectRef
+
+Adds a parameter that is reference to another object. Viewzavr will track and clear reference if referred object is removed.
+
+Example:
+```
+  obj.addObjectRef("otherobj","/",function(v) {
+    var otherobj = obj.vz.find_by_path( obj, v );
+  });
+```

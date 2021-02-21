@@ -28,6 +28,12 @@ export default function setup(x) {
     return x;
   }
   
+  /* 
+  x.hasParam = function(name) {
+    return x.params.hasOwnProperty(name);
+  }
+  */
+  
   /////
   
   x.getParams = function() {

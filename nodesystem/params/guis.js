@@ -35,11 +35,16 @@ export default function setup(x) {
   };
   x.addCheckbox = function( name, value, fn ) {
     return x.addGui( { type: "checkbox", name: name, value: value, fn: fn });
-  };  
+  };
 
   x.addText = function( name, value, fn ) {
     return x.addGui( { type: "text", name: name, value: value, fn: fn });
   };
+
+  x.addString = function( name, value, fn ) {
+    return x.addGui( { type: "string", name: name, value: value, fn: fn });
+  };
+  
   x.addLabel = function( name, value, fn ) {
     return x.addGui( { type: "label", name: name, value: value, fn: fn });
   };

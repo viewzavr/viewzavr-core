@@ -3,18 +3,36 @@
 
 export default function setup( vz ) {
 
+  /*
+    / => root
+    /item => child named `item` of root
+    /item/item => child named `item` of child named `item` of root    
+    item => child named `item` of obj
+    ../item => child named `item` of parent of obj
+  */
   vz.find_by_path = function(obj,path) {
     if (!path) return null;
     
     if (path[0] == "/") {
       var root = obj.findRoot();
-      if (root != obj)
+      if (root == obj) {
+        path = path.substring(1);
+      }
+      else
+      {
         return vz.find_by_path( root, path );
+      }
     }
     
+    if (path.length == "") return obj;
+    
+    if (path[0] == "." && path[1] == "." && path[2] == "/") {
+      return vz.find_by_path( obj.ns.parent, path.substring(3) );
+    }
+    if (path[0] == "." && path[1] == "/")
+      path = path.substring(2);
+
     if (!Array.isArray(path)) path = path.split("/");
-    if (path.length == 0) return obj;
-    if (path[0] == "") path = path.slice( 1 );
 
     var c1 = obj.ns.getChildByName( path[0] );
     if (c1) {
@@ -26,11 +44,29 @@ export default function setup( vz ) {
   vz.get_path = function( obj ) {
     if (!obj) return undefined;
     if (!obj.ns.parent) return "/";
+    
+    var root = obj.findRoot();
+    if (obj == root) return "/";
+    
+    var p = obj;
+    var res = obj.ns.name;
+    while (p != root) {
+      p = p.ns.parent;
+      if (p == root)
+        res = "/" + res;
+      else
+        res = p.ns.name + "/" + res;
+    }
+    return res;
+    
+
+/*    
     var res = vz.get_path( obj.ns.parent );
     if (res == "/") 
       return "/" + obj.ns.name;
     else
       return res + "/" + obj.ns.name;
+*/      
   }
   
 /*  вроде как выяснено что это должно зависеть от объекта.. чтобы можно было домены деревьев разделять.. */

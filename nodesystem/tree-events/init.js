@@ -7,12 +7,13 @@ export default function setup( m ) {
     var obj = this.orig( obj0, opts );
     
     var orig = obj.ns.appendChild;
-    obj.ns.appendChild = function( cobj,name ) {
-      var res = orig( cobj, name );
+    obj.ns.appendChild = function( cobj,name,rename ) {
+      var res = orig( cobj, name,rename );
       var p = obj; while (p) {
         p.signal("appendChild",cobj);
         p = p.ns.parent;
-      }      
+      }
+      cobj.signal("parentChange");
       return res;
     }
     

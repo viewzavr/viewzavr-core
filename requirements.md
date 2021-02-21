@@ -2,7 +2,7 @@
 
 ## R-GUIVISIBLE
 
-We need to somehome show and hide specific gui elements according to situation.
+We need to somehome show and hide specific gui (e.g. parameters) elements according to situation.
 
 Real case: one may select sound from preset, and also - from file in case if user
 chooses preset file as "custom file", in which case a file parameter's gui should be visible
@@ -32,6 +32,25 @@ two separate things - 1) operations on 2) objects. mm?
 
 ## P-SELECT-IMPLEMENTATION
 
-Sometimes there are various implementation of same thing. It is interesting to choose one or another in gui.
+Sometimes there are various implementation of same thing/algorythm. 
+It is interesting to choose one or another in gui (parameters).
 Another case is to temporary turn off some features. For example, turn off sound generation for a while
 to check is it a source of laggings.
+
+# Other
+
+## R-TEXT-PARAMETER
+
+We have to get a big text parameter, this is freedom for many things (scripts, lists, trees, so on).
+
+## R-ADD-XGUI
+We have to support XGUi format
+https://forum.xclu.dev/t/sdk-xgui-module-interface-description-language/19
+https://github.com/XcluDev/Xclu/blob/master/builtin_modules/Sound/SoundOsc/description.xgui
+example usage
+export function create (vz, opts ) {
+  var obj = vz.createObj();
+  vz.loadXgui( obj,"myfile.xgui" );
+  obj.track("...",....);
+  return obj;
+}

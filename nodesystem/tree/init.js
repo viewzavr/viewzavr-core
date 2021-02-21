@@ -10,7 +10,7 @@ import setup_find from "./traverse.js";
 
 export default function setup(m) {
 
-var gcounter = 0;
+//var gcounter = 0;
 
 m.chain("create_obj",function(obj,opts) {
   // console.log("?>>>>>>>>>>>>>>>>>",opts);
@@ -22,14 +22,16 @@ m.chain("create_obj",function(obj,opts) {
   // при добавлении объекта следим за уникальностью его имени в списке детей родителя
   if (opts.parent && opts.name) {
 
+    /*
     // делалка уникальности.. почему-то здесь
     var name = opts.name;
     while (opts.parent.ns.getChildByName( name )) {
       gcounter=gcounter+1;
       name = opts.name + "_" + gcounter.toString();
     }
+    */
 
-    opts.parent.ns.appendChild( obj, name );
+    opts.parent.ns.appendChild( obj, opts.name, true );
   }
   else
   if (opts.name)

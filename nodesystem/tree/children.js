@@ -2,6 +2,8 @@
 // добавляет методы .appendChild, .removeChild и т.п.
 // особенность - считается что это единичная иерархия
 
+import rename_feature from "./feature-rename-child.js";
+
 // nf это функция которая по объекту выдает область его древовидных штук..
 export default function setup( obj, nf ) {
 
@@ -10,13 +12,20 @@ export default function setup( obj, nf ) {
 
   obj.children = [];
   obj.childrenTable = {};
+  var gcounter = 0;
   
-  obj.appendChild = function( cobj,name ) {
+  obj.appendChild = function( cobj,name,enableRename ) {
     var cnf = nf( cobj );
-    if (cnf.parent) cnf.parent.ns.forgetChild( cobj );
-    
+    if (cnf.parent)  cnf.parent.ns.forgetChild( cobj );
+
     if (!obj.hasChild( cobj)) obj.children.push( cobj );
-    if (name) obj.childrenTable[ name ] = cobj;
+    if (!name) {
+      console.error("WARNING: appendChild: no name specified");
+    }
+    
+    if (name) {
+      obj.childrenTable[ name ] = cobj;
+    }
     
     cnf.parent = _obj;
     cnf.name   = name;
@@ -60,6 +69,8 @@ export default function setup( obj, nf ) {
     }
     this.orig();
   });
+  
+  rename_feature( _obj,nf );
 
   return obj;
 }
