@@ -149,9 +149,17 @@ m.chain("create_obj",function( obj, opts ) {
   obj.dump = function() {
     return m.dumpObj( obj );
   }
-  
+
   obj.restoreFromDump = function ( dump ) {
     return m.restoreObjFromDump( dump, obj );
+  }
+  
+  obj.clone = function( opts = {} ) {
+    var dump = obj.dump();
+    //debugger;
+    if (!opts.parent) opts.parent = obj.ns.parent;
+    var newobj = m.createSyncFromDump( dump, null, opts.parent, opts.name );
+    return newobj;
   }
   
   if (opts.manual) obj.manuallyInserted = true;

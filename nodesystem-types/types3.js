@@ -40,6 +40,11 @@ m.addItemType = function(code,title,fn,opts) {
   itemtypes_dic[code] = [fn,title,opts, itemtypes_arr.length-1 ];
 }
 
+m.forgetItemType = function(code) {
+  itemtypes_arr = itemtypes_arr.filter( rec => rec[0] != code );
+  delete itemtypes_dic[code];
+}
+
 // возвращает запись вида [fn,title,opts]
 m.getTypeInfo = function(code) {
   return itemtypes_dic[code];
