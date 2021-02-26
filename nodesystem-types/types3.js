@@ -50,9 +50,15 @@ m.getTypeInfo = function(code) {
   return itemtypes_dic[code];
 }
 
-// возвращает массив записей вида [code,title]
+m.getTypeOptions = function(code) {
+  var r = itemtypes_dic[code];
+  if (r) return r[2];
+  return {};
+}
+
+// возвращает массив записей вида [code,title,opts]
 m.getTypeRecords = function() {
-  return itemtypes_arr.map( function(rec) { return [ rec[0], rec[2] ] } );
+  return itemtypes_arr.map( function(rec) { return [ rec[0], rec[2], rec[3] ] } );
 }
 
 // хорошо бы сигнатуру соблюсти.. opts? и там type указывать? ну да. и такое-же провернуть с vis3-объектами..

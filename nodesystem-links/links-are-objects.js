@@ -3,7 +3,7 @@
 export default function setup( vz ) {
 
   vz.createLink = function( opts ) {
-    opts.name ||= "link";
+    opts.name ||= "formula";
     var obj = vz.createObj( opts );
     
     var currentRefFrom;
@@ -163,7 +163,7 @@ vz.chain("create_obj",function( obj, opts ) {
   return obj;
 } ); // create_obj
 
-vz.addItemType("link","Link",vz.createLink, {} );
+vz.addItemType("link","Formula",vz.createLink, {hidegui: true} );
 
 }
 
