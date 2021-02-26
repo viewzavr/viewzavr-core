@@ -18,6 +18,7 @@ export default function setup( vz ) {
     function qqq() {
       if (!obj.getParam("enabled")) return;
       if (!currentRefTo) return;
+      if (!currentRefFrom) return;
       
       var val = currentRefFrom.getParam( currentParamNameFrom  );
       
@@ -33,11 +34,13 @@ export default function setup( vz ) {
     }
     
     obj.addCheckbox( "enabled", true );
-
-    obj.addParamRef("from","",null,function(v) {
-
+    
+    function setupFromLink(enable_qqq) {
+      var v = obj.getParam("from");
+      
       if (currentRefFrom) {
         currentRefFrom.untrackParam( currentParamNameFrom,qqq )
+        forgetLinkTracking( currentRefFrom );
         currentRefFrom = undefined;
         currentParamNameFrom = undefined;
       }
@@ -54,11 +57,13 @@ export default function setup( vz ) {
       var sobj = obj.findByPath( objname );
       
       if (!sobj) {
-        console.error("Link: source obj not found! TODO: retry after appendChild! Maybe via external scheduler/signalTracked",arr );
+        console.log("Link: source obj not found! Will retry!",arr );
+        linkScannerAdd( obj );
         return;
       }
       if (!paramname) {
         console.error("Link: source param is blank",arr );
+        
         return;
       }      
       
@@ -66,10 +71,16 @@ export default function setup( vz ) {
           sobj.trackParam( paramname, qqq );
   
       currentRefFrom = sobj;
-      currentParamNameFrom = paramname;
-    });
+      currentParamNameFrom = paramname;      
+      addLinkTracking( currentRefFrom,obj );
+      
+      if (enable_qqq) qqq();
+    }
     
-    obj.addParamRef("to","",null,function(v) {
+    function setupToLink(enable_qqq) {
+      var v = obj.getParam("to");
+      
+      if (currentRefTo) forgetLinkTracking( currentRefTo );
       currentRefTo = undefined;
       currentParamNameTo = undefined;
     
@@ -87,14 +98,26 @@ export default function setup( vz ) {
       var sobj = obj.findByPath( objname );    
       
       if (!sobj) {
-        console.error("Link: target obj not found! TODO retry!",arr );
+        console.log("Link: target obj not found! Will retry!",arr );
+        linkScannerAdd( obj );
         return;
-      }      
+      }
       
       currentRefTo = sobj;
       currentParamNameTo = paramname;
+      
+      addLinkTracking( currentRefTo, obj );
+      
+      
+      if (enable_qqq) qqq();
+    }
     
-    });
+    obj.setupLinks = function() {
+      setupFromLink(false); setupToLink();
+    }
+
+    obj.addParamRef("from","",null,setupFromLink );
+    obj.addParamRef("to","",null,setupToLink );
     
     obj.addCheckbox( "transform-enabled",false );
     obj.addText("transform-code","// enter transform code here. arg: v - input value\nreturn v",function(cod) {
@@ -127,7 +150,39 @@ vz.addItemType("link","Link",vz.createLink, {} );
 
 // это для отслеживания если объект удалился
 function addLinkTracking( obj, link ) {
+  var firstTime = (!obj.links_to_me);
+  obj.links_to_me ||= [];
+  if (obj.links_to_me.indexOf( link ) >= 0) return;
+  obj.links_to_me.push( link );
+
+  if (firstTime)
+  obj.chain("remove",function() {
+    this.orig();
+    (obj.links_to_me || []).forEach( function(l) {
+      l.setupLinks(); // probably forget this
+    });
+  });
 }
 
 function forgetLinkTracking( obj, link ) {
+  if (!obj.links_to_me) return;
+  var i = obj.links_to_me.indexOf( link );
+  if (i >= 0) obj.links_to_me = obj.links_to_me.splice( i,1 );
 }
+
+
+/////////////////////////////////////////////
+
+// восстановление ненайденных ссылок
+
+var scannerLinks = [];
+function linkScannerAdd( link ) {
+  if (scannerLinks.indexOf( link ) < 0)
+      scannerLinks.push( link );
+}
+
+setInterval( function() {
+  var x = scannerLinks;
+  scannerLinks = [];
+  x.forEach( link => link.setupLinks ); // она там себя добавит если облом
+}, 1000 );
