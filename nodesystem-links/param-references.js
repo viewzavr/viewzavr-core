@@ -44,7 +44,7 @@ export default function setup(vz) {
     r.ns.traverse( function(obj) {
       var param_names = crit_fn( obj );
       param_names.forEach( function(p) {
-        acc.push( obj.getPath() + "->" + p );
+        acc.push( obj.getPathRelative(x) + "->" + p );
       });
     });
     return acc;

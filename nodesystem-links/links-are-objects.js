@@ -73,6 +73,8 @@ export default function setup( vz ) {
       addLinkTracking( currentRefFrom,obj );
       
       if (enable_qqq) qqq();
+      
+      obj.signal("linksChanged");
     }
     
     function setupToLink(enable_qqq) {
@@ -105,9 +107,10 @@ export default function setup( vz ) {
       currentParamNameTo = paramname;
       
       addLinkTracking( currentRefTo, obj );
-      
-      
+
       if (enable_qqq) qqq();
+      
+      obj.signal("linksChanged");
     }
     
     obj.setupLinks = function() {

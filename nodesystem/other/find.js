@@ -69,6 +69,13 @@ export default function setup( vz ) {
 */      
   }
   
+  vz.get_path_rel = function( obj, basisobj ) {
+    var p1 = vz.get_path( obj );
+    var p2 = vz.get_path( basisobj );
+    // TODO
+    return p1;
+  }
+  
 /*  вроде как выяснено что это должно зависеть от объекта.. чтобы можно было домены деревьев разделять.. */
   vz.find_root = function( obj ) {
     return obj.findRoot();
@@ -88,6 +95,10 @@ export default function setup( vz ) {
     obj.getPath = function() {
       return vz.get_path( obj );
     }
+    
+    obj.getPathRelative = function(basisobj) {
+      return vz.get_path_rel( obj,basisobj);
+    }    
     
     obj.findByPath = function(path) {
       return vz.find_by_path( obj, path );
