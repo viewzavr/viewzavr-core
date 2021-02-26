@@ -133,9 +133,12 @@ export default function setup( vz ) {
 
 vz.chain("create_obj",function( obj, opts ) {
 
-  obj.createLinkTo = function( paramname,sourcestring ) {
-    var q = vz.createLink( {parent: obj} );
-    q.setParam( "to", obj.ns.getPath() + "->" + paramname );
+  obj.createLinkTo = function( opts ) {
+    var paramname = opts.param;
+    var sourcestring = opts.from;
+    opts.parent = obj;
+    var q = vz.createLink( opts );
+    q.setParam( "to", obj.getPath() + "->" + paramname );
     q.setParam( "from", sourcestring );
   }
 
