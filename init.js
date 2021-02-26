@@ -4,12 +4,14 @@ import utils_setup from            "./utils/init.js";
 import nodesystem_setup from       "./nodesystem/init.js";
 import nodesystem_types_setup from "./nodesystem-types/init.js";
 import nodesystem_save_setup from  "./nodesystem-save/init.js";
+import nodesystem_links from  "./nodesystem-links/init.js";
 
 export function setup( m, opts={} ) {
   nodesystem_setup( m );
   nodesystem_types_setup( m ); // под вопросом..
   utils_setup( m ); // ну пусть пока будет
   nodesystem_save_setup( m );
+  nodesystem_links( m );
 
   
   // external function

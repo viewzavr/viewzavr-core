@@ -13,24 +13,32 @@
 // либо даже как в js: find = vz.feature("find");
 // т.е. это по сути такой набор библиотек...
 
-export default function setup( obj, nf ) {
+export default function setup( origobj, nf ) {
 
-  var _obj = obj;
-  obj = nf( obj );
+  var obj = nf( origobj );
   
   obj.find = function( fn ) {
     var cc = obj.getChildNames();
     for (var i=0; i<cc.length; i++) {
       var name = cc[i];
-      var obj = obj.getChildByName( name );
-      var res = fn( obj );
+      var cobj = obj.getChildByName( name );
+      var res = fn( cobj );
 
       if (res) return res;
-      var res2 = obj.find( fn );
+      var res2 = nf(cobj).find( fn );
       if (res2) return res;
     }
     return undefined;
   }
-  obj.traverse = find; // ok?
+
+  obj.traverse = function( fn ) {
+    var cc = obj.getChildNames();
+    for (var i=0; i<cc.length; i++) {
+      var name = cc[i];
+      var cobj = obj.getChildByName( name );
+      var res = fn( cobj );
+      nf(cobj).traverse( fn );
+    }
+  }
 
 }

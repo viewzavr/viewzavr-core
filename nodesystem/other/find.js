@@ -85,6 +85,10 @@ export default function setup( vz ) {
       return obj.ns.parent.findRoot();
     }
     
+    obj.getPath = function() {
+      return vz.get_path( obj );
+    }
+    
     return obj;
 
   });

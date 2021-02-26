@@ -27,9 +27,14 @@ export default function setup(x) {
   x.addCombo = function(name, value, values, fn) {
     return x.addGui( { type: "combo", name: name, value: value, values: values, fn: fn } );
   };
+  x.addComboString = function(name, value, values, fn) {
+    return x.addGui( { type: "combostring", name: name, value: value, values: values, fn: fn } );
+  };
+  
   x.addCmd = function( name, fn ) {
     return x.addGui( { type: "cmd", name: name, fn: fn });
   };
+  
   x.addColor = function( name, value, fn ) {
     return x.addGui( { type: "color", name: name, value: value, fn: fn });
   };
