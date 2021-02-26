@@ -2,8 +2,6 @@
 
 export default function setup( vz ) {
 
-  
-
   vz.createLink = function( opts ) {
     opts.name ||= "link";
     var obj = vz.createObj( opts );
@@ -117,7 +115,19 @@ export default function setup( vz ) {
     }
 
     obj.addParamRef("from","",null,setupFromLink );
-    obj.addParamRef("to","",null,setupToLink );
+    obj.addParamRef("to","",filter_to,setupToLink );
+    
+    // todo speedup by func ptr
+    function filter_to(o) {
+      if (obj.getParam("tied_to_parent")) {
+        if (o == obj.ns.parent) return Object.keys( o.params );
+        return [];
+      }
+      else
+      {
+        return Object.keys( o.params );
+      }
+    }
     
     obj.addCheckbox( "transform-enabled",false );
     obj.addText("transform-code","// enter transform code here. arg: v - input value\nreturn v",function(cod) {
@@ -137,9 +147,12 @@ vz.chain("create_obj",function( obj, opts ) {
     var paramname = opts.param;
     var sourcestring = opts.from;
     opts.parent = obj;
-    var q = vz.createLink( opts );
+    opts.type = "link";
+    //var q = vz.createLink( opts );
+    var q = vz.createObjByType( opts );
     q.setParam( "to", obj.getPath() + "->" + paramname );
     q.setParam( "from", sourcestring );
+    q.setParam( "tied_to_parent",true );
   }
 
   this.orig( obj, opts );

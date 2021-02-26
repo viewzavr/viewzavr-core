@@ -27,8 +27,12 @@ export default function setup(vz) {
   vz.chain("create_obj",function( x, opts ) {
 
   x.addParamRef = function( name, value, crit_fn, fn ) {
-    var values = gatherParams( crit_fn || default_crit_fn );
-    var rec = x.addGui( { type: "combostring", name: name, value: value, values: values, fn: fn } );
+    //var values = gatherParams( crit_fn || default_crit_fn );
+    var values = [];
+    var rec = x.addGui( { type: "combostring", name: name, value: value, values: values, crit_fn: crit_fn, fn: fn } );
+    rec.getValues = function() {
+      return gatherParams( crit_fn || default_crit_fn );
+    }
     return rec;
   }
   // здесь crit_fn по объекту должна выдать перечень имен его допустимых параметров
