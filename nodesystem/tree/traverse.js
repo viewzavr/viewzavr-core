@@ -32,11 +32,12 @@ export default function setup( origobj, nf ) {
   }
 
   obj.traverse = function( fn ) {
+    fn( origobj );
     var cc = obj.getChildNames();
     for (var i=0; i<cc.length; i++) {
       var name = cc[i];
       var cobj = obj.getChildByName( name );
-      var res = fn( cobj );
+      // это не надо оно само себя вызовет var res = fn( cobj );
       nf(cobj).traverse( fn );
     }
   }

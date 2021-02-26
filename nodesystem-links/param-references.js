@@ -34,9 +34,9 @@ export default function setup(vz) {
   // здесь crit_fn по объекту должна выдать перечень имен его допустимых параметров
   
   function gatherParams( crit_fn ) {
-    var acc = [];
+    var acc = [""];
     var r = x.findRoot();
-    debugger;
+
     r.ns.traverse( function(obj) {
       var param_names = crit_fn( obj );
       param_names.forEach( function(p) {

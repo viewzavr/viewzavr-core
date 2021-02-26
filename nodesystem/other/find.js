@@ -89,6 +89,10 @@ export default function setup( vz ) {
       return vz.get_path( obj );
     }
     
+    obj.findByPath = function(path) {
+      return vz.find_by_path( obj, path );
+    }
+    
     return obj;
 
   });
