@@ -16,9 +16,10 @@ export default function setup( vz ) {
     function qqq() {
       if (!obj.getParam("enabled")) return;
       if (!currentRefTo) return;
-      if (!currentRefFrom) return;
       
-      var val = currentRefFrom.getParam( currentParamNameFrom  );
+      //if (!currentRefFrom) return;
+      
+      var val = currentRefFrom ? currentRefFrom.getParam( currentParamNameFrom  ) : [];
       
       if (tracode && obj.getParam("transform-enabled")) {
         try {
@@ -75,6 +76,7 @@ export default function setup( vz ) {
       if (enable_qqq) qqq();
       
       obj.signal("linksChanged");
+      currentRefFrom.signal( paramname + "Linked" );
     }
     
     function setupToLink(enable_qqq) {
@@ -111,6 +113,8 @@ export default function setup( vz ) {
       if (enable_qqq) qqq();
       
       obj.signal("linksChanged");
+      
+      currentRefTo.signal( paramname + "Linked" );
     }
     
     obj.setupLinks = function() {
@@ -159,6 +163,13 @@ vz.chain("create_obj",function( obj, opts ) {
     q.setParam( "from", sourcestring );
     q.setParam( "tied_to_parent",true );
   }
+  
+  obj.hasLinks = function() {
+    return (howManyLinksTo( obj ) > 0);
+  }
+  obj.hasLinksToParam = function(pname) {
+    return (howManyLinksToParam( obj,pname ) > 0);
+  }
 
   this.orig( obj, opts );
 
@@ -170,11 +181,14 @@ vz.addItemType("link","Formula",vz.createLink, {hidegui: true} );
 }
 
 // это для отслеживания если объект удалился
-function addLinkTracking( obj, link ) {
+function addLinkTracking( obj, link, isFrom ) {
   var firstTime = (!obj.links_to_me);
   obj.links_to_me ||= [];
+  obj.links_to_me_direction ||= [];
+  
   if (obj.links_to_me.indexOf( link ) >= 0) return;
   obj.links_to_me.push( link );
+  obj.links_to_me_direction.push( isFrom );
 
   if (firstTime)
   obj.chain("remove",function() {
@@ -188,7 +202,25 @@ function addLinkTracking( obj, link ) {
 function forgetLinkTracking( obj, link ) {
   if (!obj.links_to_me) return;
   var i = obj.links_to_me.indexOf( link );
-  if (i >= 0) obj.links_to_me = obj.links_to_me.splice( i,1 );
+  if (i >= 0) {
+    obj.links_to_me = obj.links_to_me.splice( i,1 );
+    obj.links_to_me_direction = obj.links_to_me_direction.splice( i,1 );
+  }
+}
+
+function howManyLinksTo( obj ) {
+  return (obj.links_to_me || []).length;
+}
+
+function howManyLinksToParam( obj,name ) {
+  return (obj.links_to_me || []).filter( function(link) {
+    var i = obj.links_to_me.indexOf( link );
+    var isFrom = obj.links_to_me_direction[i];
+    var nama = isFrom ? "from" : "to";
+    var arr = (link.getParam(nama) || "").split("->");
+    var paramname = arr[1];
+    return (paramname == name);
+  } ).length;
 }
 
 
