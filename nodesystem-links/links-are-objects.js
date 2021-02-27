@@ -132,13 +132,15 @@ export default function setup( vz ) {
       }
     }
     
-    obj.addCheckbox( "transform-enabled",false );
+    obj.addCheckbox( "transform-enabled",false,qqq );
     obj.addText("transform-code","// enter transform code here. arg: v - input value\nreturn v",function(cod) {
        if (!cod || cod.length == 0) {
           tracode = undefined; // new Function("v","return v");
+          qqq();
           return;
        }
        tracode = new Function("v",cod);
+       qqq();
     } );
 
     return obj;
