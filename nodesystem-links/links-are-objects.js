@@ -19,7 +19,12 @@ export default function setup( vz ) {
       
       //if (!currentRefFrom) return;
       
-      var val = currentRefFrom ? currentRefFrom.getParam( currentParamNameFrom  ) : [];
+      var val = currentRefFrom ? currentRefFrom.getParam( currentParamNameFrom  ) : null;
+      
+      if (typeof(val) == "undefined") {
+        console.log("Links: incoming value undefined, skipping assign");
+        return;
+      }
       
       if (tracode && obj.getParam("transform-enabled")) {
         try {
@@ -127,7 +132,10 @@ export default function setup( vz ) {
     // todo speedup by func ptr
     function filter_to(o) {
       if (obj.getParam("tied_to_parent")) {
-        if (o == obj.ns.parent) return Object.keys( o.params );
+        if (o == obj.ns.parent) {
+          
+          return Object.keys( o.params );
+        }
         return [];
       }
       else
