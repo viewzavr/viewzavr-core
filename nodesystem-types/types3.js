@@ -84,7 +84,15 @@ m.create_obj_by_type = function( opts ) {
 }
 
 m.getTypeFunc = function(code) {
-  return itemtypes_dic[code][0];
+  var type = itemtypes_dic[code];
+  if (!type) {
+    console.error("Viewzavr: getTypeFunc - your code asks for type that is not registered. type=",code );
+  }
+  return type[0];
+}
+
+m.getObjType = function( obj ) {
+  return obj.historicalType;
 }
 
 } // setup

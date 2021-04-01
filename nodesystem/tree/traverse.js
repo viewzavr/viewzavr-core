@@ -24,9 +24,9 @@ export default function setup( origobj, nf ) {
       var cobj = obj.getChildByName( name );
       var res = fn( cobj );
 
-      if (res) return res;
+      if (res) return cobj;
       var res2 = nf(cobj).find( fn );
-      if (res2) return res;
+      if (res2) return res2;
     }
     return undefined;
   }
@@ -40,6 +40,12 @@ export default function setup( origobj, nf ) {
       // это не надо оно само себя вызовет var res = fn( cobj );
       nf(cobj).traverse( fn );
     }
+  }
+  
+  obj.findChild = function(name) {
+    return obj.find( function(ch) {
+      return (ch.ns.name == name);
+    });
   }
 
 }

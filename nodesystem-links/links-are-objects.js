@@ -3,7 +3,7 @@
 export default function setup( vz ) {
 
   vz.createLink = function( opts ) {
-    opts.name ||= "formula";
+    opts.name ||= "link";
     var obj = vz.createObj( opts );
     
     var currentRefFrom;
@@ -26,6 +26,7 @@ export default function setup( vz ) {
         return;
       }
       
+      /*
       if (tracode && obj.getParam("transform-enabled")) {
         try {
           val = tracode( val );
@@ -33,8 +34,12 @@ export default function setup( vz ) {
           console.error("Link: transform-code error!",ex );
         }
       }
+      */
       
       currentRefTo.setParam( currentParamNameTo,val );
+      // feature: if setting param value by link, mark it as internal
+      // so this value will not go to dump
+      currentRefTo.setParamOption( currentParamNameTo,"internal",true );
     }
     
     obj.addCheckbox( "enabled", true );
@@ -143,7 +148,8 @@ export default function setup( vz ) {
         return Object.keys( o.params );
       }
     }
-    
+
+/*
     obj.addCheckbox( "transform-enabled",false,qqq );
     obj.addText("transform-code","// enter transform code here. arg: v - input value\nreturn v",function(cod) {
        if (!cod || cod.length == 0) {
@@ -154,6 +160,7 @@ export default function setup( vz ) {
        tracode = new Function("v",cod);
        qqq();
     } );
+*/
 
     return obj;
   }
@@ -184,7 +191,7 @@ vz.chain("create_obj",function( obj, opts ) {
   return obj;
 } ); // create_obj
 
-vz.addItemType("link","Formula",vz.createLink, {hidegui: true} );
+vz.addItemType("link","Link between params",vz.createLink, {hidegui: true} );
 
 }
 

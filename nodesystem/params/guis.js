@@ -59,6 +59,12 @@ export default function setup(x) {
   x.addFile = function( name, value, fn ) {
     return x.addGui( { type: "file", name: name, value: value, fn: fn });
   };
+  
+  x.addArray = function( name, value, text_formating_options, fn ) {
+    x.setParam( name,value );
+    x.setParamOption( name,"internal",true );
+    //return x.addGui( { type: "text", name: name, value: value, fn: fn });
+  };
 
   return x;
 }

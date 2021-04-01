@@ -7,9 +7,9 @@ import nodesystem_save_setup from  "./nodesystem-save/init.js";
 import nodesystem_links from  "./nodesystem-links/init.js";
 
 export function setup( m, opts={} ) {
+  utils_setup( m ); // ну пусть пока будет
   nodesystem_setup( m );
   nodesystem_types_setup( m ); // под вопросом..
-  utils_setup( m ); // ну пусть пока будет
   nodesystem_save_setup( m );
   nodesystem_links( m );
 
@@ -18,16 +18,29 @@ export function setup( m, opts={} ) {
   m.createObj = function( opts={} ) {
     return m.create_obj( opts.body || {}, opts );
   }
+
   m.createObjByType = function( opts ) {
     return m.create_obj_by_type( opts );
   }
-  
+
   m.getDir = function(url) {
     url = url.split("#")[0];
     var i = url.lastIndexOf("/");
     if (i >= 0)
         return url.substr( 0,i+1 );
     return url; // hmm
+  }
+  
+  // feature: createObj is a common thing
+  m.createObj = function( opts1={}, opts2={}, opts3={} ) {
+    var opts = Object.assign( {}, opts1, opts2, opts3 );
+    return m.create_obj( opts.body || {}, opts );
+  }
+  
+  m.createObjByType = function( opts1={}, opts2={}, opts3={} ) {
+    // todo: hack, keep opts1 type for historicalType?
+    var opts = Object.assign( {}, opts1, opts2, opts3 );
+    return m.create_obj_by_type( opts );
   }
 
 }

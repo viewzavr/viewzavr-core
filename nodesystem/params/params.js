@@ -51,11 +51,12 @@ export default function setup(x) {
   
   // может события заюзать?
   x.trackParam = function(name,fn) {
-    /*
-    var z = function(e) {
+    
+/*    var z = function(e) {
       fn( e.detail );
     }
-    */
+*/
+    
     x.pevents.addEventListener(name,fn);
   }
   x.untrackParam = function(name,fn) {
