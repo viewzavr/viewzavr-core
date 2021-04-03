@@ -66,7 +66,7 @@ export default function setup( vz ) {
       var sobj = obj.findByPath( objname );
       
       if (!sobj) {
-        console.log("Link: source obj not found! Will retry!",arr );
+        //console.log("Link: \source obj not found! Will retry!",arr );
         linkScannerAdd( obj );
         return;
       }
@@ -110,7 +110,7 @@ export default function setup( vz ) {
       var sobj = obj.findByPath( objname );    
       
       if (!sobj) {
-        console.log("Link: target obj not found! Will retry!",arr );
+        // console.log("Link: target obj not found! Will retry!",arr );
         linkScannerAdd( obj );
         return;
       }

@@ -24,7 +24,9 @@ export function setup( m, opts={} ) {
   }
 
   m.getDir = function(url) {
-    url = url.split("#")[0];
+    url = url.split(/[\#\?]/)[0];
+    //url = url.split("#")[0];
+    //url = url.split("?")[0];
     var i = url.lastIndexOf("/");
     if (i >= 0)
         return url.substr( 0,i+1 );

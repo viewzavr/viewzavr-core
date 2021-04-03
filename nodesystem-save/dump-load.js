@@ -14,6 +14,8 @@ export default function setup( m ) {
   // короче я все еще в сомнениях - тут смешано получается создание дерева по описанию
   // и 2) синхронизация этого дерева из описания, и 
   // и еще это упирается в ситуацию а что если корень дерева в памяти не того типа что в описании?
+  
+  // returns promise
   m.createSyncFromDump = function( dump, _existingObj, parent, desiredName )
   {
     var obj = _existingObj;
@@ -31,9 +33,7 @@ export default function setup( m ) {
     }
     // в dump должно быть поле type, оно нам все и создаст что надо
     
-    obj.restoreFromDump( dump );
-    
-    return obj;
+    return obj.restoreFromDump( dump );
   }
   
   // this is made specially so obj.restoreFromDump may be overriden
@@ -47,7 +47,8 @@ export default function setup( m ) {
     });
 
     m.removeChildrenByDump( dump, obj );
-    m.createChildrenByDump( dump, obj );
+    
+    return m.createChildrenByDump( dump, obj );
   }
   
   m.removeChildrenByDump = function( dump, obj )
@@ -83,6 +84,7 @@ export default function setup( m ) {
     // а мы добавим в общем списке..
   
     // todo отсортировать в порядке order..
+    var promises_arr = [];
     ckeys.forEach( function(name) {
       var cobj = obj.ns.getChildByName( name );
       if (!c[name].manual && !cobj) {
@@ -90,8 +92,11 @@ export default function setup( m ) {
         console.error("load_from_dump: no child of name found! name=",name,"obj=",obj);
         return;
       }
-      cobj = m.createSyncFromDump( c[name], cobj, obj, name );
+      var r = m.createSyncFromDump( c[name], cobj, obj, name );
+      promises_arr.push( r );
     });
+    
+    return Promise.allSettled( promises_arr );
   }
   
   m.dumpObj = function( obj ) {
@@ -154,12 +159,12 @@ m.chain("create_obj",function( obj, opts ) {
     return m.restoreObjFromDump( dump, obj );
   }
   
+  // returns promise
   obj.clone = function( opts = {} ) {
     var dump = obj.dump();
     //debugger;
     if (!opts.parent) opts.parent = obj.ns.parent;
-    var newobj = m.createSyncFromDump( dump, null, opts.parent, opts.name );
-    return newobj;
+    return m.createSyncFromDump( dump, null, opts.parent, opts.name );
   }
   
   if (opts.manual) obj.manuallyInserted = true;
