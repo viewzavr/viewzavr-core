@@ -61,8 +61,9 @@ export default function setup(x) {
   };
   
   x.addArray = function( name, value, text_formating_options, fn ) {
-    x.setParam( name,value );
-    x.setParamOption( name,"internal",true );
+    //x.setParam( name,value );
+    //x.setParamOption( name,"internal",true );
+    return x.addGui( { type: "array", name: name, value: value, fn: fn, columns_count: text_formating_options });    
     //return x.addGui( { type: "text", name: name, value: value, fn: fn });
   };
 
