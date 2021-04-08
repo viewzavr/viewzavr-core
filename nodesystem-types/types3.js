@@ -27,9 +27,13 @@ var itemtypes_arr = [];
 m.addItemType = function(code,title,fn,opts) {
   //console.log("addItemType called!",code);
   if (!opts) opts = {};
+  
+  opts.title = title;
+  // todo: fn тоже в опции, пусть все там будет
 
   // если уже был такой тип - заменяем новым
   if (itemtypes_dic[code]) {
+    // todo - вызвать forgetItemType чтобы категории это тоже отразили
     var existing_i = itemtypes_dic[code][3];
     itemtypes_arr[existing_i] = [code,fn,title,opts];
   }
