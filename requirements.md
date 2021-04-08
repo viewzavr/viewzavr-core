@@ -44,7 +44,7 @@ to check is it a source of laggings.
 We have to get a big text parameter, this is freedom for many things (scripts, lists, trees, so on).
 
 ## R-ADD-XGUI
-We have to support XGUi format
+We may support XGUi format
 https://forum.xclu.dev/t/sdk-xgui-module-interface-description-language/19
 https://github.com/XcluDev/Xclu/blob/master/builtin_modules/Sound/SoundOsc/description.xgui
 example usage
@@ -54,3 +54,14 @@ export function create (vz, opts ) {
   obj.track("...",....);
   return obj;
 }
+
+# R-FAST-ACCESS-TO-CHILDREN
+During js coding, we need to access children of some object shortly.
+
+## F-ITEMS
+obj.items.childName probably is a good idea - as a synonym to obj.ns.childrenTable.
+Todo - think same about obj.params as a valid way to access obj params.
+
+# R-TYPE-NAMESPACES
+
+Probably we have to deal with namespaces. E.g. adding a type should be considered as a type inside namespace of current package.
