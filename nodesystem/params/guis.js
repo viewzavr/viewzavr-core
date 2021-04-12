@@ -4,6 +4,12 @@
 export default function setup(x) {
 
   x.guis = {};
+  
+  // need this to remove circluar ref (when gui record holds ref to owner obj)
+  x.chain("remove",function() {
+    x.guis = {};
+    this.orig();
+  });
 
   x.addGui = function(rec) {
     if (!rec.fn) rec.fn = function() {};

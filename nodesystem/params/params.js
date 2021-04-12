@@ -71,6 +71,14 @@ export default function setup(x) {
   // и мб старое значение, а не то что какой-то непонятный event (я не чувствую что он мне нужен если честно)
   // но смогу ли я отписываться от событий - вот что мне непонятно.
   // видимо смогу, но надо сохранять отдельно таблицу fn -> newfn
+  
+  /* if we remove pevents, then others may not talk to obj events after obj is removed
+     maybe replace pevents with new EventTarget?..
+  x.chain("remove",function() {
+    this.orig();  
+    x.pevents = undefined; // to help remove things in gc
+  });
+  */
 
   return x;
 }
