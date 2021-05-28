@@ -1,5 +1,8 @@
 // вводим понятие "ссылка" в духе Дениса Перевалова
 
+// idea: if object which some link references gets deleted, and then other object is created, try to reconnect to it.
+// probably it is already the case, and then we have to write it as a requirement (fine feature).
+
 export default function setup( vz ) {
 
   vz.createLink = function( opts ) {
