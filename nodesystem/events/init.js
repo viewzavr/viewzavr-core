@@ -5,6 +5,11 @@ export function setup_item(x) {
 
   x.track = function(name,fn) {
     x.events_dic.addEventListener(name,fn);
+    // an idea from https://github.com/ai/nanoevents which we even probably should use for events.
+    var untrack = function() {
+      x.untrack( name, fn );
+    }
+    return untrack;
   }
   //x.trackSignal = x.track;
   
