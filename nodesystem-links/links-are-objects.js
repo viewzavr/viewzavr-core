@@ -13,6 +13,7 @@ export default function setup( vz ) {
     var currentParamNameTo;
     var tracode;
     
+    // вызывается когда исходный параметр изменяется
     function qqq() {
       if (!obj.getParam("enabled")) return;
       if (!currentRefTo) return;
@@ -44,7 +45,9 @@ export default function setup( vz ) {
     
     obj.addCheckbox( "enabled", true );
     
+    // enable_qqq = выполнить разовый вызов qqq в ходе настройки (работы алгоритма setupFromLink)
     function setupFromLink(enable_qqq) {
+      //console.error("Link: setupFromLink called",obj);
       var v = obj.getParam("from");
       
       if (currentRefFrom) {
@@ -66,7 +69,7 @@ export default function setup( vz ) {
       var sobj = obj.findByPath( objname );
       
       if (!sobj) {
-        //console.log("Link: \source obj not found! Will retry!",arr );
+        console.error("Link: \source obj not found! Will retry!",arr );
         linkScannerAdd( obj );
         return;
       }
@@ -128,7 +131,9 @@ export default function setup( vz ) {
     }
     
     obj.setupLinks = function() {
-      setupFromLink(false); setupToLink();
+      //console.error("Link: setupLinks called");
+      setupFromLink(false);
+      setupToLink();
     }
 
     obj.addParamRef("from","",null,setupFromLink );
@@ -136,10 +141,11 @@ export default function setup( vz ) {
     
     // todo speedup by func ptr
     function filter_to(o) {
-      if (obj.getParam("tied_to_parent")) {
+      if (obj.getParam("tied_to_parent")) { // if our link is tied to parent... todo: move this if out of func def (define 2 functions)
         if (o == obj.ns.parent) {
-          
-          return Object.keys( o.params );
+          // implementing R-LINKS-NO-DEFAULT-VALUE
+          return [""].concat( Object.keys( o.params ) );
+          // return Object.keys( o.params );
         }
         return [];
       }
@@ -168,13 +174,15 @@ export default function setup( vz ) {
 vz.chain("create_obj",function( obj, opts ) {
 
   obj.createLinkTo = function( opts ) {
+    //console.log("CLT called,.opts=",opts);
     var paramname = opts.param;
     var sourcestring = opts.from;
     opts.parent = obj;
     opts.type = "link";
     //var q = vz.createLink( opts );
     var q = vz.createObjByType( opts );
-    q.setParam( "to", obj.getPath() + "->" + paramname );
+    if (paramname && paramname.length > 0)
+        q.setParam( "to", obj.getPath() + "->" + paramname );
     q.setParam( "from", sourcestring );
     q.setParam( "tied_to_parent",true );
   }
@@ -252,5 +260,7 @@ function linkScannerAdd( link ) {
 setInterval( function() {
   var x = scannerLinks;
   scannerLinks = [];
-  x.forEach( link => link.setupLinks ); // она там себя добавит если облом
+  //console.error("Link: retrying to connect links",x);
+  //if (x.length > 0) debugger;
+  x.forEach( link => link.setupLinks() ); // она там себя добавит если облом
 }, 1000 );
