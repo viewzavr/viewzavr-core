@@ -39,7 +39,7 @@ export default function setup(vz) {
   
   function gatherParams( crit_fn ) {
     var acc = [""];
-    var r = x.findRoot();
+    var r = x.findRoot(); // это получается в рамках текущего куста. а соседние кусты? (подсцены, вид, плеер)?
 
     r.ns.traverse( function(obj) {
       var param_names = crit_fn( obj );

@@ -88,3 +88,14 @@ Probably in some non-obvious cases or optional options..
 When adding a link, it should not have a default target parameter value (it should be blank).
 There were cases when adding a link - it have blank source param and some selected target param.
 An obj started behaving with default value, which were not the case (program hanged).
+
+# R-DO-NOT-SAVE-LABEL-VALUE
+If one creates gui via addLabel, it should not be saved to storage.
+Solution: this parameter (represented by label) should become internal.
+This is because I think so (see such pattern).
+
+# R-GUI-SKIP-LABEL-VALUE-FROM-PARAM?
+Comment: R-DO-NOT-SAVE-LABEL-VALUE maybe enought
+Labels should not load it's value from parameters..
+During addGui, if parameter marked as internal, it should not be loaded from hash?
+Or this is at least for labels?.. (labels should not in any case seems)

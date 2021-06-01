@@ -68,7 +68,7 @@ export default function setup(x) {
     // к этому моменту уже в параметрах. вот.
     
     var cpv = x.getParam( rec.name );
-    if (typeof( cpv ) != "undefined" && cpv != rec.value)
+    if (typeof( cpv ) != "undefined" && cpv != rec.value && !rec.forceUseGuiValue)
       x.signalTracked( rec.name ); // тыркнули за веревочку - с текущим значением параметра
     else
     if (typeof( cpv ) == "undefined" && rec.value) {

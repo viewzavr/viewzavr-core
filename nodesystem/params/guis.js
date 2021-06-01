@@ -57,7 +57,9 @@ export default function setup(x) {
   };
   
   x.addLabel = function( name, value, fn ) {
+    x.setParamOption( name,"internal",true ); // R-DO-NOT-SAVE-LABEL-VALUE
     return x.addGui( { type: "label", name: name, value: value, fn: fn });
+    //return x.addGui( { type: "label", name: name, value: value, fn: fn, forceUseGuiValue: true });
   };
 //  x.addUrl = function( name, value, fn ) {
 //    return x.addGui( { type: "url", name: name, value: value, fn: fn });
