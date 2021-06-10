@@ -25,7 +25,7 @@ export default function setup( vz ) {
       
       var val = currentRefFrom ? currentRefFrom.getParam( currentParamNameFrom  ) : null;
       
-      if (typeof(val) == "undefined") {
+      if (typeof(val) == "undefined" || val == null) {
         console.log("Links: incoming value undefined, skipping assign");
         return;
       }
