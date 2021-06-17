@@ -108,14 +108,9 @@ export default function setup( m ) {
         // feature: do not copy some params to dump!
         res.params = {};
         Object.keys( obj.params ).forEach( function(name) {
-        if (obj.getParamOption( name,"internal" ) || name[0] == "@")
-        {
-          // console.log("skipped dump of name because internal",name);
-        }
-        else
-        {
-          res.params[name] = obj.params[name];
-        }
+          var v = obj.dumpParam( name );
+          if (typeof(v) !== "undefined" && v !== null)
+            res.params[name] = v;
         });
     }
 
@@ -166,6 +161,19 @@ m.chain("create_obj",function( obj, opts ) {
     if (!opts.parent) opts.parent = obj.ns.parent;
     return m.createSyncFromDump( dump, null, opts.parent, opts.name );
   }
+  
+    // created this method(tpu) to implement R-SETREF-OBJ
+  obj.dumpParam = function ( name ) {
+        if (obj.getParamOption( name,"internal" ) || name[0] == "@")
+        {
+          // console.log("skipped dump of name because internal",name);
+        }
+        else
+        {
+          return obj.params[name];
+        }
+  }
+
   
   if (opts.manual) obj.manuallyInserted = true;
 

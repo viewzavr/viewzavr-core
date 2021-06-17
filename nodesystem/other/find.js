@@ -12,10 +12,12 @@ export default function setup( vz ) {
   */
   vz.find_by_path = function(obj,path) {
     if (!path) return null;
+    if (path.getPath) return path; // this is object - return as is, R-SETREF-OBJ
     
     if (path[0] == "/") {
       var root = obj.findRoot();
       if (root == obj) {
+//        if (obj.ns.name !== "scene") debugger;
         path = path.substring(1);
       }
       else

@@ -22,6 +22,7 @@ export default function setup(x) {
       if (!itsme) {
         itsme = true;
         x.setParam( rec.name, value );
+        var value2 = x.getParam( rec.name ); // R-SETREF-OBJ
         if (orig_fn) orig_fn( value );
         itsme = false;
       }

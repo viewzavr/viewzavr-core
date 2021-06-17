@@ -99,3 +99,14 @@ Comment: R-DO-NOT-SAVE-LABEL-VALUE maybe enought
 Labels should not load it's value from parameters..
 During addGui, if parameter marked as internal, it should not be loaded from hash?
 Or this is at least for labels?.. (labels should not in any case seems)
+
+# R-SETREF-OBJ
+We should be able to set references to objects as objects, not as strings.
+e.g.:
+obj.setObjRef("somename",targetobj,filterfunc,changed_event_func),
+obj.getParam("somename") => object (was string)
++ obj.setParam("somename",path) should be overrided to assign obj to param value, not path.
++ system should retry to find object if it was not found at the time of setParam
++ provide backward compatibility so vz.find( path ) should work when path is passed as obj
+because it was a frequent case when obj ref was string. 
+=> F-PARAMDUMP-METHOD: override param dump function so it dump obj path, not string.

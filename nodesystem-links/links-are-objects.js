@@ -49,7 +49,7 @@ export default function setup( vz ) {
     obj.addCheckbox( "enabled", true );
     
     // enable_qqq = выполнить разовый вызов qqq в ходе настройки (работы алгоритма setupFromLink)
-    function setupFromLink(enable_qqq) {
+    function setupFromLink(enable_qqq,enable_retry=true) {
       //console.error("Link: setupFromLink called",obj);
       var v = obj.getParam("from");
       
@@ -72,13 +72,14 @@ export default function setup( vz ) {
       var sobj = obj.findByPath( objname );
       
       if (!sobj) {
-        console.error("Link: \source obj not found! Will retry!",arr );
-        linkScannerAdd( obj );
+        if (enable_retry) {
+          console.error("Link: \source obj not found! Will retry!",arr );
+          linkScannerAdd( obj );
+        }
         return;
       }
       if (!paramname) {
         console.error("Link: source param is blank",arr );
-        
         return;
       }      
       
@@ -95,7 +96,7 @@ export default function setup( vz ) {
       currentRefFrom.signal( paramname + "Linked" );
     }
     
-    function setupToLink(enable_qqq) {
+    function setupToLink(enable_qqq,enable_retry=true) {
       var v = obj.getParam("to");
       
       if (currentRefTo) forgetLinkTracking( currentRefTo );
@@ -116,8 +117,10 @@ export default function setup( vz ) {
       var sobj = obj.findByPath( objname );    
       
       if (!sobj) {
-        // console.log("Link: target obj not found! Will retry!",arr );
-        linkScannerAdd( obj );
+        if (enable_retry) {
+          // console.log("Link: target obj not found! Will retry!",arr );
+          linkScannerAdd( obj );
+        }
         return;
       }
       
@@ -133,10 +136,10 @@ export default function setup( vz ) {
       currentRefTo.signal( paramname + "Linked" );
     }
     
-    obj.setupLinks = function() {
+    obj.setupLinks = function( may_retry = true ) {
       //console.error("Link: setupLinks called");
-      setupFromLink(false);
-      setupToLink();
+      setupFromLink(false, may_retry ); // false => do not set param value
+      setupToLink(true, may_retry); // true => set param value if all ok
     }
 
     obj.addParamRef("from","",null,setupFromLink );
@@ -170,6 +173,7 @@ export default function setup( vz ) {
        qqq();
     } );
 */
+    // todo: if link object is removed - forget all back-references (e.g. forgetLinkTracking)
 
     return obj;
   }
@@ -220,7 +224,7 @@ function addLinkTracking( obj, link, isFrom ) {
   obj.chain("remove",function() {
     this.orig();
     (obj.links_to_me || []).forEach( function(l) {
-      l.setupLinks(); // probably forget this
+      l.setupLinks( false ); // forget this object
     });
   });
 }
