@@ -15,6 +15,7 @@ export default function setup(x) {
       rec.events.dispatchEvent( new CustomEvent("visible-changed", {detail: val} ) );
     }
     if (!rec.hasOwnProperty("visible")) rec.visible = true;
+    
     return orig( rec );
   };
   x.setGuiVisible = function(name,value) {

@@ -20,6 +20,7 @@ export function setup_item(x) {
   x.signal = function(name,arg1) {
     x.events_dic.dispatchEvent( new CustomEvent(name, {detail: arg1} ) );
   }
+
   /*
   x.emit = x.signal;
   x.on = x.track;

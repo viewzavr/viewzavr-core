@@ -23,7 +23,7 @@ function traverse ( obj, fn ) {
 */
 
 export default function setup(vz) {
-  
+
   vz.chain("create_obj",function( x, opts ) {
 
   x.addParamRef = function( name, value, crit_fn, fn ) {
@@ -40,9 +40,11 @@ export default function setup(vz) {
   function gatherParams( crit_fn ) {
     var acc = [""];
     var r = x.findRoot(); // это получается в рамках текущего куста. а соседние кусты? (подсцены, вид, плеер)?
+//    debugger;
 
     r.ns.traverse( function(obj) {
       var param_names = crit_fn( obj );
+//      if (obj.getPathRelative(x) == "/xr-control") debugger;
       param_names.forEach( function(p) {
         acc.push( obj.getPathRelative(x) + "->" + p );
       });

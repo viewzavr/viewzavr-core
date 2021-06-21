@@ -136,15 +136,15 @@ export default function setup( vz ) {
       currentRefTo.signal( paramname + "Linked" );
     }
     
-    obj.setupLinks = function( may_retry = true ) {
+    obj.setupLinks = function( may_retry_from = true, may_retry_to = true ) {
       //console.error("Link: setupLinks called");
-      setupFromLink(false, may_retry ); // false => do not set param value
-      setupToLink(true, may_retry); // true => set param value if all ok
+      setupFromLink(false, may_retry_from ); // false => do not set param value
+      setupToLink(true, may_retry_to); // true => set param value if all ok
     }
 
     obj.addParamRef("from","",null,setupFromLink );
     obj.addParamRef("to","",filter_to,setupToLink );
-    
+
     // todo speedup by func ptr
     function filter_to(o) {
       if (obj.getParam("tied_to_parent")) { // if our link is tied to parent... todo: move this if out of func def (define 2 functions)
@@ -224,7 +224,12 @@ function addLinkTracking( obj, link, isFrom ) {
   obj.chain("remove",function() {
     this.orig();
     (obj.links_to_me || []).forEach( function(l) {
-      l.setupLinks( false ); // forget this object
+      l.setupLinks( true, l.parent ? true : false ); // forget this object
+      // we achieved that if object if deleted and 
+      // if some link has arrow from this object
+      //   then link will retry to find object with same name (which may appear soon, as in js-code object)
+      // if some link has arrow to this object
+      //   then link will retry only in case the link has parent (which means link is not child of current, deleted object).
     });
   });
 }
