@@ -41,6 +41,11 @@ export default function setup( vz ) {
       */
       
       currentRefTo.setParam( currentParamNameTo,val );
+      // bug: if one invokes signal on source param, without changing param value (say by ref to array)
+      // here we hide that propagation. we have to somehow understand that event will not propagate
+      // and maybe send it manually
+      
+      
       // feature: if setting param value by link, mark it as internal
       // so this value will not go to dump
       currentRefTo.setParamOption( currentParamNameTo,"internal",true );

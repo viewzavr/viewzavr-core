@@ -110,3 +110,8 @@ obj.getParam("somename") => object (was string)
 + provide backward compatibility so vz.find( path ) should work when path is passed as obj
 because it was a frequent case when obj ref was string. 
 => F-PARAMDUMP-METHOD: override param dump function so it dump obj path, not string.
+
+# R-PARAM-REF
+We need to create param-ref same as obj ref. Logic of parameter recovery (object not found so on)
+should be placed there (instead of links object). getParam of add-param-ref should return
+value of linked parameter.
