@@ -32,6 +32,14 @@ export default function setup(x) {
     delete x.guis[ name ];
   }
 
+  // как-то бы придумать чтобы легче добавлять параметры на основе text..
+  // т.е. там текст и фукнкции преобразования.. (маленький текст строка, 
+  // и большой текст - 2 функции)
+  // ну и вообще подумать о комбинациях... как-то..
+  x.addFloat = function( name, value, fn ) {
+    return x.addGui( { type: "float", name: name, value: value, fn: fn });
+  };
+
   x.addSlider = function (name, value, min, max, step, fn) {
     return x.addGui( { type: "slider", name: name, value: value, min: min, max: max, step: step, fn: fn } );
   }
@@ -41,7 +49,7 @@ export default function setup(x) {
   x.addComboString = function(name, value, values, fn) {
     return x.addGui( { type: "combostring", name: name, value: value, values: values, fn: fn } );
   };
-  
+
   x.addCmd = function( name, fn ) {
     return x.addGui( { type: "cmd", name: name, fn: fn });
   };
