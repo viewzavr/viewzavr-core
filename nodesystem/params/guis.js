@@ -24,9 +24,15 @@ export default function setup(x) {
 //      rec[optionname] = value;
 //    }
 
+    rec.getType = () => rec.type;
+
     x.guis[ rec.name ] = rec;
     return rec;
   };
+
+  x.getGui = function( name ) {
+    return x.guis[ name ];
+  }
   
   x.removeGui = function(name) {
     delete x.guis[ name ];

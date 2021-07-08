@@ -39,6 +39,11 @@ export default function setup(x) {
   x.getParams = function() {
     return x.params;
   }
+
+  x.getParamsNames = function() {
+    return Object.keys( x.params );
+  }  
+
   x.setParams = function(value) {
     x.params = value;
     // тотальненько..

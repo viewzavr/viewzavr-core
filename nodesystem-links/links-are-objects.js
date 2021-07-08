@@ -3,6 +3,10 @@
 // idea: if object which some link references gets deleted, and then other object is created, try to reconnect to it.
 // probably it is already the case, and then we have to write it as a requirement (fine feature).
 
+// idea: move link resolution logic to addParamRef method
+// idea: maybe - use some restriction mechanism for links -- e.g. it should choose source
+//       only from some specifics. but may be no need because we may do it by default criteria
+
 export default function setup( vz ) {
 
   vz.createLink = function( opts ) {
@@ -54,7 +58,7 @@ export default function setup( vz ) {
     obj.addCheckbox( "enabled", true );
     
     // enable_qqq = выполнить разовый вызов qqq в ходе настройки (работы алгоритма setupFromLink)
-    function setupFromLink(enable_qqq,enable_retry=true) {
+    function setupFromLink(enable_qqq,enable_retry=true,enable_signal=true) {
       //console.error("Link: setupFromLink called",obj);
       var v = obj.getParam("from");
       
@@ -97,11 +101,13 @@ export default function setup( vz ) {
       
       if (enable_qqq) qqq();
       
-      obj.signal("linksChanged");
+      if (enable_signal) obj.signal("linksChanged");
       currentRefFrom.signal( paramname + "Linked" );
+
+      return true;
     }
     
-    function setupToLink(enable_qqq,enable_retry=true) {
+    function setupToLink(enable_qqq,enable_retry=true,enable_signal=true) {
       var v = obj.getParam("to");
       
       if (currentRefTo) forgetLinkTracking( currentRefTo );
@@ -115,7 +121,7 @@ export default function setup( vz ) {
       if (arr.length != 2) {
         console.error("Link: target arr length not 2!",arr );
         return;
-      }      
+      }
       
       var objname = arr[0];
       var paramname = arr[1];
@@ -136,24 +142,27 @@ export default function setup( vz ) {
 
       if (enable_qqq) qqq();
       
-      obj.signal("linksChanged");
-      
+      // это бы надо вытащить на общий уровень
+      if (enable_signal) obj.signal("linksChanged");
+
       currentRefTo.signal( paramname + "Linked" );
+
+      return true;
     }
     
     obj.setupLinks = function( may_retry_from = true, may_retry_to = true ) {
       //console.error("Link: setupLinks called");
-      setupFromLink(false, may_retry_from ); // false => do not set param value
-      setupToLink(true, may_retry_to); // true => set param value if all ok
+      if (setupFromLink(false, may_retry_from, false)) // 1st false => do not set param value, 3rd true => do not signal
+          setupToLink(true, may_retry_to, true);       // 1st true => set param value if all ok, 3rd true => signal if ok
     }
 
-    obj.addParamRef("from","",null,setupFromLink );
+    obj.addParamRef("from","",filter_from,setupFromLink );
     obj.addParamRef("to","",filter_to,setupToLink );
 
     // todo speedup by func ptr
     function filter_to(o) {
       if (obj.getParam("tied_to_parent")) { // if our link is tied to parent... todo: move this if out of func def (define 2 functions)
-        if (o == obj.ns.parent) {
+        if (o === obj.ns.parent) {
           // implementing R-LINKS-NO-DEFAULT-VALUE
           return [""].concat( Object.keys( o.params ) );
           // return Object.keys( o.params );
@@ -165,6 +174,71 @@ export default function setup( vz ) {
         return Object.keys( o.params );
       }
     }
+
+    // F-RESTRICT-PARAM-REF-OPTION
+    function filter_from(o) {
+      // вход - объект o
+      // выход - список имен параметров которые мы у него берем
+
+      // если не выбрали куда - то ограничимся
+      if (!(currentRefTo && currentParamNameTo)) return o.getParamsNames();
+
+      var acc = [];
+
+      var checker = currentRefTo.getParamOption( currentParamNameTo,"maylink" );
+      if (!checker) 
+      {
+        return o.getParamsNames()
+        /*
+        checker = function( otherobj, otherparam ) {
+        // ну не знаю что тут сделать.. гуи сравнить //
+        return true;
+        }
+        */
+      }
+      var onames = o.getParamsNames();
+      // вообще тупняк тут алгоритмы разводить. должна быть четкая функция
+      // "можно ли к этому параметру прилинковать тот?"
+      for (var pn of onames) {
+        if (checker( o, pn )) // а почему такой интерфейс? удобно?
+            acc.push( pn );
+      }
+      return acc;
+    }
+
+/*
+    function filter_from(o) {
+      // вход - объект o
+      // выход - список имен параметров которые мы у него берем
+
+      // если не выбрали куда - то ограничимся
+      if (!(currentRefTo && currentParamNameTo)) return o.getParamsNames();
+
+      var acc = []  
+      // а теперь введем ограничения хотя бы даже по гуи
+      var myguitype = currentRefTo.getGui( currentParamNameTo )?.getType();
+      var myparamtype = currentRefTo.getParamOption("type");
+      var onames = o.getParamsNames();
+      
+      // вообще тупняк тут алгоритмы разводить. должна быть четкая функция
+      // "можно ли к этому параметру прилинковать тот?"
+      for (var pn of onames) {
+        var oguitype = o.getGui( pn )?.getType();
+        var oparamtype = o.getParamOption("type");
+        if (myparamtype) 
+          { // если у исходного параметра указан тип то ориентируемся на него
+
+          }
+          else
+          {
+            if (oguitype == myguitype) acc.push(pn);
+          }
+      }
+
+      return acc;
+
+    }
+    */
 
 /*
     obj.addCheckbox( "transform-enabled",false,qqq );

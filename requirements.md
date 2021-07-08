@@ -115,3 +115,10 @@ because it was a frequent case when obj ref was string.
 We need to create param-ref same as obj ref. Logic of parameter recovery (object not found so on)
 should be placed there (instead of links object). getParam of add-param-ref should return
 value of linked parameter.
+
+# R-RESTRICT-PARAM-REF
+For usability we need to restrict list of params which may be linked to current selected param.
+
+=> F-RESTRICT-PARAM-REF-OPTION we introduce param option `maylink` where restriction function
+might be described by user. 
+Example: obj.setParamOption( "paramname","maylink",(tobj,tparam) => tparam.match(/color/) );

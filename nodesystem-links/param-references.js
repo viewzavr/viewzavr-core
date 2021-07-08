@@ -7,7 +7,7 @@
 // но отписаться нужно точно
 
 function default_crit_fn( obj ) {
-  return Object.keys( obj.params );
+  return obj.getParamsNames();
 }
 
 /*
