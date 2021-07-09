@@ -1,4 +1,6 @@
 // calls new code before
+// вообще-то это название некорректное. в руби prepend это именно что override
+//  с возможностью вызывать старое через super
 export function prepend( obj, name, newfn ) {
     var origfn = obj[name] || function() {};
     obj[name] = function() {

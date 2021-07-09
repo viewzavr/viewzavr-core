@@ -90,7 +90,7 @@ export default function setup( vz ) {
       if (!paramname) {
         console.error("Link: source param is blank",arr );
         return;
-      }      
+      }
       
       if (sobj)
           sobj.trackParam( paramname, qqq );
@@ -343,10 +343,15 @@ function howManyLinksToParam( obj,name ) {
 // восстановление ненайденных ссылок
 
 var scannerLinks = [];
-function linkScannerAdd( link ) {
-  if (scannerLinks.indexOf( link ) < 0)
+/* заоверрайдено фичей ниже.. почему в js нельзя переопределять функцию? */
+/* но быть может потому что это надо делать через точку передачи управления */
+/* сделал через перехват точки управления (было function linkScannerAdd) */
+
+var linkScannerAdd = function ( link ) {
+  if (scannerLinks.indexOf( link ) < 0) 
       scannerLinks.push( link );
 }
+
 
 setInterval( function() {
   var x = scannerLinks;
@@ -355,3 +360,16 @@ setInterval( function() {
   //if (x.length > 0) debugger;
   x.forEach( link => link.setupLinks() ); // она там себя добавит если облом
 }, 1000 );
+
+///////////////////////////////////////////
+/// фича - несколько попыток и идите в лес
+/// перехватываем вот то управление.. можно было бы там метод какой-то типа doAddToArr?
+linkScannerAdd = function ( link ) {
+  if (scannerLinks.indexOf( link ) < 0) {
+      link.linkScannerCounter = (link.linkScannerCounter || 0) + 1;
+      if (link.linkScannerCounter < 10)
+          scannerLinks.push( link );
+      else
+          console.error("Link: retry counter finished, will not retry anymore.")
+  }
+}
