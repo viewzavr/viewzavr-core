@@ -73,8 +73,10 @@ export default function setup(x) {
       x.signalTracked( rec.name ); // тыркнули за веревочку - с текущим значением параметра
     else
     if (typeof( cpv ) === "undefined" && typeof(rec.value) !== "undefined") {
-      x.setParam( rec.name, rec.value ); 
+      // x.setParam( rec.name, rec.value ); 
       // надо и похоже выставить значение, и дернуть за веревочку тоже.. 
+      // но дергая за веревочку мы вызываем всякие update-ы...
+      x.params[ rec.name ] = rec.value; // попробуем так
     }
       
 //    else
