@@ -81,7 +81,22 @@ m.create_obj_by_type = function( opts ) {
   Object.assign( finalopts, typerecord[2], opts || {} );
   
   var typefunc = typerecord[0];
+
+  if (!typefunc) {
+    console.error("Viewzavr: no type function found for type", code);
+    return;
+  }
+
   var obj = typefunc( opts );
+
+  if (!obj) {
+    console.error("Viewzavr: type function returned no value! type=", 
+      code);
+    
+    debugger;
+    return;
+  }
+
   obj.historicalType = opts.type;
 
   return obj;
