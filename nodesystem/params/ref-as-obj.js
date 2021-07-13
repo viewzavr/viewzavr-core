@@ -31,7 +31,12 @@ var retry_timer = null;
 
 function add_retry( obj, paramname, value ) {
   setTimeout( function() {
-    console.log("retry setting obj-ref",paramname, value );
-    obj.setParam( paramname, value );
+    console.log("ref-as-obj: retry setting obj-ref",paramname, value );
+    obj.ref_retry_counters ||= {};
+    obj.ref_retry_counters[paramname] = (obj.ref_retry_counters[paramname] || 0)+1;
+    if (obj.ref_retry_counters[paramname] < 30)
+      obj.setParam( paramname, value );
+    else
+      console.error("ref-as-obj: stopped because of retry counter limit.")
   }, 150 );
 }

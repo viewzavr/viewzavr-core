@@ -51,7 +51,7 @@ export default function setup(vz, x) {
     // забыть все ссылки на нас надо
   x.chain("remove",function() {
     Object.keys( x.references_to_me || {} ).forEach( function(k) {
-      var ko = vz.find_by_path( vz.root, k );
+      var ko = vz.find_by_path( x.findRoot(), k );
       if (ko) {
         var pn = x.references_to_me[k];
         ko.setReference( pn, undefined );

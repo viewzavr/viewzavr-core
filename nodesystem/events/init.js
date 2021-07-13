@@ -11,7 +11,6 @@ export function setup_item(x) {
     }
     return untrack;
   }
-  //x.trackSignal = x.track;
   
   x.untrack = function(name,fn) {
     x.events_dic.removeEventListener(name,fn);
@@ -20,6 +19,26 @@ export function setup_item(x) {
   x.signal = function(name,arg1) {
     x.events_dic.dispatchEvent( new CustomEvent(name, {detail: arg1} ) );
   }
+
+  // переходим к варианту nanoevents (пока на уровне интерфейса)
+  x.on = function(name,fn) {
+    var f2 = function(event) {
+      var arg1 = event.data.detail.arg1;
+      fn( arg1 );
+    }
+    x.events_dic.addEventListener(name,f2);
+    // an idea from https://github.com/ai/nanoevents which we even probably should use for events.
+    var untrack = function() {
+      x.untrack( name, f2 );
+    }
+    return untrack;
+  }
+  x.emit = x.signal;
+  
+  //x.trackSignal = x.track;  
+  // кстати нам наиболее важно даже не только on, а on в контексте другого объекта.
+  // вот это будет дело. т.е. удалять подписки если другой объект удалился или мы удалились.
+  // @todo, @idea
 
   /*
   x.emit = x.signal;

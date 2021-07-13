@@ -13,6 +13,14 @@ export default function setup(x) {
 
   x.addGui = function(rec) {
     if (!rec.fn) rec.fn = function() {};
+
+    // R-NEED-GUI-TITLE
+    // R-PROVIDE-GUI-TITLE
+    // F-USE-PARAM-OPTIONS
+    rec.getTitle = function() { 
+      var t = x.getParamOption( rec.name,"title" ) || rec.name;
+      return t;
+    }
   
     rec.setValue = function(val) {
       rec.value = val;
