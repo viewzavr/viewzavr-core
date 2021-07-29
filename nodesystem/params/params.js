@@ -7,10 +7,12 @@ export default function setup(x) {
   x.setParam = function(name,value) {
     var old = x.params[name];
 
+/*  we still need to track that param exist.. F-PARAM-VALUE-ALWAYS
     if (typeof(value) == "undefined")
       x.removeParam( name );
     else
-      x.params[name]=value;
+*/    
+    x.params[name]=value;
 
     if (old != value) {
       x.signalTracked( name );

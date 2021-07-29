@@ -7,6 +7,12 @@
 // idea: maybe - use some restriction mechanism for links -- e.g. it should choose source
 //       only from some specifics. but may be no need because we may do it by default criteria
 
+// R-RELATIVE-LINKS store: 
+// ../../object-name->param-name
+// ./this-object-name->param-name
+
+// R-LINKS-FROM-OBJ: link objects should consider all links relative from their parents.
+
 export default function setup( vz ) {
 
   vz.createLink = function( opts ) {
@@ -70,6 +76,8 @@ export default function setup( vz ) {
       }
       
       if (!v || v.length == 0) return;
+
+      if (!obj.ns.parent) return; // seems this link is abandoned
       
       var arr = v.split("->");
       if (arr.length != 2) {
@@ -78,11 +86,13 @@ export default function setup( vz ) {
       }
       var objname = arr[0];
       var paramname = arr[1];
-      var sobj = obj.findByPath( objname );
+      //var sobj = obj.findByPath( objname );
+      //R-LINKS-FROM-OBJ
+      var sobj = obj.ns.parent.findByPath( objname );
       
       if (!sobj) {
         if (enable_retry) {
-          console.error("Link: \source obj not found! Will retry!",arr );
+          console.error("Link: source obj not found! Will retry!",arr,'me=',obj.getPath() );
           linkScannerAdd( obj );
         }
         return;
@@ -97,7 +107,7 @@ export default function setup( vz ) {
   
       currentRefFrom = sobj;
       currentParamNameFrom = paramname;      
-      addLinkTracking( currentRefFrom,obj );
+      addLinkTracking( currentRefFrom,obj, true );
       
       if (enable_qqq) qqq();
       
@@ -115,6 +125,8 @@ export default function setup( vz ) {
       currentParamNameTo = undefined;
     
       if (!v || v.length == 0) return;
+
+      if (!obj.ns.parent) return; // seems abandoned
     
       var arr = v.split("->");
       
@@ -125,7 +137,9 @@ export default function setup( vz ) {
       
       var objname = arr[0];
       var paramname = arr[1];
-      var sobj = obj.findByPath( objname );    
+      //var sobj = obj.findByPath( objname );
+      // R-LINKS-FROM-OBJ
+      var sobj = obj.ns.parent.findByPath( objname );    
       
       if (!sobj) {
         if (enable_retry) {
@@ -138,7 +152,7 @@ export default function setup( vz ) {
       currentRefTo = sobj;
       currentParamNameTo = paramname;
       
-      addLinkTracking( currentRefTo, obj );
+      addLinkTracking( currentRefTo, obj, false );
 
       if (enable_qqq) qqq();
       
@@ -156,15 +170,18 @@ export default function setup( vz ) {
           setupToLink(true, may_retry_to, true);       // 1st true => set param value if all ok, 3rd true => signal if ok
     }
 
-    obj.addParamRef("from","",filter_from,setupFromLink );
-    obj.addParamRef("to","",filter_to,setupToLink );
+    obj.addParamRef("from","",filter_from,setupFromLink, obj.ns.parent ); // R-LINKS-FROM-OBJ
+    obj.addParamRef("to","",filter_to,setupToLink, obj.ns.parent ); // R-LINKS-FROM-OBJ
+    // note: we set here obj.ns.parent as desired parent for params pathes. probably it is only the case for tied_to_parent version
 
     // todo speedup by func ptr
     function filter_to(o) {
       if (obj.getParam("tied_to_parent")) { // if our link is tied to parent... todo: move this if out of func def (define 2 functions)
         if (o === obj.ns.parent) {
           // implementing R-LINKS-NO-DEFAULT-VALUE
-          return [""].concat( Object.keys( o.params ) );
+          //return [""].concat( Object.keys( o.params ) );
+          // вроде как не обязательно "" добавлять т.к. там и так есть пустое значение
+          return Object.keys( o.params );
           // return Object.keys( o.params );
         }
         return [];
@@ -179,6 +196,8 @@ export default function setup( vz ) {
     function filter_from(o) {
       // вход - объект o
       // выход - список имен параметров которые мы у него берем
+
+      if (obj.getParam("tied_to_parent") && o == obj) return [];
 
       // если не выбрали куда - то ограничимся
       if (!(currentRefTo && currentParamNameTo)) return o.getParamsNames();
@@ -272,12 +291,18 @@ vz.chain("create_obj",function( obj, opts ) {
     q.setParam( "from", sourcestring );
     q.setParam( "tied_to_parent",true );
   }
+  obj.linkParam = function( paramname, link_source ) {
+     return obj.createLinkTo( { param: paramname, from: link_source })
+  }
   
   obj.hasLinks = function() {
     return (howManyLinksTo( obj ) > 0);
   }
   obj.hasLinksToParam = function(pname) {
-    return (howManyLinksToParam( obj,pname ) > 0);
+    return (howManyLinksOfParam( obj,pname,false,true ) > 0);
+  }
+  obj.hasLinksFromParam = function(pname) {
+    return (howManyLinksOfParam( obj,pname,false,true ) > 0);
   }
 
   this.orig( obj, opts );
@@ -326,10 +351,14 @@ function howManyLinksTo( obj ) {
   return (obj.links_to_me || []).length;
 }
 
-function howManyLinksToParam( obj,name ) {
+function howManyLinksOfParam( obj,name, needfrom=true, needto=true ) {
   return (obj.links_to_me || []).filter( function(link) {
     var i = obj.links_to_me.indexOf( link );
     var isFrom = obj.links_to_me_direction[i];
+
+    if (isFrom && !needfrom) return;
+    if (!isFrom && !needto) return;
+
     var nama = isFrom ? "from" : "to";
     var arr = (link.getParam(nama) || "").split("->");
     var paramname = arr[1];

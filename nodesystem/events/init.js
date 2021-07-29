@@ -23,7 +23,7 @@ export function setup_item(x) {
   // переходим к варианту nanoevents (пока на уровне интерфейса)
   x.on = function(name,fn) {
     var f2 = function(event) {
-      var arg1 = event.data.detail.arg1;
+      var arg1 = event.detail;
       fn( arg1 );
     }
     x.events_dic.addEventListener(name,f2);

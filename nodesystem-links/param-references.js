@@ -26,29 +26,52 @@ export default function setup(vz) {
 
   vz.chain("create_obj",function( x, opts ) {
 
-  x.addParamRef = function( name, value, crit_fn, fn ) {
+  x.addParamRef = function( name, value, crit_fn, fn, desired_parent ) {
+    desired_parent ||= x;
     //var values = gatherParams( crit_fn || default_crit_fn );
     var values = [];
     var rec = x.addGui( { type: "combostring", name: name, value: value, values: values, crit_fn: crit_fn, fn: fn } );
     rec.getValues = function() {
-      return gatherParams( crit_fn || default_crit_fn );
+      return gatherParams( crit_fn || default_crit_fn, desired_parent );
+    }
+    // special case to convert absolute links comming from parameter values to relative links
+    rec.notFound = function( param_path, values ) { // в параметре значение, которого нет в комбо-бокс значениях
+      // это случай вероятно, когда param_path абсолютный
+      if (param_path && param_path[0] == '/') {
+         let [objpath,paramname] = param_path.split("->");
+         let obj = desired_parent.findByPath( objpath );
+         if (obj) {
+           let newpath = obj.getPathRelative( desired_parent ) + "->" + paramname;
+           return values.indexOf( newpath );
+         } else 
+           return 0;
+      } // not found
     }
     return rec;
   }
   // здесь crit_fn по объекту должна выдать перечень имен его допустимых параметров
   
-  function gatherParams( crit_fn ) {
+  function gatherParams( crit_fn, relative_to_obj ) {
     var acc = [""];
     var r = x.findRoot(); // это получается в рамках текущего куста. а соседние кусты? (подсцены, вид, плеер)?
 //    debugger;
+    // var acc_full = []; // решено продублировать и полные пути - чтобы не ломать старые приложения...
+    // ну либо надо научить combostring принимать то что дают..
+    // дублирование это шляпа - там много шлака оказывается
+    // надо сделать чтобы на импорте это все произошло    
+    
 
     r.ns.traverse( function(obj) {
       var param_names = crit_fn( obj );
 //      if (obj.getPathRelative(x) == "/xr-control") debugger;
       param_names.forEach( function(p) {
-        acc.push( obj.getPathRelative(x) + "->" + p );
+        //let objpath = relative_to_obj ? obj.getPathRelative( relative_to_obj ) : obj.getPath();
+        let objpath = obj.getPathRelative( relative_to_obj );
+        acc.push( objpath + "->" + p );
+        ///acc_full.push( obj.getPath() + "->" + p );
       });
     });
+    //return acc.concat( acc_full );
     return acc;
   }
   

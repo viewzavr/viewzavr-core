@@ -28,10 +28,16 @@ export default function setup( vz ) {
     
     if (path.length == "") return obj;
     
-    if (path[0] == "." && path[1] == "." && path[2] == "/") {
+    if (path[0] == "." && path[1] == "." && path[2] == "/") {    // example: ../camera
       return vz.find_by_path( obj.ns.parent, path.substring(3) );
     }
-    if (path[0] == "." && path[1] == "/")
+    if (path == "..") {    // example: ..
+      return obj.ns.parent;
+    }
+    if (path == ".") {     // example: .
+      return obj.ns.parent;
+    }
+    if (path[0] == "." && path[1] == "/") // example: ./child
       path = path.substring(2);
 
     if (!Array.isArray(path)) path = path.split("/");
@@ -71,11 +77,35 @@ export default function setup( vz ) {
 */      
   }
   
+  // computes path to obj relative to basisobj
   vz.get_path_rel = function( obj, basisobj ) {
     var p1 = vz.get_path( obj );
     var p2 = vz.get_path( basisobj );
-    // TODO
-    return p1;
+
+    // https://github.com/jinder/path/blob/master/path.js#L506
+    var to = p1;
+    var from = p2;
+
+    var fromParts = trimArray(from.split('/'));
+    var toParts = trimArray(to.split('/'));
+
+    var length = Math.min(fromParts.length, toParts.length);
+    var samePartsLength = length;
+    for (var i = 0; i < length; i++) {
+      if (fromParts[i] !== toParts[i]) {
+        samePartsLength = i;
+        break;
+      }
+    }
+
+    var outputParts = [];
+    for (var i = samePartsLength; i < fromParts.length; i++) {
+      outputParts.push('..');
+    }
+
+    outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+    return outputParts.join('/');
   }
   
 /*  вроде как выяснено что это должно зависеть от объекта.. чтобы можно было домены деревьев разделять.. */
@@ -110,4 +140,29 @@ export default function setup( vz ) {
 
   });
 
+}
+
+////////////////////////////////
+// https://github.com/jinder/path/blob/master/path.js#L58
+// returns an array with empty elements removed from either end of the input
+// array or the original array if no elements need to be removed
+function trimArray(arr) {
+  var lastIndex = arr.length - 1;
+  var start = 0;
+  for (; start <= lastIndex; start++) {
+    if (arr[start])
+      break;
+  }
+
+  var end = lastIndex;
+  for (; end >= 0; end--) {
+    if (arr[end])
+      break;
+  }
+
+  if (start === 0 && end === lastIndex)
+    return arr;
+  if (start > end)
+    return [];
+  return arr.slice(start, end + 1);
 }

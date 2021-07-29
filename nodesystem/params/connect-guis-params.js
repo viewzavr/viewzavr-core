@@ -72,7 +72,9 @@ export default function setup(x) {
     if (typeof( cpv ) != "undefined" && cpv != rec.value && !rec.forceUseGuiValue)
       x.signalTracked( rec.name ); // тыркнули за веревочку - с текущим значением параметра
     else
-    if (typeof( cpv ) === "undefined" && typeof(rec.value) !== "undefined") {
+    {
+    // F-PARAM-VALUE-ALWAYS
+    //if (typeof( cpv ) === "undefined" && typeof(rec.value) !== "undefined") {
       // x.setParam( rec.name, rec.value ); 
       // надо и похоже выставить значение, и дернуть за веревочку тоже.. 
       // но дергая за веревочку мы вызываем всякие update-ы...

@@ -109,6 +109,12 @@ export default function setup( m ) {
         res.params = {};
         Object.keys( obj.params ).forEach( function(name) {
           var v = obj.dumpParam( name );
+
+          if (typeof(v) === "string" && v.length > 10000) {
+            console.error("dumpObj: because value too long, dump will not save param ",name,"of obj",obj.getPath());
+            return;
+          }
+
           if (typeof(v) !== "undefined" && v !== null)
             res.params[name] = v;
         });
