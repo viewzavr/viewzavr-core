@@ -9,9 +9,13 @@ export default function setup( vz ) {
     /item/item => child named `item` of child named `item` of root    
     item => child named `item` of obj
     ../item => child named `item` of parent of obj
+    EMPTY => obj
   */
   vz.find_by_path = function(obj,path) {
+    if (path == "") return obj;
+
     if (!path) return null;
+
     if (path.getPath) return path; // this is object - return as is, R-SETREF-OBJ
     
     if (path[0] == "/") {
@@ -25,8 +29,6 @@ export default function setup( vz ) {
         return vz.find_by_path( root, path );
       }
     }
-    
-    if (path.length == "") return obj;
     
     if (path[0] == "." && path[1] == "." && path[2] == "/") {    // example: ../camera
       return vz.find_by_path( obj.ns.parent, path.substring(3) );
