@@ -60,9 +60,11 @@ export default function setup(x) {
   x.addCombo = function(name, value, values, fn) {
     return x.addGui( { type: "combo", name: name, value: value, values: values, fn: fn } );
   };
-  x.addComboString = function(name, value, values, fn) {
-    return x.addGui( { type: "combostring", name: name, value: value, values: values, fn: fn } );
+
+  x.addComboValue = function(name, value, values, fn) {
+    return x.addGui( { type: "combovalue", name: name, value: value, values: values, fn: fn } );
   };
+  x.addComboString = x.addComboValue;
 
   x.addCmd = function( name, fn ) {
     return x.addGui( { type: "cmd", name: name, fn: fn });
