@@ -94,6 +94,11 @@ export default function setup( m ) {
       }
       var r = m.createSyncFromDump( c[name], cobj, obj, name );
       promises_arr.push( r );
+      
+      // the only way to catch errors is here, allSettled will ignore that error
+      r.catch( (err) => {
+        console.error("createChildrenByDump: error!",err );
+      });
     });
     
     return Promise.allSettled( promises_arr );
