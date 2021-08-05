@@ -30,7 +30,7 @@ export default function setup(vz) {
     desired_parent ||= x;
     //var values = gatherParams( crit_fn || default_crit_fn );
     var values = [];
-    var rec = x.addGui( { type: "combostring", name: name, value: value, values: values, crit_fn: crit_fn, fn: fn } );
+    var rec = x.addGui( { type: "combovalue", name: name, value: value, values: values, crit_fn: crit_fn, fn: fn } );
     rec.getValues = function() {
       return gatherParams( crit_fn || default_crit_fn, desired_parent );
     }
@@ -56,7 +56,7 @@ export default function setup(vz) {
     var r = x.findRoot(); // это получается в рамках текущего куста. а соседние кусты? (подсцены, вид, плеер)?
 //    debugger;
     // var acc_full = []; // решено продублировать и полные пути - чтобы не ломать старые приложения...
-    // ну либо надо научить combostring принимать то что дают..
+    // ну либо надо научить combovalues принимать то что дают..
     // дублирование это шляпа - там много шлака оказывается
     // надо сделать чтобы на импорте это все произошло    
     
