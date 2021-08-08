@@ -87,7 +87,7 @@ export default function setup( m ) {
     var promises_arr = [];
     ckeys.forEach( function(name) {
       var cobj = obj.ns.getChildByName( name );
-      if (!c[name].manual && !cobj) {
+      if (!c[name].manual && !cobj && !c[name].forcecreate) {
         // ситуация когда объект должен был быть создан автоматически - но его нет!
         console.error("load_from_dump: no child of name found! name=",name,"obj=",obj);
         return;
@@ -148,7 +148,7 @@ export default function setup( m ) {
              res.children[cname].order=index;
       } );
     }
-    return res;  
+    return res;
   }
 
 m.chain("create_obj",function( obj, opts ) {

@@ -26,6 +26,11 @@ export default function setup(vz) {
 
   vz.chain("create_obj",function( x, opts ) {
 
+  // name - имя параметра который является ссылкой
+  // value - значение, строка в форме ПУТЬОБЪЕКТА->ИМЯПАРАМЕТРА
+  // crit_fn - критерий отбора параметров, f(obj)->names
+  // fn - вызывается при измененении
+  // desired_parent - относительно кого отсчитывать пути
   x.addParamRef = function( name, value, crit_fn, fn, desired_parent ) {
     desired_parent ||= x;
     //var values = gatherParams( crit_fn || default_crit_fn );
