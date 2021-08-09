@@ -37,7 +37,7 @@ export default function setup( vz ) {
       return obj.ns.parent;
     }
     if (path == ".") {     // example: .
-      return obj.ns.parent;
+      return obj;
     }
     if (path[0] == "." && path[1] == "/") // example: ./child
       path = path.substring(2);

@@ -97,6 +97,7 @@ export default function setup( m ) {
     for (var i=0; i<cnames.length; i++) {
       var cname = cnames[i];
       var lc = obj.ns.getChildByName( cname );
+      if (lc.protected) continue;
       if (lc.manuallyInserted || lc.dumpyInserted) {
         if (!c[cname]) { // во входящих нет этого дитятки
           // console.log("removing local unnecessary child lc=",lc);
