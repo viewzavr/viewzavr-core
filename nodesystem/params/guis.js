@@ -69,6 +69,16 @@ export default function setup(x) {
   x.addCmd = function( name, fn ) {
     return x.addGui( { type: "cmd", name: name, fn: fn });
   };
+
+  x.hasCmd = function(name) {
+    let gui = x.getGui( name );
+    return (gui?.type === "cmd" && gui?.fn);
+  }
+  x.callCmd = function( name, ...args ) {
+    let gui = x.getGui( name );
+    if (gui?.type === "cmd")
+      return gui.fn.apply( gui.fn, args );
+  }
   
   x.addColor = function( name, value, fn ) {
     return x.addGui( { type: "color", name: name, value: value, fn: fn });

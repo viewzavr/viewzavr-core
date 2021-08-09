@@ -17,6 +17,7 @@ export default function setup( origobj, nf ) {
 
   var obj = nf( origobj );
   
+  // поиск - для каждого под-объекта вызывается fn, и если она вернула true то нашли и далее не ищем
   obj.find = function( fn ) {
     var cc = obj.getChildNames();
     for (var i=0; i<cc.length; i++) {
@@ -31,6 +32,7 @@ export default function setup( origobj, nf ) {
     return undefined;
   }
 
+  // поиск - обход всех детей с вызовом fn
   obj.traverse = function( fn ) {
     fn( origobj );
     var cc = obj.getChildNames();

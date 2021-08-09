@@ -32,8 +32,43 @@ export default function setup( m ) {
       }
     }
     // в dump должно быть поле type, оно нам все и создаст что надо
+
     
-    return obj.restoreFromDump( dump );
+    return new Promise( function (resolve, reject) {
+        obj.restoreFromDump( dump ).then( (res) => {
+          resolve( obj );
+        }).catch( (err) => {
+            reject( err );
+        })
+    })
+    
+    /*
+    //return obj.restoreFromDump( dump );
+    obj.restoreFromDump( dump );
+    return obj;
+    */
+  }
+
+  // тестовое - получается создает obj а наполнение потом уж
+  m.createSyncFromDumpNow = function( dump, _existingObj, parent, desiredName )
+  {
+    var obj = _existingObj;
+    if (!obj || (dump.type && obj.historicalType != dump.type && dump.manual)) {
+      if (!obj || obj.ns.parent) {  // пусть это работает пока не для корня дерева - там непонятно мне пока
+         // var opts = { parent: parent, type: dump.type, name: dump.name }
+         var opts = Object.assign( {}, dump, { parent: parent, name: desiredName } );
+         obj = dump.type ? m.create_obj_by_type( opts ) : m.createObj( opts );
+         if (!obj) {
+           console.error("createSyncFromDump: failed to create object! opts=",opts);
+           console.error("will create some obj to avoid js errors, but it is not the desired one");
+           obj = m.createObj( { parent: parent, name: desiredName || "ehh" });
+         }
+      }
+    }
+    // в dump должно быть поле type, оно нам все и создаст что надо
+
+    obj.restoreFromDump( dump );
+    return obj;
   }
   
   // this is made specially so obj.restoreFromDump may be overriden
@@ -62,7 +97,7 @@ export default function setup( m ) {
     for (var i=0; i<cnames.length; i++) {
       var cname = cnames[i];
       var lc = obj.ns.getChildByName( cname );
-      if (lc.manuallyInserted) {
+      if (lc.manuallyInserted || lc.dumpyInserted) {
         if (!c[cname]) { // во входящих нет этого дитятки
           // console.log("removing local unnecessary child lc=",lc);
           lc.remove();
@@ -187,6 +222,7 @@ m.chain("create_obj",function( obj, opts ) {
 
   
   if (opts.manual) obj.manuallyInserted = true;
+  if (opts.forcecreate) obj.dumpyInserted = true; // @todo раскопать эту тему
 
   this.orig( obj, opts );
 
