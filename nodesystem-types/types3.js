@@ -24,6 +24,12 @@ export default function setup( m ) {
 var itemtypes_dic = {};
 var itemtypes_arr = [];
 
+// shorter variant
+m.addType = function( code, fn, opts={} ) {
+  if (typeof(opts) === "string") opts = { title: opts };
+  return m.addItemType( code, opts?.title || code, fn, {...opts, protocol2: true} );
+}
+
 m.addItemType = function(code,title,fn,opts) {
   //console.log("addItemType called!",code);
   if (!opts) opts = {};
@@ -87,7 +93,14 @@ m.create_obj_by_type = function( opts ) {
     return;
   }
 
-  var obj = typefunc( opts );
+  var type_opts = m.getTypeOptions( code ) || {};
+  var obj;
+
+  if (type_opts.protocol2) {
+    obj = typefunc( m, opts );
+  }
+  else
+    obj = typefunc( opts );
 
   if (!obj) {
     console.error("Viewzavr: type function returned no value! type=", 
