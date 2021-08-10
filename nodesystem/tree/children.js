@@ -64,7 +64,7 @@ export default function setup( obj, nf ) {
   }
 
   obj.removeChildren = function() {
-    for (let c of obj.getChildren) c.remove();
+    for (let c of obj.getChildren()) c.remove();
   }
 
   _obj.chain("remove", function() {
