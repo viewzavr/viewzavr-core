@@ -15,18 +15,28 @@ var cats_dic = {};
     // feature: split : in title into 2
     
     if (!opts) opts = {};
-    if (!opts.cat) {
+
+    if (!opts.cats && opts.cat) {
+      opts.cats = [opts.cat]
+    }
+
+    if (!opts.cats) {
       var parts = title.split(": ");
       if (parts.length >= 2) {
         title = parts[1]; // ну это никуда не уходит..
-        opts.cat = parts[0].toLowerCase(); // feature: cats are lower-case
+        let cats = parts[0].split(" ").map( s => s.trim().toLowerCase() )
+        // короче категория это идентификатор. если надо будет пробелы в ней - делаем ей title, отд опция
+        opts.cats = cats;
+        // feature: cats are lower-case
       }
     }
   
-    var cat = opts && opts.cat ? opts.cat : "uncategorized";
-    cats_dic[ cat ] ||= [];
-    if (cats_dic[ cat ].indexOf( code ) < 0) 
-        cats_dic[ cat ].push( code );
+    var cats = opts?.cats || ["uncategorized"];
+    for (let cat of cats) {
+      cats_dic[ cat ] ||= [];
+      if (cats_dic[ cat ].indexOf( code ) < 0)
+          cats_dic[ cat ].push( code );
+    }
 
     this.orig( code, title, fn, opts );
   } );
@@ -39,11 +49,11 @@ var cats_dic = {};
     return cats_dic[ cat ] || [];
   }
   
-  vz.getCatByType = function(type) {
+  vz.getCatsByType = function(type) {
     var opts = vz.getTypeOptions( type );
-    var cat = opts && opts.cat ? opts.cat : "uncategorized";    
-    return cat;
+    return opts.cats || ["uncategorized"]
   }
+
 
 } // setup
 

@@ -18,7 +18,7 @@ export default function setup( vz ) {
   vz.createLink = function( opts ) {
     opts.name ||= "link";
     var obj = vz.createObj( opts );
-    
+
     var currentRefFrom;
     var currentRefTo;
 
