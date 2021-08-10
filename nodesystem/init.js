@@ -26,12 +26,16 @@ export default function setup(m) {
   }
 
   setup_trees(m);
+  setup_trees(m,"shadow"); /// shadow feature - must be here
   setup_params(m);
   
   setup_events(m);
   setup_other(m);
   
   setup_tree_events(m);
+
+  /// shadow feature
+  setup_tree_events(m,"shadow");
 
   return m;
 }
