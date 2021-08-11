@@ -1,3 +1,16 @@
+// https://github.com/ai/nanoevents
+export let createNanoEvents = () => ({
+  events: {},
+  emit(event, ...args) {
+    ;(this.events[event] || []).forEach(i => i(...args))
+  },
+  on(event, cb) {
+    ;(this.events[event] = this.events[event] || []).push(cb)
+    return () =>
+      (this.events[event] = (this.events[event] || []).filter(i => i !== cb))
+  }
+})
+
 export function setup_item(x) {
 
   // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
