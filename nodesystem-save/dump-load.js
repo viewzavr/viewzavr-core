@@ -16,7 +16,7 @@ export default function setup( m ) {
   // и еще это упирается в ситуацию а что если корень дерева в памяти не того типа что в описании?
   
   // returns promise
-  m.createSyncFromDump = function( dump, _existingObj, parent, desiredName )
+  m.createSyncFromDump = function( dump, _existingObj, parent, desiredName, manualParamsMode )
   {
     var obj = _existingObj;
     if (!obj || (dump.type && obj.historicalType != dump.type && dump.manual)) {
@@ -35,7 +35,7 @@ export default function setup( m ) {
 
     
     return new Promise( function (resolve, reject) {
-        obj.restoreFromDump( dump ).then( (res) => {
+        obj.restoreFromDump( dump,manualParamsMode ).then( (res) => {
           resolve( obj );
         }).catch( (err) => {
             reject( err );
@@ -72,18 +72,19 @@ export default function setup( m ) {
   }
   
   // this is made specially so obj.restoreFromDump may be overriden
-  m.restoreObjFromDump = function( dump, obj ) {
+  m.restoreObjFromDump = function( dump, obj, manualParamsMode ) {
     var h = dump.params || {};
     var keys = Object.keys(h);
 
+    //var objismanual = obj.ismanual();
     keys.forEach( function(name) {
       //console.log("setting param",name,h[name]);
-      obj.setParam( name, h[name] );
+      obj.setParam( name, h[name], manualParamsMode ); // ставим true - в том смысле что это установка из
     });
 
     m.removeChildrenByDump( dump, obj );
     
-    return m.createChildrenByDump( dump, obj );
+    return m.createChildrenByDump( dump, obj, manualParamsMode );
   }
   
   m.removeChildrenByDump = function( dump, obj )
@@ -109,7 +110,7 @@ export default function setup( m ) {
   }
   
   // это вынесено в отдельную функцию потому что мы ее захотим овверрайдить для загрузки пакетов
-  m.createChildrenByDump = function( dump, obj )
+  m.createChildrenByDump = function( dump, obj, manualParamsMode )
   {
     var c = dump.children || {};
     var ckeys = Object.keys( c );
@@ -128,7 +129,7 @@ export default function setup( m ) {
         console.error("load_from_dump: no child of name found! name=",name,"obj=",obj);
         return;
       }
-      var r = m.createSyncFromDump( c[name], cobj, obj, name );
+      var r = m.createSyncFromDump( c[name], cobj, obj, name, manualParamsMode );
       promises_arr.push( r );
       
       // the only way to catch errors is here, allSettled will ignore that error
@@ -184,6 +185,12 @@ export default function setup( m ) {
              res.children[cname].order=index;
       } );
     }
+
+    // фича "если не заданы параметры вовсе то не надо делать запись params"
+    if (res.params && Object.keys(res.params).length == 0) delete res.params;
+    // фича "если не заданы дети вовсе то не надо делать запись children"
+    if (res.children && Object.keys(res.children).length == 0) delete res.children;
+
     return res;
   }
 
@@ -197,8 +204,8 @@ m.chain("create_obj",function( obj, opts ) {
     return m.dumpObj( obj );
   }
 
-  obj.restoreFromDump = function ( dump ) {
-    return m.restoreObjFromDump( dump, obj );
+  obj.restoreFromDump = function ( dump, manualParamsMode ) {
+    return m.restoreObjFromDump( dump, obj, manualParamsMode );
   }
   
   // returns promise

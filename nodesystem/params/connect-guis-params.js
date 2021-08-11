@@ -21,7 +21,7 @@ export default function setup(x) {
     rec.fn = function(value) {
       if (!itsme) {
         itsme = true;
-        x.setParam( rec.name, value );
+        x.setParam( rec.name, value, true ); // true => руками выставлено
         var value2 = x.getParam( rec.name ); // R-SETREF-OBJ
         if (orig_fn) orig_fn( value );
         itsme = false;
@@ -37,7 +37,7 @@ export default function setup(x) {
     rec.setValue = function(v) {
       if (!itsme) {
         itsme = true;
-        x.setParam( rec.name, v );
+        x.setParam( rec.name, v, true ); // true => руками выставлено
         itsme = false;
       }
       return orig_setvalue( v );
@@ -71,6 +71,7 @@ export default function setup(x) {
     var cpv = x.getParam( rec.name );
     if (typeof( cpv ) != "undefined" && cpv != rec.value && !rec.forceUseGuiValue)
       x.signalTracked( rec.name ); // тыркнули за веревочку - с текущим значением параметра
+      // видимо это заодно приведет и к обновлению гуи? но зачем для этого вызывать tracked? причем тут гуи вообще?
     else
     {
     // F-PARAM-VALUE-ALWAYS
@@ -78,7 +79,8 @@ export default function setup(x) {
       // x.setParam( rec.name, rec.value ); 
       // надо и похоже выставить значение, и дернуть за веревочку тоже.. 
       // но дергая за веревочку мы вызываем всякие update-ы...
-      x.params[ rec.name ] = rec.value; // попробуем так
+      x.setParamWithoutEvents( rec.name, rec.value );
+      //x.params[ rec.name ] = rec.value; // попробуем так
     }
       
 //    else

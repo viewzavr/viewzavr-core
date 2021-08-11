@@ -4,15 +4,23 @@ export default function setup(x) {
 
   x.params = {};
 
-  x.setParam = function(name,value) {
+  // выделено в отдельный метод так как нам оказалось необходимо в ГУИ выставлять значение параметра,
+  // заданное через гуи, на этапе инициализации - считается что события "параметр изменился" там при этом
+  // происходить не должно. @todo разобраться со всей этой историей, построить ясную модель.
+  x.setParamWithoutEvents = function(name,value) {
     var old = x.params[name];
+    x.params[name]=value;
+    return old;
+  }
+
+  x.setParam = function(name,value) {
+    var old = x.setParamWithoutEvents( name, value );
 
 /*  we still need to track that param exist.. F-PARAM-VALUE-ALWAYS
     if (typeof(value) == "undefined")
       x.removeParam( name );
     else
-*/    
-    x.params[name]=value;
+*/
 
     if (old != value) {
       x.signalTracked( name );
