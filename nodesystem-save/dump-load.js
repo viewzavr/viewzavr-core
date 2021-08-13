@@ -204,6 +204,7 @@ m.chain("create_obj",function( obj, opts ) {
     return m.dumpObj( obj );
   }
 
+  // manualParamsMode - consider incoming params as manual
   obj.restoreFromDump = function ( dump, manualParamsMode ) {
     return m.restoreObjFromDump( dump, obj, manualParamsMode );
   }

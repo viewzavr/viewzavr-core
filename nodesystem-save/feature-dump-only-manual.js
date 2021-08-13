@@ -58,17 +58,27 @@ export default function setup(m) {
       return undefined;
     });
 
+/*
+    var isforcedump = function( obj ) {
+      //return obj === obj.findRoot() || obj === vzPlayer
+      return obj.forcedump ? true : false;
+    }
+*/    
+
     // фича "не надо дампить объект, который не создавали руками"
-    P.chain(obj,"dump", function() {
-      if (obj.ismanual() || obj === obj.findRoot()) 
+    P.chain(obj,"dump", function(force) {
+      if (obj.ismanual() || obj === obj.findRoot() || force) 
         return this.orig();
+
       // но - может оказаться что объект автоматический, а в глубинах его сидит объект с настроенными вручную параметрами
       // и это надо тоже сохранить
+      // @todo подумать над этим - может быть там стоит говорить о patch или params_for?
 
       // далее алгоритм возвращения дампа, если в поддереве что-то поменяли руками.      
       let result = this.orig();
       if (result.params)
          return result;
+
       let first_child = Object.values( result.children || {} )[0] || {};
       if (first_child.params || first_child.children || first_child.manual) {
          // что-то есть, ладно

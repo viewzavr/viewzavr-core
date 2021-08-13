@@ -19,6 +19,7 @@ export function setup( m, opts={} ) {
     return m.create_obj( opts.body || {}, opts );
   }
 
+  // вообще конечно вопрос - зачем мне отдельно byType? почему нельзя соединить в createObj?
   m.createObjByType = function( opts ) {
     return m.create_obj_by_type( opts );
   }
