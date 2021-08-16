@@ -77,6 +77,9 @@ export default function setup( m ) {
     var keys = Object.keys(h);
 
     //var objismanual = obj.ismanual();
+
+    if (dump.manual) manualParamsMode = true; // такой вот прием.. а то "ручные объекты" потом не сохранить получается..
+
     keys.forEach( function(name) {
       //console.log("setting param",name,h[name]);
       obj.setParam( name, h[name], manualParamsMode ); // ставим true - в том смысле что это установка из

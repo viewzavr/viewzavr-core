@@ -287,9 +287,9 @@ vz.chain("create_obj",function( obj, opts ) {
     //var q = vz.createLink( opts );
     var q = vz.createObjByType( opts );
     if (paramname && paramname.length > 0)
-        q.setParam( "to", obj.getPath() + "->" + paramname );
+        q.setParam( "to", obj.getPath() + "->" + paramname, opts.manual );
     q.setParam( "from", sourcestring );
-    q.setParam( "tied_to_parent",true );
+    q.setParam( "tied_to_parent",true, opts.manual );
   }
   obj.linkParam = function( paramname, link_source ) {
      return obj.createLinkTo( { param: paramname, from: link_source })
