@@ -36,7 +36,7 @@ export default function setup( vz ) {
       var val = currentRefFrom ? currentRefFrom.getParam( currentParamNameFrom  ) : null;
       
       if (typeof(val) == "undefined" || val == null) {
-        console.log("Links: incoming value undefined, skipping assign");
+        console.warn("Links: incoming value undefined, skipping assign");
         return;
       }
       
@@ -92,13 +92,13 @@ export default function setup( vz ) {
       
       if (!sobj) {
         if (enable_retry) {
-          console.error("Link: source obj not found! Will retry!",arr,'me=',obj.getPath() );
+          console.warn("Link: source obj not found! Will retry!",arr,'me=',obj.getPath() );
           linkScannerAdd( obj );
         }
         return;
       }
       if (!paramname) {
-        console.error("Link: source param is blank",arr );
+        console.warn("Link: source param is blank",arr );
         return;
       }
       

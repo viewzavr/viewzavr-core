@@ -20,7 +20,7 @@ export default function setup( obj, nf ) {
           }
         }
         else {
-          console.error( "WARNING: overwriting existing child with same name and removing existing child!",name );
+          console.warn( "WARNING: overwriting existing child with same name and removing existing child!",name );
           // obj.forgetChild( existing );
           existing.remove();
         }
