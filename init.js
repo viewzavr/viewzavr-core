@@ -42,9 +42,28 @@ export function setup( m, opts={} ) {
   
   m.createObjByType = function( opts1={}, opts2={}, opts3={} ) {
     // todo: hack, keep opts1 type for historicalType?
+
+    // feature: first arg may be type
+    if (typeof(opts1) === "string")
+      opts1 = { type: opts1 }
+
     var opts = Object.assign( {}, opts1, opts2, opts3 );
     return m.create_obj_by_type( opts );
   }
+
+  // feature: createObj may respond to type
+  /*
+  m.createObj = function( opts1={}, opts2={}, opts3={} ) {
+    // feature: first arg may be type
+    if (typeof(opts1) === "string")
+      opts1 = { type: opts1 }
+
+    var opts = Object.assign( {}, opts1, opts2, opts3 );
+    if (opts.type)
+      return  m.create_obj_by_type( opts );
+    return m.create_obj( opts.body || {}, opts );
+  }
+  */
 
 }
 

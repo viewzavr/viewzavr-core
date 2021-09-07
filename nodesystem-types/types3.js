@@ -100,7 +100,7 @@ m.create_obj_by_type = function( opts ) {
     obj = typefunc( m, opts );
   }
   else
-    obj = typefunc( opts );
+    obj = typefunc( opts ); 
 
   if (!obj) {
     console.error("Viewzavr: type function returned no value! type=", 

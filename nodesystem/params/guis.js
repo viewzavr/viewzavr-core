@@ -11,6 +11,7 @@ export default function setup(x) {
     this.orig();
   });
 
+
   x.addGui = function(rec) {
     if (!rec.fn) rec.fn = function() {};
 
@@ -41,6 +42,8 @@ export default function setup(x) {
   x.getGui = function( name ) {
     return x.guis[ name ];
   }
+
+  x.getGuiNames = () => Object.keys( x.guis );
   
   x.removeGui = function(name) {
     delete x.guis[ name ];
@@ -67,6 +70,9 @@ export default function setup(x) {
   x.addComboString = x.addComboValue;
 
   x.addCmd = function( name, fn ) {
+    // feature: when adding cmd, also add method to obj
+    x[name] = fn;
+
     return x.addGui( { type: "cmd", name: name, fn: fn });
   };
 

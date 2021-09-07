@@ -66,7 +66,7 @@ export default function setup(x) {
   }
   x.untrackParamOption = function(name,name2,fn) {
     x.paramOptions(name).untrack(name2,fn);
-  }  
+  }
   
   return x;
 }
