@@ -5,6 +5,7 @@ import nodesystem_setup from       "./nodesystem/init.js";
 import nodesystem_types_setup from "./nodesystem-types/init.js";
 import nodesystem_save_setup from  "./nodesystem-save/init.js";
 import nodesystem_links from  "./nodesystem-links/init.js";
+import pw from "./programmer-warnings.js";
 
 export function setup( m, opts={} ) {
   utils_setup( m ); // ну пусть пока будет
@@ -12,6 +13,8 @@ export function setup( m, opts={} ) {
   nodesystem_types_setup( m ); // под вопросом..
   nodesystem_save_setup( m );
   nodesystem_links( m );
+  pw(m);
+
 
   
   // external function

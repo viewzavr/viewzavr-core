@@ -75,8 +75,15 @@ export default function setup(m) {
   m.chain( "create_obj", function (obj,options) {
     return this.orig( obj || {}, options || {} );
   });
-  
-  
 
+  /////// фича "remove" вызывает событие remove
+  m.chain( "create_obj", function (obj,options) {
+    var res = this.orig( obj, options );
+    obj.chain( "remove", function () {
+      obj.emit("remove");
+      return this.orig();
+    });  
+    return res;
+  });
   
 }

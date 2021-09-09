@@ -1,5 +1,5 @@
 // https://github.com/ai/nanoevents
-export let createNanoEvents = () => ({
+export var createNanoEvents = () => ({
   events: {},
   emit(event, ...args) {
     ;(this.events[event] || []).forEach(i => i(...args))
@@ -14,9 +14,11 @@ export let createNanoEvents = () => ({
   }
 })
 
-export function setup_item(x) {
+export function setNanoEvents( fn ) {
+  createNanoEvents = fn;
+}
 
-  // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
+export function addEventsTo( x ) {
   x.events_dic = createNanoEvents();
 
   x.track = x.events_dic.on.bind(x.events_dic);
@@ -26,6 +28,12 @@ export function setup_item(x) {
   x.off = x.events_dic.off.bind(x.events_dic);
   x.emit = x.events_dic.emit.bind(x.events_dic);
 
+}
+
+export function setup_item(x) {
+  addEventsTo( x );
+
+  // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
 
 /*
   var orig_on = x.on;

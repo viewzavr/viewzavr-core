@@ -63,8 +63,10 @@ export default function setup( obj, nf ) {
     return Object.keys( obj.childrenTable );
   }
 
+  // call .remove on all children
   obj.removeChildren = function() {
-    for (let c of obj.getChildren()) c.remove();
+    let list = obj.getChildren().slice(0);
+    for (let c of list) c.remove();
   }
 
   _obj.chain("remove", function() {

@@ -60,7 +60,28 @@ export default function setup(x) {
   }
   
   /////
-  
+  setup_params_events( x );
+
+
+  return x;
+}
+
+import * as E from "../events/init.js";
+
+function setup_params_events(x) {
+  x.pevents = E.createNanoEvents();
+  x.trackParam = x.pevents.on.bind( x.pevents );
+  x.untrackParam = x.pevents.on.bind( x.pevents );
+  x.signalTracked = function(name) {
+    x.pevents.emit( name,x.getParam(name) )
+  }
+  x.signalParam = x.signalTracked;
+
+  // todo сделать тут setParam?...
+}
+
+
+function setup_params_events_old(x) {
   // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
   x.pevents = new EventTarget();
   
@@ -93,7 +114,5 @@ export default function setup(x) {
     this.orig();  
     x.pevents = undefined; // to help remove things in gc
   });
-  */
-
-  return x;
+  */  
 }

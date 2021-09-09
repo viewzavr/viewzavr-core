@@ -12,9 +12,10 @@ export default function setup(m) {
       var res = orig(cobj, name, rename);
       var p = obj;
       while (p) {
-        p.signal("appendChild", cobj); // @todo TODO move to tree from object
+        p.signal("appendChildInTree", cobj); // @todo TODO move to tree from object
         p = p[tree_name].parent;
       }
+      obj.signal("appendChild", cobj);
       cobj.signal("parentChange");
       return res;
     }
@@ -25,9 +26,10 @@ export default function setup(m) {
       var res = orig2(cobj);
       var p = obj;
       while (p) {
-        p.signal("forgetChild", cobj);
+        p.signal("forgetChildInTree", cobj);
         p = p[tree_name].parent;
       }
+      obj.signal("forgetChild", cobj);
       return res;
     }
 

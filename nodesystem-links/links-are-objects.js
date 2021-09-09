@@ -31,12 +31,15 @@ export default function setup( vz ) {
       if (!obj.getParam("enabled")) return;
       if (!currentRefTo) return;
       
-      //if (!currentRefFrom) return;
+      if (!currentRefFrom) return;
       
       var val = currentRefFrom ? currentRefFrom.getParam( currentParamNameFrom  ) : null;
-      
+
       if (typeof(val) == "undefined" || val == null) {
         console.warn("Links: incoming value undefined, skipping assign");
+        console.warn('me=',obj.getPath(),'currentRefFrom=',currentRefFrom ? currentRefFrom.getPath() : null,"currentParamNameFrom=",currentParamNameFrom );
+        //var v = obj.getParam("from");
+        console.warn("from=",obj.getParam("from"),"to=",obj.getParam("to"));
         return;
       }
       
@@ -288,6 +291,7 @@ vz.chain("create_obj",function( obj, opts ) {
     var q = vz.createObjByType( opts );
     if (paramname && paramname.length > 0)
         q.setParam( "to", obj.getPath() + "->" + paramname, opts.manual );
+        //q.setParamWithoutEvents( "to", obj.getPath() + "->" + paramname, opts.manual ); // will emit events on 'from'?
     q.setParam( "from", sourcestring );
     q.setParam( "tied_to_parent",true, opts.manual );
   }
