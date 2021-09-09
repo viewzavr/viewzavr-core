@@ -36,7 +36,7 @@ export default function setup( vz ) {
     if (path == "..") {    // example: ..
       return obj.ns.parent;
     }
-    if (path == ".") {     // example: .
+    if (path == "." || path == "") { // example: .
       return obj;
     }
     if (path[0] == "." && path[1] == "/") // example: ./child
