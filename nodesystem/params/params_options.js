@@ -4,23 +4,23 @@
 // need: попытка навести универсальность. т.е. не setParam а obj.params.set, не setGuiVisible а obj.guivisile.set..
 // need: надо как-то хранить опции параметров.. и тоже от них уведомления как-то получать..
 
+import * as E from "../events/init.js";
+
 function dic_with_events() {
   var x = {};
   
-  x.events_dic = new EventTarget();
+  x.events_dic = E.createNanoEvents();
 
-  x.track = function(name,fn) {
-    x.events_dic.addEventListener(name,fn);
-  }
-  x.untrack = function(name,fn) {
-    x.events_dic.removeEventListener(name,fn);
-  }
-  x.signal = function(name,arg1) {
-    x.events_dic.dispatchEvent( new CustomEvent(name, {detail: arg1} ) );
-  }
+  x.track = x.events_dic.on.bind(x.events_dic);
+  x.untrack = x.events_dic.off.bind(x.events_dic);
+  x.signal = x.events_dic.emit.bind(x.events_dic);
+  x.on = x.events_dic.on.bind(x.events_dic);
+  x.off = x.events_dic.off.bind(x.events_dic);
+  x.emit = x.events_dic.emit.bind(x.events_dic);
+
   x.set = function(name, value) {
     x[name] = value;
-    x.signal( name,value );
+    x.emit( name,value );
   }
   x.get = function(name) {
     return x[name];
@@ -58,11 +58,13 @@ export default function setup(x) {
   x.setParamOption = function(name,name2,value) {
     x.paramOptions(name).set(name2,value);
   }
-  x.getParamOption = function(name,name2) {
-    return x.paramOptions(name).get(name2);
+  x.getParamOption = function(name,name2,defaultvalue) {
+    let r =  x.paramOptions(name).get(name2);
+    if (typeof(r) === "undefined") return defaultvalue;
+    return r;
   }  
   x.trackParamOption = function(name,name2,fn) {
-    x.paramOptions(name).track(name2,fn);
+    return x.paramOptions(name).track(name2,fn);
   }
   x.untrackParamOption = function(name,name2,fn) {
     x.paramOptions(name).untrack(name2,fn);

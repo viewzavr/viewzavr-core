@@ -28,6 +28,9 @@ export default function setup(x) {
       rec.fn( val );
     }
 
+    // для комбо
+    rec.getValues = function() { return rec.values };
+
 //  возможно, это все стоит связать с опциями параметра, т.е. setParamOption
 //    rec.set = function( optionname, value ) {
 //      rec[optionname] = value;

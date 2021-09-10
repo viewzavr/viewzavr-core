@@ -234,7 +234,7 @@ m.chain("create_obj",function( obj, opts ) {
 
   
   if (opts.manual) obj.manuallyInserted = true;
-  if (opts.forcecreate) obj.dumpyInserted = true; // @todo раскопать эту тему
+  //if (opts.forcecreate) obj.dumpyInserted = true; // @todo раскопать эту тему
 
   this.orig( obj, opts );
 

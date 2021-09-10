@@ -122,3 +122,7 @@ For usability we need to restrict list of params which may be linked to current 
 => F-RESTRICT-PARAM-REF-OPTION we introduce param option `maylink` where restriction function
 might be described by user. 
 Example: obj.setParamOption( "paramname","maylink",(tobj,tparam) => tparam.match(/color/) );
+
+# R-LINKS-MANUAL
+Need an option for links to consider their function as setting value manually.
+=> F-LINKS-MANUAL added optional parameter for links, manual_mode. Link will issue 'setParam' with it.

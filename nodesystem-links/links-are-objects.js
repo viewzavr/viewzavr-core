@@ -52,16 +52,20 @@ export default function setup( vz ) {
         }
       }
       */
+
+      // feature: if setting param value by link, mark it as internal
+      // so this value will not go to dump
+      // + F-LINKS-MANUAL
+      // IMPORTANT: need call this before setting param value (currently this is a bug)
+      currentRefTo.setParamOption( currentParamNameTo,"internal",obj.params.manual_mode ? false : true );
       
-      currentRefTo.setParam( currentParamNameTo,val );
+      currentRefTo.setParam( currentParamNameTo,val, obj.params.manual_mode ); // F-LINKS-MANUAL
       // bug: if one invokes signal on source param, without changing param value (say by ref to array)
       // here we hide that propagation. we have to somehow understand that event will not propagate
       // and maybe send it manually
       
       
-      // feature: if setting param value by link, mark it as internal
-      // so this value will not go to dump
-      currentRefTo.setParamOption( currentParamNameTo,"internal",true );
+
     }
     
     obj.addCheckbox( "enabled", true );
@@ -176,6 +180,8 @@ export default function setup( vz ) {
     obj.addParamRef("from","",filter_from,setupFromLink, obj.ns.parent ); // R-LINKS-FROM-OBJ
     obj.addParamRef("to","",filter_to,setupToLink, obj.ns.parent ); // R-LINKS-FROM-OBJ
     // note: we set here obj.ns.parent as desired parent for params pathes. probably it is only the case for tied_to_parent version
+
+    obj.trackParam("manual_mode",qqq); // F-LINKS-MANUAL
 
     // todo speedup by func ptr
     function filter_to(o) {

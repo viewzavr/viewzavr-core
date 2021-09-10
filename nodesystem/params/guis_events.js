@@ -12,9 +12,11 @@ export default function setup(x) {
     var res = orig(rec);
     x.emit("gui-added",rec.name);
 
+/*
     rec.events.addEventListener( "visible-changed",() => {
       x.emit("gui-visible-changed",rec.name);
     } );
+*/    
 
     return res;
   };

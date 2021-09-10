@@ -27,7 +27,6 @@ export function addEventsTo( x ) {
   x.on = x.events_dic.on.bind(x.events_dic);
   x.off = x.events_dic.off.bind(x.events_dic);
   x.emit = x.events_dic.emit.bind(x.events_dic);
-
 }
 
 export function setup_item(x) {
