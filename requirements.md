@@ -126,3 +126,7 @@ Example: obj.setParamOption( "paramname","maylink",(tobj,tparam) => tparam.match
 # R-LINKS-MANUAL
 Need an option for links to consider their function as setting value manually.
 => F-LINKS-MANUAL added optional parameter for links, manual_mode. Link will issue 'setParam' with it.
+
+# R-DEFAULT-NAME-IN-TYPE
+Type options should define a default name or name comment.
+In other way, it may be non-user friendly to generate name only by type.

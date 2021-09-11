@@ -40,6 +40,8 @@ export default function setup( vz ) {
         console.warn('me=',obj.getPath(),'currentRefFrom=',currentRefFrom ? currentRefFrom.getPath() : null,"currentParamNameFrom=",currentParamNameFrom );
         //var v = obj.getParam("from");
         console.warn("from=",obj.getParam("from"),"to=",obj.getParam("to"));
+        //if (currentParamNameFrom === "origin")
+//          debugger;
         return;
       }
       
@@ -52,17 +54,25 @@ export default function setup( vz ) {
         }
       }
       */
+      /*
+      console.log("link setting value from",obj.params.from,"to",obj.params.to);
+      if (obj.params.to === "/view-cmp-Lidar_crop_p3_4->origin")
+        debugger;
+      */  
 
-      // feature: if setting param value by link, mark it as internal
-      // so this value will not go to dump
-      // + F-LINKS-MANUAL
-      // IMPORTANT: need call this before setting param value (currently this is a bug)
-      currentRefTo.setParamOption( currentParamNameTo,"internal",obj.params.manual_mode ? false : true );
-      
-      currentRefTo.setParam( currentParamNameTo,val, obj.params.manual_mode ); // F-LINKS-MANUAL
-      // bug: if one invokes signal on source param, without changing param value (say by ref to array)
-      // here we hide that propagation. we have to somehow understand that event will not propagate
-      // and maybe send it manually
+      // feature: set only if val changes; in other case, we will lose manual effect..
+      if (currentRefTo.getParam( currentParamNameTo ) != val) {
+        // feature: if setting param value by link, mark it as internal
+        // so this value will not go to dump
+        // + F-LINKS-MANUAL
+        // IMPORTANT: need call this before setting param value (currently this is a bug)
+        currentRefTo.setParamOption( currentParamNameTo,"internal",obj.params.manual_mode ? false : true );
+        
+        currentRefTo.setParam( currentParamNameTo,val, obj.params.manual_mode ); // F-LINKS-MANUAL
+        // bug: if one invokes signal on source param, without changing param value (say by ref to array)
+        // here we hide that propagation. we have to somehow understand that event will not propagate
+        // and maybe send it manually
+       }
       
       
 
@@ -300,6 +310,7 @@ vz.chain("create_obj",function( obj, opts ) {
         //q.setParamWithoutEvents( "to", obj.getPath() + "->" + paramname, opts.manual ); // will emit events on 'from'?
     q.setParam( "from", sourcestring );
     q.setParam( "tied_to_parent",true, opts.manual );
+    return q;
   }
   obj.linkParam = function( paramname, link_source ) {
      return obj.createLinkTo( { param: paramname, from: link_source })

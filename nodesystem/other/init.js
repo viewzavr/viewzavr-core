@@ -47,7 +47,7 @@ export default function setup(m) {
   m.chain( "create_obj", function(obj,opts) {
     if (!opts.name) opts.name = opts.type || "item";
     return this.orig( obj, opts );
-  });  
+  });
   
   ////////// фича "у объекта есть метод create_obj"
   

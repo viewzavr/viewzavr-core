@@ -15,6 +15,7 @@ export default function setup( vz ) {
     if (path == "") return obj;
 
     if (!path) return null;
+    if (!obj) return null;
 
     if (path.getPath) return path; // this is object - return as is, R-SETREF-OBJ
     

@@ -8,13 +8,20 @@ export default function setup(x) {
   // заданное через гуи, на этапе инициализации - считается что события "параметр изменился" там при этом
   // происходить не должно. @todo разобраться со всей этой историей, построить ясную модель.
   x.setParamWithoutEvents = function(name,value) {
+    /*
+    if (name === "origin" && x.getPath() === "/view-cmp-Lidar_crop_p3_4")
+      debugger;
+    */  
+
     var old = x.params[name];
     x.params[name]=value;
     return old;
   }
 
   x.setParam = function(name,value) {
+
     var old = x.setParamWithoutEvents( name, value );
+    
 
 /*  we still need to track that param exist.. F-PARAM-VALUE-ALWAYS
     if (typeof(value) == "undefined")

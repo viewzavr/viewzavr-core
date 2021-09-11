@@ -202,6 +202,9 @@ m.chain("create_obj",function( obj, opts ) {
   obj.ismanual = function() {
     return obj.manuallyInserted ? true : false;
   }
+  obj.setmanual = function(v) {
+    return obj.manuallyInserted = v;
+  }
 
   obj.dump = function() {
     return m.dumpObj( obj );
