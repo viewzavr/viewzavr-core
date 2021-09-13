@@ -5,7 +5,8 @@ import nodesystem_setup from       "./nodesystem/init.js";
 import nodesystem_types_setup from "./nodesystem-types/init.js";
 import nodesystem_save_setup from  "./nodesystem-save/init.js";
 import nodesystem_links from  "./nodesystem-links/init.js";
-import pw from "./programmer-warnings.js";
+import pw from "./features/programmer-warnings.js";
+import sw from "./features/special-vars.js";
 
 export function setup( m, opts={} ) {
   utils_setup( m ); // ну пусть пока будет
@@ -14,9 +15,8 @@ export function setup( m, opts={} ) {
   nodesystem_save_setup( m );
   nodesystem_links( m );
   pw(m);
+  sw(m);
 
-
-  
   // external function
   m.createObj = function( opts={} ) {
     return m.create_obj( opts.body || {}, opts );

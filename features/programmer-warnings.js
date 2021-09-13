@@ -1,7 +1,7 @@
 // aim: warn programmer if something going wrong
 
 
-import * as E from "./nodesystem/events/init.js";
+import * as E from "../nodesystem/events/init.js";
 
 export default function setup( vz ) {
 

@@ -119,8 +119,6 @@ export default function setup( vz ) {
   }
   
   vz.chain( "create_obj", function (obj,options) {
-  
-    this.orig( obj, options );
 
     obj.findRoot = function() {
       if (!obj.ns.parent) return obj;
@@ -138,6 +136,8 @@ export default function setup( vz ) {
     obj.findByPath = function(path) {
       return vz.find_by_path( obj, path );
     }
+    
+    this.orig( obj, options );
     
     return obj;
 
