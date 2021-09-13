@@ -82,9 +82,12 @@ m.create_obj_by_type = function( opts ) {
     console.error("Viewzavr: create_obj_by_type no type info for type=",code );
     return;
   }
+
+  var type_opts = m.getTypeOptions( code ) || {};
   
   var finalopts = {};
-  Object.assign( finalopts, typerecord[2], opts || {} );
+  Object.assign( finalopts, type_opts, opts || {} );
+  
   
   var typefunc = typerecord[0];
 
@@ -92,8 +95,7 @@ m.create_obj_by_type = function( opts ) {
     console.error("Viewzavr: no type function found for type", code);
     return;
   }
-
-  var type_opts = m.getTypeOptions( code ) || {};
+  
   var obj;
 
   if (type_opts.protocol2) {

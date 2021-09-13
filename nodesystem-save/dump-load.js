@@ -1,6 +1,13 @@
 // экспорт состояния дерева объектов nodesystem в json-простой объект
 // а также создание дерева по этому состоянию
 
+// update: manualParamsMode получается это идет признак источника восстановления и сообразно разное поведение
+// manualParamsMode=true => все параметры считаются выставленные вручную, setParam( .... true )
+// что приведет при дальнейшем дампе к их сохранению в дамп
+// manualParamsMode=false => все параметры считаются устанавливаемыми программно и сообразно потом в дамп не попадут
+// и более того, это используется для анализа стирания объектов которые не упоминаются в дампе
+// todo переразобраться с manual и forcecreate(dumpyInserted) - тут где-то чувствуется что будет ясность причин.
+
 export default function setup( m ) {
 
   // создание дерева по json-описанию
@@ -85,12 +92,12 @@ export default function setup( m ) {
       obj.setParam( name, h[name], manualParamsMode ); // ставим true - в том смысле что это установка из
     });
 
-    m.removeChildrenByDump( dump, obj );
+    m.removeChildrenByDump( dump, obj, manualParamsMode );
     
     return m.createChildrenByDump( dump, obj, manualParamsMode );
   }
   
-  m.removeChildrenByDump = function( dump, obj )
+  m.removeChildrenByDump = function( dump, obj, manualParamsMode )
   {
     var c = dump.children || {};
     var ckeys = Object.keys( c );
@@ -102,7 +109,7 @@ export default function setup( m ) {
       var cname = cnames[i];
       var lc = obj.ns.getChildByName( cname );
       if (lc.protected) continue;
-      if (lc.manuallyInserted || lc.dumpyInserted) {
+      if (lc.manuallyInserted || (lc.dumpyInserted && !manualParamsMode)) {
         if (!c[cname]) { // во входящих нет этого дитятки
           // console.log("removing local unnecessary child lc=",lc);
           lc.remove();
@@ -237,7 +244,13 @@ m.chain("create_obj",function( obj, opts ) {
 
   
   if (opts.manual) obj.manuallyInserted = true;
-  //if (opts.forcecreate) obj.dumpyInserted = true; // @todo раскопать эту тему
+
+  if (opts.forcecreate) obj.dumpyInserted = true; // @todo раскопать эту тему
+  // расскомментировал dumpyInserted так как это признак при очистке детей что их можно очищать..
+  // (там идет идейный конфликт - нам приходит дамп и можно ли удалить объект?)
+  // и вот у на случай что мы сделали xmlFromChildren.. и хотим повторить... и значит надо всех кого мы не перечислили - убрать..
+  // но это приводит к тому что когда приходит дамп из проекта (хеш браузера) то это приводит к очистке всево..
+  // значит нужны режимы...
 
   this.orig( obj, opts );
 
