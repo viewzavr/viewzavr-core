@@ -7,10 +7,14 @@ import nodesystem_save_setup from  "./nodesystem-save/init.js";
 import nodesystem_links from  "./nodesystem-links/init.js";
 import pw from "./features/programmer-warnings.js";
 import sw from "./features/special-vars.js";
+import vf from "./features/viewzavr-features.js";
 
 export function setup( m, opts={} ) {
   utils_setup( m ); // ну пусть пока будет
   nodesystem_setup( m );
+
+  vf( m );
+
   nodesystem_types_setup( m ); // под вопросом..
   nodesystem_save_setup( m );
   nodesystem_links( m );

@@ -17,7 +17,7 @@ import setup_tree_events from "./tree-events/init.js";
 export default function setup(m) {
 
   m.create_obj = function(obj) { return obj; }
-  
+
   m.chain = function ( name, newfn ) {
     var origfn = this[name] || function() {};
     this[name] = function() {

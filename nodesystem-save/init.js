@@ -18,5 +18,10 @@ export default function setup(m) {
   //setup_dump_distinct( m );
   setup_dump_manual( m );
 
+  // object feature
+  m.register_feature( "disable_dump",(obj) => {
+    obj.dump = () => { return {} };
+  });
+
   return m;
 }
