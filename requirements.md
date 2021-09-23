@@ -130,3 +130,6 @@ Need an option for links to consider their function as setting value manually.
 # R-DEFAULT-NAME-IN-TYPE
 Type options should define a default name or name comment.
 In other way, it may be non-user friendly to generate name only by type.
+
+# R-REMOVEPARAM-REMOVES-GUI
+obj.removeParam should remove gui record also, so it is not visible in gui editor.

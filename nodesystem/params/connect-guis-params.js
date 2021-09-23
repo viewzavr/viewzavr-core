@@ -2,6 +2,15 @@
 
 export default function setup(x) {
 
+  // R-REMOVEPARAM-REMOVES-GUI
+  var orig_remove = x.removeParam;
+  x.removeParam = function(nama) {
+    x.removeGui( nama );
+    return orig_remove( nama );
+  }
+  
+  //
+
   var orig = x.addGui;
   x.addGui = function(rec) {
     var orig_fn = rec.fn || function() {};

@@ -32,6 +32,7 @@ export default function setup(m) {
       return this.orig( name, value );
     });*/
 
+
     // запоминаем что выставлено руками
     P.chain(obj,"setParam", function(name,value,ismanual) {
       let res = this.orig( name, value );
