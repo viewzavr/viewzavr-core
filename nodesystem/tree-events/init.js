@@ -7,29 +7,40 @@ export default function setup(m) {
   m.chain("addTreeToObj", function(obj, tree_name) {
     this.orig(obj, tree_name);
 
-    var orig = obj[tree_name].appendChild;
-    obj[tree_name].appendChild = function(cobj, name, rename) {
-      var res = orig(cobj, name, rename);
+    // вопрос, это получается сигнал то на объекте у нас а не на дереве
+    // ну пусть так пока будет
+    obj[tree_name].signalOnTree = function( ...args ) {
       var p = obj;
       while (p) {
-        p.signal("appendChildInTree", cobj); // @todo TODO move to tree from object
+        p.signal( ...args );
         p = p[tree_name].parent;
       }
+    }
+
+    var orig = obj[tree_name].appendChild;
+
+    obj[tree_name].appendChild = function(cobj, name, rename) {
+      var res = orig(cobj, name, rename);
+      obj[tree_name].signalOnTree("appendChildInTree");
       obj.signal("appendChild", cobj);
-      cobj.signal("parentChange");
+      cobj.signal("parent_change");
+      obj[tree_name].signalOnTree("change_in_tree");
       return res;
     }
 
+
     var orig2 = obj[tree_name].forgetChild;
     obj[tree_name].forgetChild = function(cobj) {
+      
 
       var res = orig2(cobj);
-      var p = obj;
-      while (p) {
-        p.signal("forgetChildInTree", cobj);
-        p = p[tree_name].parent;
-      }
+
+      if (!cobj) return;
+      
+      obj[tree_name].signalOnTree("forgetChildInTree");
       obj.signal("forgetChild", cobj);
+      cobj.signal("parent_change", cobj );
+      obj[tree_name].signalOnTree("change_in_tree");
       return res;
     }
 

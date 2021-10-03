@@ -3,6 +3,7 @@
 // особенность - считается что это единичная иерархия
 
 import rename_feature from "./feature-auto-rename-child.js";
+import manual_rename_feature from "./feature-manual-rename-child.js";
 import items_feature from "./feature-items.js";
 
 // nf это функция которая по объекту выдает область его древовидных штук..
@@ -44,6 +45,7 @@ export default function setup( obj, nf ) {
   }
 
   obj.forgetChild = function( cobj ) {
+    
     var i = obj.children.indexOf( cobj );
     if (i >= 0) obj.children.splice( i,1 );
 
@@ -79,6 +81,7 @@ export default function setup( obj, nf ) {
   
   rename_feature( _obj,nf );
   items_feature( _obj, nf );
+  manual_rename_feature( _obj, nf );
 
   return obj;
 }
