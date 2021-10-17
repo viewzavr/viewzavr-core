@@ -121,6 +121,7 @@ m.getTypeFunc = function(code) {
   var type = itemtypes_dic[code];
   if (!type) {
     console.error("Viewzavr: getTypeFunc - your code asks for type that is not registered. type=",code );
+    return;
   }
   return type[0];
 }
