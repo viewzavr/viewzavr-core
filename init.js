@@ -7,13 +7,16 @@ import nodesystem_save_setup from  "./nodesystem-save/init.js";
 import nodesystem_links from  "./nodesystem-links/init.js";
 import pw from "./features/programmer-warnings.js";
 import sw from "./features/special-vars.js";
-import vf from "./optional-features/viewzavr-features.js";
+//import vf from "./optional-features/viewzavr-features.js";
+//import extend from "./extend/extend.js";
+import extend from "./extend/init.js";
 
 export function setup( m, opts={} ) {
   utils_setup( m ); // ну пусть пока будет
   nodesystem_setup( m );
 
-  vf( m );
+  //vf( m );
+  extend( m );
 
   nodesystem_types_setup( m ); // под вопросом..
   nodesystem_save_setup( m );
