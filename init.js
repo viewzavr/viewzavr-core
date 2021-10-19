@@ -7,7 +7,7 @@ import nodesystem_save_setup from  "./nodesystem-save/init.js";
 import nodesystem_links from  "./nodesystem-links/init.js";
 import pw from "./features/programmer-warnings.js";
 import sw from "./features/special-vars.js";
-import vf from "./features/viewzavr-features.js";
+import vf from "./optional-features/viewzavr-features.js";
 
 export function setup( m, opts={} ) {
   utils_setup( m ); // ну пусть пока будет

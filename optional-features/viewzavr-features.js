@@ -1,7 +1,8 @@
 /*
   Implements 'features' for viewzavr and its objects. Adds methods:
 
-  vz.reg_feature(name,f) - registers feature function f in feature table
+  vz.register_feature(name,f) - registers feature function f in feature table
+  // todo: specify target env type, eg vz, obj?
   
   vz.feature(names) - implements feature for viewzavr. example: vz.feature("timers")
   
@@ -69,6 +70,9 @@
 
    * feature default in subtree?
    
+   update - probably features auto-activated for some scope is simpler todo with event handlers.
+   update - for features consisting of features, it is simple call to feature function of child features and target env.
+   
 */
 
 
@@ -94,9 +98,11 @@ export function create_feature_table() {
     // F-ONCE
     // keeps record of applied features in that target_env
     // (I think that is normal to change that env for that purpose).    
+    
         target_env.applied_features ||= {};
         if (target_env.applied_features[name]) return;
         target_env.applied_features[name] = true;
+        
     // so, apply the feature
     return f( target_env );
    }
@@ -112,6 +118,7 @@ export function attach_features_feature_to_viewzavr( vz ) {
     names.forEach( (name) => vz.feature_table.apply( name, target_env ) );
   }
   vz.feature = (names) => vz.feature_for( vz, names );
+  // тут идет спор - это может быть использовано не для фич vz, а просто для поиска фич, find_feature.
   
   vz.register_feature = (name,f) => vz.feature_table.add( name, f ); // table_name ?
 
