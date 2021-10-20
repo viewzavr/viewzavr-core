@@ -136,8 +136,9 @@ export function add_features_registry( env ) {
 }
 
 export function add_features_use( env, registry_env ) {
-  env.feature = (names,...args) => registry_env.feature_for( vz, names,...args );
+  env.feature = (names,...args) => registry_env.feature_for( env, names,...args );
   // тут идет спор - это может быть использовано не для фич vz, а просто для поиска фич, find_feature.
+  
   env.extend = env.feauture; // пока идет конкурс имен
 }
 

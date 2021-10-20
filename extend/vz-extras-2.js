@@ -26,7 +26,7 @@ export function find_objects(env) {
       function matching( obj ) {
       	let type = obj.historicalType;
       	if (!type) return;
-      	var objcats = vz.getCatsByType( type );
+      	var objcats = env.vz.getCatsByType( type );
       	   for (let c of cats) {
       	   	  for (let oc of objcats) {
       	   	  	 if (oc.startsWith( c ))
@@ -35,7 +35,7 @@ export function find_objects(env) {
       	   }
       }
 
-      //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              console.log("find-objects: criteria=",criteria, "result=",acc );
+      // console.log("find-objects: criteria=",criteria, "result=",acc );
 
       return acc;
    };
@@ -101,6 +101,9 @@ export function track_objects(env) {
 /////////////////////////////////////////////////////////////////////
 
 export function objects_param(obj) {
+
+    //track_objects( obj );
+    obj.feature("track_objects");
   
     // добавляет параметр равный массиву объектов заданного критерия
 
@@ -112,7 +115,7 @@ export function objects_param(obj) {
 
        obj.addString(`${name}_criteria`,criteria,(v) => {
        		if (unsubscribe) unsubscribe();
-       		unsubscribe = vz.trackObjects( desired_root || obj.findRoot(),v,(acc) => {
+       		unsubscribe = obj.vz.trackObjects( desired_root || obj.findRoot(),v,(acc) => {
        			 obj.setParam( name, acc );
              if (!removed) // фича не посылать cb удаленному объекту
        			     cb( acc );
@@ -146,6 +149,8 @@ export function param_alias(obj) {
 
 /////////////////////////////////////////////////////////////////////
 export function param_mirror(obj) {  
+
+    obj.feature("find_track");
 
     // импортирует параметр и его гуи из другого объекта, и устанавливает взаимную связь
     // source это путь объект->имяпараметра
