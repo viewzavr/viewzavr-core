@@ -62,7 +62,8 @@ export default function setup(x) {
     let r =  x.paramOptions(name).get(name2);
     if (typeof(r) === "undefined") return defaultvalue;
     return r;
-  }  
+  }
+  
   x.trackParamOption = function(name,name2,fn) {
     return x.paramOptions(name).track(name2,fn);
   }
