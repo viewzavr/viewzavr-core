@@ -84,6 +84,9 @@ export function create_feature_table() {
   // adds a feature record to a table
   res.add = (name,f) => {
     res.list[name] = f;
+    // microfeature: dash-names
+    name = name.replaceAll("_","-"); // i love feature-name, but it may arrive as feature_name (from functions names)
+    res.list[name] = f;
   }
 
   // applies feature to target_env
@@ -102,10 +105,9 @@ export function create_feature_table() {
     // возможно тут и не надо once, а сделать это опцией. потому что фигня получается если у нас аргументы у extend-ов.
     // но с другой стороны, если надо что-то с аргументами. то extend может выдать функцию такую, которая уже будет что-то делать на базе аргументов.
     // посмотрим в общем.
-    
-        target_env.applied_features ||= {};
-        if (target_env.applied_features[name]) return;
-        target_env.applied_features[name] = true;
+    if (target_env.has_feature(name))
+      return;
+    target_env.set_has_feature(name);
         
     // so, apply the feature
     return f( target_env,...args );
@@ -140,6 +142,19 @@ export function add_features_use( env, registry_env ) {
   // тут идет спор - это может быть использовано не для фич vz, а просто для поиска фич, find_feature.
 
   env.extend = env.feature; // пока идет конкурс имен
+
+  env.set_has_feature = (name) => {
+    env.applied_features ||= {};
+    env.applied_features[name] = true;
+  }
+  env.has_feature = (name) => {
+    env.applied_features ||= {};
+    return env.applied_features[name];
+  }
+
+  // todo:
+  // idea: if aready is_feature, call cb too
+  //env.on_feature = (name,cb)
 }
 
 // добавляет метод env(name)
@@ -209,7 +224,7 @@ export default function setup( vz ) {
 //   attach_features_feature_to_viewzavr( vz );
    
   add_features_registry( vz );
-  add_features_use( vz );
+  add_features_use( vz, vz );
   add_create_env( vz, vz );
   
   add_features_to_new_objs( vz );

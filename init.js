@@ -24,6 +24,8 @@ export function setup( m, opts={} ) {
   pw(m);
   sw(m);
 
+  //m.feature( "viewzavr-utils, nodesystem, ")
+
   // external function
   m.createObj = function( opts={} ) {
     return m.create_obj( opts.body || {}, opts );
