@@ -247,10 +247,8 @@ function traverse_if( obj, fn ) {
 }
 
 export function setup( vz,me ) {
+  vz.register_feature_set( me ); // получается вот этот вызов это есть сухожилия. соединение местного с системой. регаем фичи = добавляем в таблицу системы записи.
   //let q = import.meta;
-
   //debugger;
-
   //vz.register_feature_set( {find_objects,delayed,find_track,tree_items,param_alias,param_mirror,objects_param,find_objects,track_objects} );
-  //vz.register_feature_set( me );
 }

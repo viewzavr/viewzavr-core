@@ -75,6 +75,27 @@
    
 */
 
+// this is a feature of attaching feature table to x
+export default function setup( vz ) {
+//   attach_features_feature_to_viewzavr( vz );
+   
+  add_features_registry( vz );
+    add_appends( vz ); // думаю вызов фичи должен быть здесь. аддитивность - подключаем фичу один раз.
+    add_feature_map( vz );
+
+  add_features_use( vz, vz );
+  add_create_env( vz, vz );
+  
+  add_features_to_new_objs( vz );
+  activate_features_from_new_obj_params( vz, (o) => o.features );
+  activate_features_from_new_obj_params( vz, (o) => o.params?.features );
+  activate_features_from_new_obj_params( vz, (o) => o.extend );
+  activate_features_from_new_obj_params( vz, (o) => o.params?.extend );
+}
+
+
+//////////////////////////////////////////////////////////
+
 
 export function create_feature_table() {
   let res = { list: {} };
@@ -110,14 +131,14 @@ export function create_feature_table() {
     target_env.set_has_feature(name);
         
     // so, apply the feature
-    return f( target_env,...args );
+    f( target_env,...args );
+    return true;
    }
    return res;
 }
 
-export function add_features_registry( env ) {
-  env.features = create_feature_table();
 
+export function add_features_registry( env ) {
   env.feature_table = create_feature_table();
   // here names is array of feature names, or a string in form "feature1 feature2, feature3"
   env.feature_for = (target_env, names, ...args) => {
@@ -134,7 +155,6 @@ export function add_features_registry( env ) {
         env.register_feature( name, featureset[name] );
     }
   }
-
 }
 
 export function add_features_use( env, registry_env ) {
@@ -160,42 +180,10 @@ export function add_features_use( env, registry_env ) {
 // добавляет метод env(name)
 export function add_create_env( target_env, registry_env ) {
   target_env.env = (name) => {
-    let e = target_env[name] || {};
+    let e = name ? (target_env[name] || {}) : {};
     add_features_use( e, registry_env );
   }
 }
-
-/*
-export function attach_features_feature_to_viewzavr( vz ) {
-  add_features_registry( vz );
-  add_features_use( vz );
-  add_create_env( vz, vz );
-
-  let orig = vz.create_obj;
-  vz.chain( "create_obj", function (obj,options) {
-    // setup
-    add_features_use( obj, vz );
-    add_create_env( obj, vz );
-    // call constructor
-    this.orig( obj, options );
-    
-    // feature: implement default features (determined by viewzavr)
-    // obj.feature( "viewzavr-object-features" );
-    
-    // feature: implement features listed in 'features' key in options
-    if (options.features)
-      obj.feature( options.features );
-    // feature: implement features listed in 'features' key in options.params
-    if (options?.params?.features)
-      obj.feature( options.params.features );
-      
-    // TODO это тоже фича, анализировать фичи.. надо бы это оформить как фичу...
-    
-    
-    return obj;
-  });
-}
-*/
 
 function add_features_to_new_objs( vz ) {
   vz.chain( "create_obj", function (obj,options) {
@@ -219,17 +207,114 @@ function activate_features_from_new_obj_params( vz, f_from_options ) {
 
 }
 
-// this is a feature of attaching feature table to x
-export default function setup( vz ) {
-//   attach_features_feature_to_viewzavr( vz );
-   
-  add_features_registry( vz );
-  add_features_use( vz, vz );
-  add_create_env( vz, vz );
-  
-  add_features_to_new_objs( vz );
-  activate_features_from_new_obj_params( vz, (o) => o.features );
-  activate_features_from_new_obj_params( vz, (o) => o.params?.features );
-  activate_features_from_new_obj_params( vz, (o) => o.extend );
-  activate_features_from_new_obj_params( vz, (o) => o.params?.extend );
+/////////////////////////////////// фича "добавки к фичам"
+// потребность - чтобы при срабатывании фичи NAME1 срабатывали еще дополнительные фичи по списку, связанному с NAME1
+// особенность - контроль чтобы в списке доп-фич фичи не было дублирования, чтобы одну и ту же суб-фичу не применять два раза.
+
+export function add_appends_to_table(env) {
+  env.appends = {}
+  env.append = (name,name2) => {
+    env.appends[name] ||= [];
+    if (env.appends[name].indexOf(name2) < 0) 
+        env.appends[name].push( name2 ); // todo optimize
+  }
+  /*
+  let orig = env.apply;
+  */
+  env.run_appends = (name,target_env,...args) => { // башенка / событие (но однократное)
+    //if (orig( name, target_env, ...args)) {
+    for (let appended_name of (env.appends[name] || []))
+        env.apply( appended_name, target_env, ...args );
+  }
+
+  env.apply = (name,target_env,...args) => {
+    // F-ONCE
+    // keeps record of applied features in that target_env
+    // (I think that is normal to change that env for that purpose).    
+    
+    // возможно тут и не надо once, а сделать это опцией. потому что фигня получается если у нас аргументы у extend-ов.
+    // но с другой стороны, если надо что-то с аргументами. то extend может выдать функцию такую, которая уже будет что-то делать на базе аргументов.
+    // посмотрим в общем.
+    if (target_env.has_feature(name))
+      return;
+    target_env.set_has_feature(name);
+
+
+    let f = env.list[name];
+    let appends = env.appends[name];
+    if (!f && !appends) {
+      console.error(`viewzavr features: feature '${name}' is not defined (no code and no appended features). object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
+      return;
+    }
+        
+    // so, apply the feature
+    if (f) 
+      f( target_env,...args );
+    if (appends) 
+      env.run_appends( name, target_env, ...args );
+    return true;
+   }  
 }
+
+export function add_appends( env ) {
+   add_appends_to_table( env.feature_table );
+   env.register_feature_append = ( name, names ) => {
+      if (names.split) names = names.split(/[\s,]+/);
+      for (let appended_name of names)
+         env.feature_table.append( name, appended_name )
+   }
+}
+
+/////////////////////////////////// фича "карты фич"
+// потребность - уметь красиво задать карту добавок к фичам.
+/* пример: 
+   var app = {
+      main: "features",
+      features: "hash-settings auto-load-settings auto-save-settings auto-save-screenshot datapath-from-url commands-socket show-file-progress"
+   }
+   vz.register_feature_map( app, "main" );
+*/   
+
+export function add_feature_map( env ) {
+  env.register_feature_map = ( map, entry_point ) => {
+    if (entry_point) 
+      interpret( map, entry_point, env );
+    else {
+      for (let name of Object.keys(map))
+        interpret( map, name, env );
+    }
+  }
+  // идея apply_feature_map и там типа карта и точка входа. так вот, 1) развернуть карту и 2) применить точку входа.
+}
+
+// возможно тут понадобится еще include файлов. и тогда будет счастьие. а может и нет, может это надо в list.txt будет добавить.
+/* замысел алгоритма:
+     идти по ключам указанной записи 
+       * и если ключ append то это значит что надо зарегистрировать append к записи.
+       * а для других ключей - повторить процедуру рекурсивно.
+
+*/
+    function interpret( code, feature, registry_env ) {
+      let value = code[ feature ];
+
+      if (!value) return; // ну или обратиться в словарь? - вдруг там что еще развернется..
+
+      if (typeof(value) == "string") value = { append: value }
+        //else if (Array.isArray( value ))
+
+      for (let n of Object.keys(value)) {
+         if (n == "append") {
+           let toappend = value[n];
+           if (typeof(toappend) == "string") toappend = toappend.split(/[\s,]+/);
+           //registry_env.register_feature_append( toappend );
+            /* вроде не надо разбивать --- надо! */
+           for (let item of toappend) {
+              registry_env.register_feature_append( feature, item );
+              // и надо пройти по этой фиче в дерево наше
+              interpret( code, item, registry_env );
+           }
+         }
+         else
+           interpret( code, n, registry_env );
+      }
+    }
