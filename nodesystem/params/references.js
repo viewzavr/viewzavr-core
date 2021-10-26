@@ -27,7 +27,7 @@ export default function setup(vz, x) {
         }
       }
       
-      var obj = vz.find_by_path( x,value );
+      var obj = vz.find_by_path( x,value ); // todo fix use start tree, see ref-as-obj
 
       if (obj) {
         if (!obj.references_to_me) obj.references_to_me = {};
@@ -50,11 +50,30 @@ export default function setup(vz, x) {
 
     // забыть все ссылки на нас надо
   x.chain("remove",function() {
+
     Object.keys( x.references_to_me || {} ).forEach( function(k) {
-      var ko = vz.find_by_path( x.findRoot(), k );
+      var ko = vz.find_by_path( x.findRoot(), k ); // todo - это уже не работает, так как уже отцепили от дерева.
+      // идеи - хранить не пути кто на нас ссылается, а прямо ссылки на объекты.. (хотя тогда их надо будет чистить)
+      // ну и плюс в опции параметра записывать оригинальную ссылку, чем и пользоваться.
+      // ну либо лучше прописать тут все что к чему для прояснения картины. а то с этими ссылками не все ясно что-то стало.
+      
       if (ko) {
         var pn = x.references_to_me[k];
         ko.setReference( pn, undefined );
+        // todo - ссылка стерлась, так надо как-то тех товарищей уведомить...
+        var xpath = x.getPath();
+        debugger;
+        ko.setParam( pn, null ); // сбросили
+        x.on("remove",() => {
+          // считаю что вызовется сейчас
+          ko.setParam( pn, xpath ); // вернули старое строковое значение
+        })
+
+        // ko.referencedObjectRemoved( pn );
+        // hope this will rescan..
+        // var q = ko.getParam( pn );
+        //ko.setParam
+        //ko.signalParam( pn );
       }
     });
     this.orig();

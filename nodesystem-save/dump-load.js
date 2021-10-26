@@ -45,7 +45,7 @@ export default function setup( m ) {
         obj.restoreFromDump( dump,manualParamsMode ).then( (res) => {
           resolve( obj );
         }).catch( (err) => {
-            reject( err );
+          reject( err );
         })
     })
     

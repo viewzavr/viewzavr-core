@@ -86,11 +86,13 @@ export default function setup( vz ) {
   add_features_use( vz, vz );
   add_create_env( vz, vz );
   
-  add_features_to_new_objs( vz );
-  activate_features_from_new_obj_params( vz, (o) => o.features );
-  activate_features_from_new_obj_params( vz, (o) => o.params?.features );
-  activate_features_from_new_obj_params( vz, (o) => o.extend );
-  activate_features_from_new_obj_params( vz, (o) => o.params?.extend );
+  vz_add_features_to_new_objs( vz );
+  vz_activate_features_from_new_obj_params( vz, (o) => o.features );
+  vz_activate_features_from_new_obj_params( vz, (o) => o.params?.features );
+  vz_activate_features_from_new_obj_params( vz, (o) => o.extend );
+  vz_activate_features_from_new_obj_params( vz, (o) => o.params?.extend );
+  // потребность "фича object на новых объектах" => можно создавать новые объекты вообще только из фич
+  vz_add_feature_object_to_new_objects( vz );
 }
 
 
@@ -149,6 +151,7 @@ export function add_features_registry( env ) {
   env.register_feature = (name,f) => env.feature_table.add( name, f ); // table_name ?  
 
   // хорошо бы чтобы это тоже стало фичей.. но я до сих пор не переключил мозги, может потом смогу
+  // featureset = набор { ключ -> функция }
   env.register_feature_set = ( featureset ) => {
     for (var name of Object.keys(featureset)) {
         if (name == "setup") continue;
@@ -185,7 +188,7 @@ export function add_create_env( target_env, registry_env ) {
   }
 }
 
-function add_features_to_new_objs( vz ) {
+function vz_add_features_to_new_objs( vz ) {
   vz.chain( "create_obj", function (obj,options) {
     // setup
     add_features_use( obj, vz );
@@ -196,7 +199,7 @@ function add_features_to_new_objs( vz ) {
  });
 }
 
-function activate_features_from_new_obj_params( vz, f_from_options ) {
+function vz_activate_features_from_new_obj_params( vz, f_from_options ) {
   //let orig = vz.create_obj;
   vz.chain( "create_obj", function (obj,options) {
     this.orig( obj, options );
@@ -204,7 +207,16 @@ function activate_features_from_new_obj_params( vz, f_from_options ) {
       obj.extend( f_from_options( options ) );
     return obj;
   });
+}
 
+function vz_add_feature_object_to_new_objects( vz, f_from_options ) {
+  //let orig = vz.create_obj;
+  vz.register_feature( "viewzavr-object", () => {} );
+  vz.chain( "create_obj", function (obj,options) {
+    this.orig( obj, options );
+    obj.feature( "viewzavr-object" );
+    return obj;
+  });
 }
 
 /////////////////////////////////// фича "добавки к фичам"
@@ -253,7 +265,7 @@ export function add_appends_to_table(env) {
     if (appends) 
       env.run_appends( name, target_env, ...args );
     return true;
-   }  
+   }
 }
 
 export function add_appends( env ) {
@@ -276,6 +288,8 @@ export function add_appends( env ) {
 */   
 
 export function add_feature_map( env ) {
+  // в общем это пока загадочный для меня метод, непонятный. что-то типа массовй регистрации аппендов, получается.
+  // но тогда это register_feature_appends_map
   env.register_feature_map = ( map, entry_point ) => {
     if (entry_point) 
       interpret( map, entry_point, env );
@@ -292,8 +306,8 @@ export function add_feature_map( env ) {
      идти по ключам указанной записи 
        * и если ключ append то это значит что надо зарегистрировать append к записи.
        * а для других ключей - повторить процедуру рекурсивно.
-
 */
+// todo - в будущем лесом это. надо просто идти по всем ключам и все.
     function interpret( code, feature, registry_env ) {
       let value = code[ feature ];
 
@@ -305,7 +319,7 @@ export function add_feature_map( env ) {
       for (let n of Object.keys(value)) {
          if (n == "append") {
            let toappend = value[n];
-           if (typeof(toappend) == "string") toappend = toappend.split(/[\s,]+/);
+           if (typeof(toappend) == "string") toappend = toappend.trim().split(/[\s,]+/);
            //registry_env.register_feature_append( toappend );
             /* вроде не надо разбивать --- надо! */
            for (let item of toappend) {

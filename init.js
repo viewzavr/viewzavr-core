@@ -12,6 +12,8 @@ import sw from "./features/special-vars.js";
 import extend from "./extend/init.js";
 
 export function setup( m, opts={} ) {
+  m.vz = m;
+
   utils_setup( m ); // ну пусть пока будет
   nodesystem_setup( m );
 
@@ -56,8 +58,11 @@ export function setup( m, opts={} ) {
     // todo: hack, keep opts1 type for historicalType?
 
     // feature: first arg may be type
-    if (typeof(opts1) === "string")
+    if (typeof(opts1) === "string") {
       opts1 = { type: opts1 }
+      if (opts2 && opts2.type)
+        opts2.type = opts1.type;
+    }
 
     var opts = Object.assign( {}, opts1, opts2, opts3 );
     return m.create_obj_by_type( opts );
