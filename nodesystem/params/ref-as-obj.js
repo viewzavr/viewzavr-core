@@ -17,7 +17,7 @@ export default function setup( obj ) {
             add_retry( obj, name, value );
             return;
           }
-          value = target_obj;
+          value = target_obj; // будем класть на хранение уже объекты
       }
     }
     return this.orig( name, value );

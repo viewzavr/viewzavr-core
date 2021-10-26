@@ -31,7 +31,6 @@ export default function setup(m) {
 
     var orig2 = obj[tree_name].forgetChild;
     obj[tree_name].forgetChild = function(cobj) {
-      
 
       var res = orig2(cobj);
 

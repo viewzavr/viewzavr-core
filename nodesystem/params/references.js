@@ -13,26 +13,24 @@ export default function setup(vz, x) {
     return rec;
   }
   x.addObjectRef = x.addObjRef;
+
+  var ref_values = {};
+  var ref_event_unbinds = {};
   
   x.chain("setParam",function (name, value) {
     if (x.isReference( name )) {
       // ага это ссылка
-      var xpath = vz.get_path( x );
+      if (ref_event_unbinds[ name ]) ref_event_unbinds[ name ]();
 
-      var old = x.getParam( name );
-      if (old) {
-        var oldobj = vz.find_by_path( x, old );
-        if (oldobj && oldobj.references_to_me) {
-          delete oldobj.references_to_me[ xpath ];
-        }
-      }
-      
       var obj = vz.find_by_path( x,value ); // todo fix use start tree, see ref-as-obj
 
       if (obj) {
-        if (!obj.references_to_me) obj.references_to_me = {};
-        obj.references_to_me[ xpath ] = name;
-      }
+        ref_event_unbinds[ name ] = obj.on("parent_change",() => { // это включает в себя и remove
+          x.setParam( name, ref_values[name] );
+        });
+      } else ref_event_unbinds[ name ] = null;
+
+      ref_values[name] = value?.getPath ? value.getPath() : value;
     }
     //x.setReference( name, value ); // ставим флаг что у нас есть ссылка
     this.orig( name, value );
@@ -46,38 +44,6 @@ export default function setup(vz, x) {
   x.isReference = function(name) {
     return x.references && x.references[name]
   }
-  
-
-    // забыть все ссылки на нас надо
-  x.chain("remove",function() {
-
-    Object.keys( x.references_to_me || {} ).forEach( function(k) {
-      var ko = vz.find_by_path( x.findRoot(), k ); // todo - это уже не работает, так как уже отцепили от дерева.
-      // идеи - хранить не пути кто на нас ссылается, а прямо ссылки на объекты.. (хотя тогда их надо будет чистить)
-      // ну и плюс в опции параметра записывать оригинальную ссылку, чем и пользоваться.
-      // ну либо лучше прописать тут все что к чему для прояснения картины. а то с этими ссылками не все ясно что-то стало.
-      
-      if (ko) {
-        var pn = x.references_to_me[k];
-        ko.setReference( pn, undefined );
-        // todo - ссылка стерлась, так надо как-то тех товарищей уведомить...
-        var xpath = x.getPath();
-        debugger;
-        ko.setParam( pn, null ); // сбросили
-        x.on("remove",() => {
-          // считаю что вызовется сейчас
-          ko.setParam( pn, xpath ); // вернули старое строковое значение
-        })
-
-        // ko.referencedObjectRemoved( pn );
-        // hope this will rescan..
-        // var q = ko.getParam( pn );
-        //ko.setParam
-        //ko.signalParam( pn );
-      }
-    });
-    this.orig();
-  });
   
   // R-SETREF-OBJ
   ref_as_obj_setup( x );
