@@ -75,25 +75,6 @@
    
 */
 
-// this is a feature of attaching feature table to x
-export default function setup( vz ) {
-//   attach_features_feature_to_viewzavr( vz );
-   
-  add_features_registry( vz );
-    add_appends( vz ); // думаю вызов фичи должен быть здесь. аддитивность - подключаем фичу один раз.
-    add_feature_map( vz );
-
-  add_features_use( vz, vz );
-  add_create_env( vz, vz );
-  
-  vz_add_features_to_new_objs( vz );
-  vz_activate_features_from_new_obj_params( vz, (o) => o.features );
-  vz_activate_features_from_new_obj_params( vz, (o) => o.params?.features );
-  vz_activate_features_from_new_obj_params( vz, (o) => o.extend );
-  vz_activate_features_from_new_obj_params( vz, (o) => o.params?.extend );
-  // потребность "фича object на новых объектах" => можно создавать новые объекты вообще только из фич
-  vz_add_feature_object_to_new_objects( vz );
-}
 
 
 //////////////////////////////////////////////////////////
@@ -111,12 +92,17 @@ export function create_feature_table() {
     name = name.replaceAll("_","-"); // i love feature-name, but it may arrive as feature_name (from functions names)
     res.list[name] = f;
   }
+  res.get = (name) => {
+    return res.list[name];
+  }
 
   // applies feature to target_env
 
+/* заменяется далее
   res.apply = (name,target_env,...args) => {
     let f = res.list[name];
     if (!f) {
+      // ну и что... что нету функции....
       console.error("viewzavr features: feature",name,"not found. object desired for feature is ",target_env );
       return;
     }
@@ -136,6 +122,8 @@ export function create_feature_table() {
     f( target_env,...args );
     return true;
    }
+*/
+
    return res;
 }
 
@@ -149,6 +137,7 @@ export function add_features_registry( env ) {
   }
 
   env.register_feature = (name,f) => env.feature_table.add( name, f ); // table_name ?  
+  env.get_feature_core = ( name ) => env.feature_table.get( name );
 
   // хорошо бы чтобы это тоже стало фичей.. но я до сих пор не переключил мозги, может потом смогу
   // featureset = набор { ключ -> функция }
@@ -166,15 +155,15 @@ export function add_features_use( env, registry_env ) {
 
   env.extend = env.feature; // пока идет конкурс имен
 
-  env.set_has_feature = (name) => {
+  env.set_feature_applied = (name) => {
     name = name.replaceAll("_","-");
-    env.applied_features ||= {};
-    env.applied_features[name] = true;
+    env.$features_applied ||= {};    
+    env.$features_applied[name] = true;
   }
-  env.has_feature = (name) => {
+  env.is_feature_applied = (name) => {
     name = name.replaceAll("_","-");
-    env.applied_features ||= {};
-    return env.applied_features[name];
+    env.$features_applied ||= {};
+    return env.$features_applied[name];
   }
 
   // todo:
@@ -190,36 +179,6 @@ export function add_create_env( target_env, registry_env ) {
   }
 }
 
-function vz_add_features_to_new_objs( vz ) {
-  vz.chain( "create_obj", function (obj,options) {
-    // setup
-    add_features_use( obj, vz );
-    add_create_env( obj, vz );
-    // call constructor
-    this.orig( obj, options );
-    return obj;
- });
-}
-
-function vz_activate_features_from_new_obj_params( vz, f_from_options ) {
-  //let orig = vz.create_obj;
-  vz.chain( "create_obj", function (obj,options) {
-    this.orig( obj, options );
-    if (f_from_options( options ))
-      obj.extend( f_from_options( options ) );
-    return obj;
-  });
-}
-
-function vz_add_feature_object_to_new_objects( vz, f_from_options ) {
-  //let orig = vz.create_obj;
-  vz.register_feature( "viewzavr-object", () => {} );
-  vz.chain( "create_obj", function (obj,options) {
-    this.orig( obj, options );
-    obj.feature( "viewzavr-object" );
-    return obj;
-  });
-}
 
 /////////////////////////////////// фича "добавки к фичам"
 // потребность - чтобы при срабатывании фичи NAME1 срабатывали еще дополнительные фичи по списку, связанному с NAME1
@@ -249,14 +208,22 @@ export function add_appends_to_table(env) {
     // возможно тут и не надо once, а сделать это опцией. потому что фигня получается если у нас аргументы у extend-ов.
     // но с другой стороны, если надо что-то с аргументами. то extend может выдать функцию такую, которая уже будет что-то делать на базе аргументов.
     // посмотрим в общем.
-    if (target_env.has_feature(name))
+    if (target_env.is_feature_applied(name))
       return;
-    target_env.set_has_feature(name);
-
+    target_env.set_feature_applied(name);
 
     let f = env.list[name];
     let appends = env.appends[name];
     if (!f && !appends) {
+      // субфишка - если это тип или категория - то не ругаться
+      // но тут вьюзавра еще нету..
+      // значит другая идея - при регистрации типа или категории - добавлять их в список фич. ну.
+      /*
+      if (vz.getTypeInfo(f) || vz.getCatsDic()[f])
+      {
+      }
+      else
+      */
       console.error(`viewzavr features: feature '${name}' is not defined (no code and no appended features). object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
       return;
     }

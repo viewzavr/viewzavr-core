@@ -18,9 +18,11 @@ export function setup( m, opts={} ) {
   nodesystem_setup( m );
 
   //vf( m );
+  
+  nodesystem_types_setup( m ); // под вопросом..
+  
   extend( m );
 
-  nodesystem_types_setup( m ); // под вопросом..
   nodesystem_save_setup( m );
   nodesystem_links( m );
   pw(m);

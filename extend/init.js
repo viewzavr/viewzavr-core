@@ -1,4 +1,4 @@
-import E from "./extend.js";
+import E from "./extend-viewzavr.js";
 import * as F1 from "./vz-extras-2.js";
 import * as F2 from "./criteria-finder.js";
 

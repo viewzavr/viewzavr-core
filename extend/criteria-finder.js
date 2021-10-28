@@ -43,7 +43,7 @@ export function findObjects( root, criteria_text ) {
          if (need_features.length > 0)
             and_tests.push( function(obj) { 
               for (let f of need_features)
-                if (!obj.has_feature(f)) return false;
+                if (!obj.is_feature_applied(f)) return false;
               return true;
             })
 
