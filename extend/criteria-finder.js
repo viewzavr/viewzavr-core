@@ -23,8 +23,8 @@ export function findObjects( root, criteria_text ) {
       function tocrit( line ) {
          var parts = line.trim().split(/\s+/);
          var and_tests = [];
-
-         if (parts[0] != "@") {
+         
+         if (parts[0] && parts[0][0] != "@") {
             // это путь
             var regexp_string = parts[0].replaceAll("**",".+").replaceAll("*","[^\/]+")
             var re = new RegExp( regexp_string );
