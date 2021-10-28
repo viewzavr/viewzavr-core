@@ -109,8 +109,13 @@ export default function setup( m ) {
       var cname = cnames[i];
       var lc = obj.ns.getChildByName( cname );
       if (lc.protected) continue;
+
+      // режимы:
+      // объект был добавлен вручную => входящая информация несет приоритет
+      // объект был добавлен программно => вообще его не трогаем (почему-то)
+      // объект был добавлен программно с пометкой dumpyInserted/forcecreate => входящая информация несет приоритет если режим ввода программный
       if (lc.manuallyInserted || (lc.dumpyInserted && !manualParamsMode)) {
-        if (!c[cname]) { // во входящих нет этого дитятки
+        if (!c[cname]) { // во входящих нет
           // console.log("removing local unnecessary child lc=",lc);
           lc.remove();
         }
@@ -132,11 +137,13 @@ export default function setup( m ) {
   
     // todo отсортировать в порядке order..
     var promises_arr = [];
+    //var actual_children_table
     ckeys.forEach( function(name) {
       var cobj = obj.ns.getChildByName( name );
       if (!c[name].manual && !cobj && !c[name].forcecreate) {
         // ситуация когда объект должен был быть создан автоматически - но его нет!
         console.error("load_from_dump: no child of name found! name=",name,"obj=",obj);
+        promises_arr.push( Promise.reject() );
         return;
       }
       var r = m.createSyncFromDump( c[name], cobj, obj, name, manualParamsMode );
@@ -147,8 +154,38 @@ export default function setup( m ) {
         console.error("createChildrenByDump: error!",err );
       });
     });
+
+    //return Promise.allSettled( promises_arr );
+
+    // теперь у нас ситуация что есть входящий список детей, и их экземпляры
+    // и есть текущий список детей внутри объекта
+    // и надо чтобы порядок текущего списка соответствовал входящему списку
+
+    var result_p = new Promise( (resolv, reject) => {
+      Promise.allSettled( promises_arr ).then( (arr_of_objects_res) => {
+
+       let order = {};
+       let index = 0;
+       for (let c of ckeys) {
+          // имя в дампе может отличаться от реального назначенного имени
+          order[ arr_of_objects_res[index].value?.ns?.name || "__not__found__" ] = index++;
+       }
+       // тех что уже были в объекте - считаем на первом месте
+       var dp = -1;
+       var sorted = obj.ns.getChildren().sort( (a,b) => {
+          if ((order[a.ns.name] || dp) < (order[ b.ns.name ] || dp)) return -1;
+          if ((order[a.ns.name] || dp) > (order[ b.ns.name ] || dp)) return +1;
+          return 0;
+       })
+       
+       obj.ns.setChildren( sorted );
+
+       resolv( obj );
+    });
+    });
     
-    return Promise.allSettled( promises_arr );
+    return result_p;
+
   }
   
   m.dumpObj = function( obj ) {

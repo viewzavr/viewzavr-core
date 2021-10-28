@@ -35,8 +35,9 @@ export default function setup( obj, nf ) {
   
   // appendChildWithName ? и тогда трекать что объект уже есть?..
   obj.setChildName = function( cobj, name ) {
-    obj.childrenTable[ name ] = cobj;
+    //obj.childrenTable[ name ] = cobj;
     nf(cobj).name = name;
+    obj.updateChildrenTable();
   };
   
   obj.hasChild = function( cobj ) {
@@ -49,13 +50,25 @@ export default function setup( obj, nf ) {
     var i = obj.children.indexOf( cobj );
     if (i >= 0) obj.children.splice( i,1 );
 
+    obj.updateChildrenTable();
+    /*
     Object.keys( obj.childrenTable ).forEach(key => {
       if (obj.childrenTable[ key ] == cobj)
           delete obj.childrenTable[ key ];
     });
+    */
   }
 
   obj.getChildren = function() { return obj.children; }
+  obj.setChildren = (arr) => {
+    obj.children = arr;
+    obj.updateChildrenTable();
+  }
+  obj.updateChildrenTable = () => {
+    let ct = {};
+    for (let c of obj.children) ct[ nf(c).name ] = c;
+    obj.childrenTable = ct;
+  }
   
   obj.getChildByName = function(name) {
     return obj.childrenTable[ name ];

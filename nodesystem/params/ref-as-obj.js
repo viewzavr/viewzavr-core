@@ -38,7 +38,8 @@ var retry_timer = null;
 
 function add_retry( obj, paramname, value ) {
   setTimeout( function() {
-    console.warn("ref-as-obj: retry setting obj-ref",paramname, value );
+    if (obj.removed) return;
+    console.warn("ref-as-obj: retry setting obj-ref, obj=",obj.getPath(), {paramname,value} );
     obj.ref_retry_counters ||= {};
     obj.ref_retry_counters[paramname] = (obj.ref_retry_counters[paramname] || 0)+1;
     if (obj.ref_retry_counters[paramname] < 30)
