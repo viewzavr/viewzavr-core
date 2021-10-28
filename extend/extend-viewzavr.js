@@ -19,6 +19,12 @@ export default function setup( vz ) {
 
   vz_add_type_as_feature( vz );
   vz_add_cats_as_feature( vz );
+
+  ///////////////
+  vz.register_feature_set({vzf_manual_features})
+  vz.register_feature_map({"viewzavr-object":"vzf_manual_features"});
+  //vz.register_feature_map({"viewzavr-object":{append:[vzf_manual_features]}})
+  
 }
 
 
@@ -84,4 +90,29 @@ function vz_add_cats_as_feature( vz ) {
       }
     return result;
   });
+}
+
+///////////////////// 
+function vzf_manual_features( obj ) {
+  obj.trackParam("manual_features", (v) => {
+    obj.manual_feature( v );
+  })
+  obj.manual_feature = (names,...args) => {
+    var arr = FT.feature_names_to_arr( names );
+    var has_new = false;
+    for (var name of names) {
+        if (!obj.is_feature_applied(name)) {
+          has_new = true;
+          break;
+        }
+    }
+
+    if (has_new) {
+      obj.feature( names,...args );
+      var existing_arr = FT.feature_names_to_arr( (obj.params.manual_features || "") );
+      let unique = [...new Set(arr.concat(existing_arr))];
+      obj.setParam("manual_features", unique, true);
+      // todo optimize
+    }
+  }
 }

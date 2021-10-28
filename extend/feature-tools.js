@@ -127,12 +127,19 @@ export function create_feature_table() {
    return res;
 }
 
+export function feature_names_to_arr( names ) {
+  if (!names || names == "") return [];
+  if (names.split) names = names.split(/[\s,]+/);
+  return names;
+}
+
 
 export function add_features_registry( env ) {
   env.feature_table = create_feature_table();
   // here names is array of feature names, or a string in form "feature1 feature2, feature3"
   env.feature_for = (target_env, names, ...args) => {
-    if (names.split) names = names.split(/[\s,]+/);
+    names = feature_names_to_arr(names);
+    //if (names.split) names = names.split(/[\s,]+/);
     names.forEach( (name) => env.feature_table.apply( name, target_env, ...args ) );
   }
 
@@ -225,7 +232,8 @@ export function add_appends_to_table(env) {
       else
       */
       console.error(`viewzavr features: feature '${name}' is not defined (no code and no appended features). object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
-      return;
+      // ну и что что фичи нет - потом может появится..
+      //return;
     }
         
     // so, apply the feature
@@ -284,6 +292,7 @@ export function add_feature_map( env ) {
 
       if (typeof(value) == "string") value = { append: value }
         //else if (Array.isArray( value ))
+      if (typeof(value) == 'function') value = { core: value }
 
       for (let n of Object.keys(value)) {
          if (n == "append") {
@@ -296,6 +305,9 @@ export function add_feature_map( env ) {
               // и надо пройти по этой фиче в дерево наше
               interpret( code, item, registry_env );
            }
+         }
+         else if (n == 'core') {
+            registry_env.register_feature( feature, value[n]);
          }
          else
            interpret( code, n, registry_env );
