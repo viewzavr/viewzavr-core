@@ -29,7 +29,10 @@ export default function setup(x) {
     }
 
     // для комбо
-    rec.getValues = function() { return rec.values };
+    rec.getValues = function() {
+      var v = x.getParamOption( rec.name,"values" ); // || rec.values;
+      return v;
+    };
 
 //  возможно, это все стоит связать с опциями параметра, т.е. setParamOption
 //    rec.set = function( optionname, value ) {
@@ -64,10 +67,12 @@ export default function setup(x) {
     return x.addGui( { type: "slider", name: name, value: value, min: min, max: max, step: step, fn: fn } );
   }
   x.addCombo = function(name, value, values, fn) {
+    x.setParamOption( name,"values",values);
     return x.addGui( { type: "combo", name: name, value: value, values: values, fn: fn } );
   };
 
   x.addComboValue = function(name, value, values, fn) {
+    x.setParamOption( name,"values",values);
     return x.addGui( { type: "combovalue", name: name, value: value, values: values, fn: fn } );
   };
   x.addComboString = x.addComboValue;
