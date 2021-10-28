@@ -167,10 +167,12 @@ export function add_features_use( env, registry_env ) {
   env.extend = env.feature; // пока идет конкурс имен
 
   env.set_has_feature = (name) => {
+    name = name.replaceAll("_","-");
     env.applied_features ||= {};
     env.applied_features[name] = true;
   }
   env.has_feature = (name) => {
+    name = name.replaceAll("_","-");
     env.applied_features ||= {};
     return env.applied_features[name];
   }
