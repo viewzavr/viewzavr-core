@@ -33,30 +33,28 @@ export default function setup(vz) {
   // desired_parent - относительно кого отсчитывать пути
 
   // todo - нужен какой-то более удобный критерий отбора объектов..
-  x.addParamRef = function( name, value, crit_fn, fn, desired_parent ) {
-    desired_parent ||= x;
+  x.addParamRef = function( name, value, crit_fn, fn, desired_parent0 ) {
+    var desired_parent = desired_parent0 || x;
+    //desired_parent ||= x;
     //var values = gatherParams( crit_fn || default_crit_fn );
     var values = [];
-    var rec = x.addGui( { type: "combovalue", name: name, value: value, values: values, crit_fn: crit_fn, fn: fn } );
-    rec.getValues = function() {
-      return gatherParams( crit_fn || default_crit_fn, desired_parent );
-    }
-    x.addCmd(`rescan-${name}`,() => {
-      var vv = gatherParams( crit_fn || default_crit_fn, desired_parent );
-      x.setParamOption( name, "values",vv);
-    });
-    /*
-    rec.on("connect",() => {
-      x.callCmd(`rescan-${name}`);
-    })
-    */
+    var rec;
+    setrec();
 
-    x.setParamOption( name,"value-find-helper", rec.notFound );
-    //x.trackParamOption
-    //x.setParamOption( name, "values" );
-    // special case to convert absolute links comming from parameter values to relative links
-    rec.notFound = function( param_path, values ) { // в параметре значение, которого нет в комбо-бокс значениях
-      // это случай вероятно, когда param_path абсолютный
+    x.addCmd(`rescan-${name}`,() => {
+      //var vv = gatherParams( crit_fn || default_crit_fn, desired_parent );
+      //x.setParamOption( name, "values",vv);
+      setrec();
+    });
+    x.addLabel(`status-${name}`);
+
+    function setrec() {
+      rec = x.addGui( { type: "editablecombo", name: name, value: value, values: values, crit_fn: crit_fn, fn: fn } );
+      rec.getValues = function() {
+        return gatherParams( crit_fn || default_crit_fn, desired_parent );
+       }
+      rec.notFound = function( param_path, values ) { // в параметре значение, которого нет в комбо-бокс значениях
+        // это случай вероятно, когда param_path абсолютный
       if (param_path && param_path[0] == '/') {
          let [objpath,paramname] = param_path.split("->");
          let obj = desired_parent.findByPath( objpath );
@@ -65,8 +63,30 @@ export default function setup(vz) {
            return values.indexOf( newpath );
          } else 
            return 0;
-      } // not found
+       }
+       } // not found
     }
+
+    // вот эта штука вообще ток для гуи актуальна... пока эта гуи работает.... странно все это...
+    x.trackParam(name,(v) => {
+       var [obj,param] = v.split("->");
+       var status = "ok";
+       obj = desired_parent.findByPath( obj );
+       if (!obj) status = "obj no found";
+       x.addLabel(`status-${name}`,"status: "+status);
+       //console.log("checked param ",name,"v=",v,"result=",obj)
+    })
+    /*
+    rec.on("connect",() => {
+      x.callCmd(`rescan-${name}`);
+    })
+    */
+
+    // x.setParamOption( name,"value-find-helper", rec.notFound );
+    //x.trackParamOption
+    //x.setParamOption( name, "values" );
+    // special case to convert absolute links comming from parameter values to relative links
+    
     return rec;
   }
   // здесь crit_fn по объекту должна выдать перечень имен его допустимых параметров

@@ -25,6 +25,8 @@ export default function setup( vz ) {
     var currentParamNameFrom;
     var currentParamNameTo;
     var tracode;
+
+    // tied_to_parent
     
     // вызывается когда исходный параметр изменяется
     function qqq() {
@@ -107,6 +109,8 @@ export default function setup( vz ) {
       //var sobj = obj.findByPath( objname );
       //R-LINKS-FROM-OBJ
       var sobj = obj.ns.parent.findByPath( objname );
+      // R-LINKS-FROM-OBJ
+      // var sobj = (obj.getParam("tied_to_parent") ? obj.ns.parent : obj).findByPath( objname );
       
       if (!sobj) {
         if (enable_retry) {
@@ -157,7 +161,8 @@ export default function setup( vz ) {
       var paramname = arr[1];
       //var sobj = obj.findByPath( objname );
       // R-LINKS-FROM-OBJ
-      var sobj = obj.ns.parent.findByPath( objname );    
+      var sobj = obj.ns.parent.findByPath( objname );
+      //var sobj = (obj.getParam("tied_to_parent") ? obj.ns.parent : obj).findByPath( objname );
       
       if (!sobj) {
         if (enable_retry) {
@@ -188,8 +193,10 @@ export default function setup( vz ) {
           setupToLink(true, may_retry_to, true);       // 1st true => set param value if all ok, 3rd true => signal if ok
     }
 
-    obj.addParamRef("from","",filter_from,setupFromLink, obj.ns.parent ); // R-LINKS-FROM-OBJ
-    obj.addParamRef("to","",filter_to,setupToLink, obj.ns.parent ); // R-LINKS-FROM-OBJ
+    //var references_obj = obj.getParam("tied_to_parent") ? obj.ns.parent : obj;
+    var references_obj = obj.ns.parent;
+    obj.addParamRef("from","",filter_from,setupFromLink, references_obj ); // R-LINKS-FROM-OBJ
+    obj.addParamRef("to","",filter_to,setupToLink, references_obj ); // R-LINKS-FROM-OBJ
     // note: we set here obj.ns.parent as desired parent for params pathes. probably it is only the case for tied_to_parent version
 
     obj.trackParam("manual_mode",qqq); // F-LINKS-MANUAL
@@ -305,7 +312,7 @@ vz.chain("create_obj",function( obj, opts ) {
     opts.parent = obj;
     opts.type = "link";
     //var q = vz.createLink( opts );
-    var q = vz.createObjByType( opts );
+    var q = vz.createObjByType( {...opts} );
     if (paramname && paramname.length > 0)
         q.setParam( "to", obj.getPath() + "->" + paramname, opts.manual );
         //q.setParamWithoutEvents( "to", obj.getPath() + "->" + paramname, opts.manual ); // will emit events on 'from'?

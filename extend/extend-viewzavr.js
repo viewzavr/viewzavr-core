@@ -27,7 +27,10 @@ export default function setup( vz ) {
   //vz.register_feature_set({vzf_manual_features,vzf_object_uniq_ids})
   //vz.register_feature_map({"viewzavr-object":"vzf_manual_features vzf_object_uniq_ids"});
   vz.register_feature_set({viewzavr_object_uniq_ids});
-  vz.feature( "viewzavr_object_uniq_ids");
+  vz.feature( "viewzavr_object_uniq_ids"); // под вопросом.. может достаточно и просто стыковки с объектом..
+
+  vz.register_feature_set({viewzar_translate});
+  vz.feature( "viewzar_translate"); // может на уровне обьекта это тоже?
 
   // //vz.register_feature_map({"viewzavr-object":{append:[vzf_manual_features]}})
 }
@@ -131,4 +134,11 @@ function vzf_object_uniq_ids( obj ) {
 function viewzavr_object_uniq_ids( vz ) {
    vz.register_feature_set({vzf_object_uniq_ids})
    vz.register_feature_map({"viewzavr-object":"vzf_object_uniq_ids"});
+}
+
+function viewzavr_object_uniq_ids( vz ) {
+  vz.t = function(key) {
+    return key;
+  }
+  //viewzar_translate
 }

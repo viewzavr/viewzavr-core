@@ -20,6 +20,7 @@ export default function setup(x) {
     // F-USE-PARAM-OPTIONS
     rec.getTitle = function() { 
       var t = x.getParamOption( rec.name,"title" ) || rec.name;
+      if (x.translate_text) t = x.translate_text(t);
       return t;
     }
   
@@ -78,6 +79,11 @@ export default function setup(x) {
     return x.addGui( { type: "combovalue", name: name, value: value, values: values, fn: fn, min: 0, max: values.length-1, step: 1 } );
   };
   x.addComboString = x.addComboValue;
+
+  x.addEditableCombo = function(name, value, values, fn) {
+    //x.setParamOption( name,"values",values);
+    return x.addGui( { type: "editablecombo", name: name, value: value, values: values, fn: fn } );
+  };
 
   x.addCmd = function( name, fn ) {
     // feature: when adding cmd, also add method to obj
