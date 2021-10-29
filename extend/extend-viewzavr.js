@@ -136,9 +136,23 @@ function viewzavr_object_uniq_ids( vz ) {
    vz.register_feature_map({"viewzavr-object":"vzf_object_uniq_ids"});
 }
 
-function viewzavr_object_uniq_ids( vz ) {
-  vz.t = function(key) {
+//////////////////////
+// idea - env.set_translation( table ); { key }
+//      + env sends translation-changed to all childs. => translation is based on vzPlayer, not vz...
+
+function viewzar_translate( vz ) {
+  vz.translate_text = function(key) { return key; }
+  vz.register_feature_set({viewzavr_object_translate_text})
+  vz.register_feature_map({"viewzavr-object":"viewzavr_object_translate_text"});
+  //viewzar_translate
+}
+
+function viewzavr_object_translate_text( env ) {
+  env.translate_text = function(key) {
+    if (env.ns && env.ns.parent && env.ns.parent.translate_text)
+      return env.ns.parent.translate_text( key );
+    if (env.vz != env)
+      return env.vz.translate_text( key );
     return key;
   }
-  //viewzar_translate
 }
