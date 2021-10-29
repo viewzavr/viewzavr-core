@@ -23,8 +23,12 @@ export default function setup( vz ) {
   ///////////////
   vz.register_feature_set({vzf_manual_features})
   vz.register_feature_map({"viewzavr-object":"vzf_manual_features"});
-  //vz.register_feature_map({"viewzavr-object":{append:[vzf_manual_features]}})
-  
+  //vz.register_feature_set({vzf_manual_features,vzf_object_uniq_ids})
+  //vz.register_feature_map({"viewzavr-object":"vzf_manual_features vzf_object_uniq_ids"});
+  vz.register_feature_set({viewzavr_object_uniq_ids});
+  vz.feature( "viewzavr_object_uniq_ids");
+
+  // //vz.register_feature_map({"viewzavr-object":{append:[vzf_manual_features]}})
 }
 
 
@@ -115,4 +119,15 @@ function vzf_manual_features( obj ) {
       // todo optimize
     }
   }
+}
+
+///////////////////////
+var uniq_counter = 0;
+function vzf_object_uniq_ids( obj ) {
+  obj.$vz_unique_id = uniq_counter++;
+}
+
+function viewzavr_object_uniq_ids( vz ) {
+   vz.register_feature_set({vzf_object_uniq_ids})
+   vz.register_feature_map({"viewzavr-object":"vzf_object_uniq_ids"});
 }

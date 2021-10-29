@@ -23,7 +23,7 @@ export function findObjects( root, criteria_text ) {
       function tocrit( line ) {
          var parts = line.trim().split(/\s+/);
          var and_tests = [];
-         
+          
          if (parts[0] && parts[0][0] != "@") {
             // это путь
             var regexp_string = parts[0].replaceAll("**",".+").replaceAll("*","[^\/]+")
@@ -97,10 +97,32 @@ function traverse_if( obj, fn ) {
       }
 */
 
-export function trackObjects( root, finder_func, cb ) {
+export function trackObjects0( root, finder_func, cb ) {
   function rescan2() {
     let acc = finder_func(root);
     cb(acc);
+  }
+
+  var rescan = delayed(rescan2, 25); // поставим задержку и отсечение дублей
+  rescan();
+
+  var f3 = root.on("change_in_tree", rescan);
+  return f3;
+}
+
+// версия с кешем
+export function trackObjects( root, finder_func, cb ) {
+  root.vz.feature( "viewzavr_object_uniq_ids");
+  var result_id = "";
+
+  function rescan2() {
+    let acc = finder_func(root);
+    var acc_id = acc.map( (i) => i.$vz_unique_id.toString() ).join(":");
+    if (acc_id != result_id) {
+      result_id = acc_id;
+      cb(acc);
+    }
+    //else console.log("AAAAAAAAAAAAAAAAAAAAAAAA",acc_id)
   }
 
   var rescan = delayed(rescan2, 25); // поставим задержку и отсечение дублей
