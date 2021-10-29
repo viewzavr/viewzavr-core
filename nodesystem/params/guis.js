@@ -33,6 +33,7 @@ export default function setup(x) {
       var v = x.getParamOption( rec.name,"values" ); // || rec.values;
       return v;
     };
+    //rec.valuesUpdated
 
 //  возможно, это все стоит связать с опциями параметра, т.е. setParamOption
 //    rec.set = function( optionname, value ) {
@@ -64,16 +65,17 @@ export default function setup(x) {
   };
 
   x.addSlider = function (name, value, min, max, step, fn) {
+    //x.setParamOption( name, "min", min );
     return x.addGui( { type: "slider", name: name, value: value, min: min, max: max, step: step, fn: fn } );
   }
   x.addCombo = function(name, value, values, fn) {
     x.setParamOption( name,"values",values);
-    return x.addGui( { type: "combo", name: name, value: value, values: values, fn: fn } );
+    return x.addGui( { type: "combo", name: name, value: value, values: values, fn: fn, min: 0, max: values.length-1, step: 1 } );
   };
 
   x.addComboValue = function(name, value, values, fn) {
     x.setParamOption( name,"values",values);
-    return x.addGui( { type: "combovalue", name: name, value: value, values: values, fn: fn } );
+    return x.addGui( { type: "combovalue", name: name, value: value, values: values, fn: fn, min: 0, max: values.length-1, step: 1 } );
   };
   x.addComboString = x.addComboValue;
 

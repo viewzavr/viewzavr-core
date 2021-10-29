@@ -11,6 +11,7 @@ export default function setup( vz ) {
   
   vz_add_features_to_new_objs( vz );
   vz_activate_features_from_new_obj_params( vz, (o) => o.features );
+  vz_activate_features_from_new_obj_params( vz, (o) => o.feature );
   vz_activate_features_from_new_obj_params( vz, (o) => o.params?.features );
   vz_activate_features_from_new_obj_params( vz, (o) => o.extend );
   vz_activate_features_from_new_obj_params( vz, (o) => o.params?.extend );

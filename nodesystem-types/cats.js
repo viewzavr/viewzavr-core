@@ -20,6 +20,9 @@ export default function setup(vz) {
       opts.cats = [opts.cat]
     }
 
+    if (opts.cats && typeof(opts.cats) == "string")
+      opts.cats = opts.cats.split(/\s+/);
+
     if (!opts.cats) {
       var parts = title.split(": ");
       if (parts.length >= 2) {

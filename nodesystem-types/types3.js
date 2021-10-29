@@ -25,6 +25,12 @@ var itemtypes_dic = {};
 var itemtypes_arr = [];
 
 // shorter variant
+// code is a programmatic code, used for scene dumps, so on
+// fn is a creator function
+// opts is an object with possible fields:
+//   cats - a string with space-separated categories
+//   title - a title for user
+//   
 m.addType = function( code, fn, opts={} ) {
   if (typeof(opts) === "string") opts = { title: opts };
   return m.addItemType( code, opts?.title || code, fn, {...opts, protocol2: true} );

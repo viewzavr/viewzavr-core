@@ -29,8 +29,10 @@ export default function setup(vz) {
   // name - имя параметра который является ссылкой
   // value - значение, строка в форме ПУТЬОБЪЕКТА->ИМЯПАРАМЕТРА
   // crit_fn - критерий отбора параметров, f(obj)->names
-  // fn - вызывается при измененении
+  // fn - вызывается при измененении; строка вида путь->имяпараметра
   // desired_parent - относительно кого отсчитывать пути
+
+  // todo - нужен какой-то более удобный критерий отбора объектов..
   x.addParamRef = function( name, value, crit_fn, fn, desired_parent ) {
     desired_parent ||= x;
     //var values = gatherParams( crit_fn || default_crit_fn );
@@ -39,6 +41,19 @@ export default function setup(vz) {
     rec.getValues = function() {
       return gatherParams( crit_fn || default_crit_fn, desired_parent );
     }
+    x.addCmd(`rescan-${name}`,() => {
+      var vv = gatherParams( crit_fn || default_crit_fn, desired_parent );
+      x.setParamOption( name, "values",vv);
+    });
+    /*
+    rec.on("connect",() => {
+      x.callCmd(`rescan-${name}`);
+    })
+    */
+
+    x.setParamOption( name,"value-find-helper", rec.notFound );
+    //x.trackParamOption
+    //x.setParamOption( name, "values" );
     // special case to convert absolute links comming from parameter values to relative links
     rec.notFound = function( param_path, values ) { // в параметре значение, которого нет в комбо-бокс значениях
       // это случай вероятно, когда param_path абсолютный
@@ -57,7 +72,7 @@ export default function setup(vz) {
   // здесь crit_fn по объекту должна выдать перечень имен его допустимых параметров
   
   function gatherParams( crit_fn, relative_to_obj ) {
-    var acc = [""];
+    var acc = [];
     var r = x.findRoot(); // это получается в рамках текущего куста. а соседние кусты? (подсцены, вид, плеер)?
 //    debugger;
     // var acc_full = []; // решено продублировать и полные пути - чтобы не ломать старые приложения...
@@ -66,17 +81,29 @@ export default function setup(vz) {
     // надо сделать чтобы на импорте это все произошло    
     
 
-    r.ns.traverse( function(obj) {
+    traverse_if( r, function(obj) {
       var param_names = crit_fn( obj );
+      if (!param_names) return ; // значит не надо в это поддерево
 //      if (obj.getPathRelative(x) == "/xr-control") debugger;
+      var priority = false;
+      if (param_names.priority) {
+        param_names = param_names.result;
+        priority = true;
+      }
       param_names.forEach( function(p) {
         //let objpath = relative_to_obj ? obj.getPathRelative( relative_to_obj ) : obj.getPath();
         let objpath = obj.getPathRelative( relative_to_obj );
-        acc.push( objpath + "->" + p );
+        if (priority)
+          acc.unshift( objpath + "->" + p );
+        else
+          acc.push( objpath + "->" + p );
         ///acc_full.push( obj.getPath() + "->" + p );
       });
+      return true;
     });
     //return acc.concat( acc_full );
+
+    acc.unshift( "" );
     return acc;
   }
   
@@ -127,4 +154,14 @@ export default function setup(vz) {
 */
 
 //  return x;
+}
+
+
+// поиск - обход всех детей с вызовом fn
+function traverse_if( obj, fn ) {
+  if (!fn( obj )) return;
+  var cc = obj.ns.getChildren();
+  for (var cobj of cc) {
+    traverse_if( cobj,fn );
+  }
 }
