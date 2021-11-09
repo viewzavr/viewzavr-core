@@ -141,6 +141,8 @@ export function add_features_registry( env ) {
     names = feature_names_to_arr(names);
     //if (names.split) names = names.split(/[\s,]+/);
     names.forEach( (name) => env.feature_table.apply( name, target_env, ...args ) );
+
+    return env; // mm?
   }
 
   env.register_feature = (name,f) => env.feature_table.add( name, f ); // table_name ?  
