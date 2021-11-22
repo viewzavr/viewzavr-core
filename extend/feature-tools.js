@@ -79,6 +79,11 @@
 
 //////////////////////////////////////////////////////////
 
+export function normalize_feature_name(name) {
+  name = name.replaceAll("_","-");
+  return name;
+}
+
 
 export function create_feature_table() {
   let res = { list: {} };
@@ -89,12 +94,17 @@ export function create_feature_table() {
   res.add = (name,f) => {
     res.list[name] = f;
     // microfeature: dash-names
-    name = name.replaceAll("_","-"); // i love feature-name, but it may arrive as feature_name (from functions names)
+    name = normalize_feature_name(name); // i love feature-name, but it may arrive as feature_name (from functions names)
     res.list[name] = f;
+    res.emit(`feature-registered-${name}`,name,f);
   }
   res.get = (name) => {
     return res.list[name];
   }
+
+  // вот тут у меня уже вопрос, зачем вот так вот.. вмешивать какие-то имена в окружение...
+  // вдруг конфликты будут.. почему нельзя действительно в под-окружение это добавить?
+  add_events( res );
 
   // applies feature to target_env
 
@@ -145,7 +155,10 @@ export function add_features_registry( env ) {
     return env; // mm?
   }
 
-  env.register_feature = (name,f) => env.feature_table.add( name, f ); // table_name ?  
+  env.register_feature = (name,f) => {
+    env.feature_table.add( name, f );
+    //env.emit("feature-registered",name,f);
+  } // table_name ?  
   env.get_feature_core = ( name ) => env.feature_table.get( name );
 
   // хорошо бы чтобы это тоже стало фичей.. но я до сих пор не переключил мозги, может потом смогу
@@ -233,9 +246,19 @@ export function add_appends_to_table(env) {
       }
       else
       */
-      console.error(`viewzavr features: feature '${name}' is not defined (no code and no appended features). object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
+      let error_report_tmr = setTimeout( () => {
+        console.error(`viewzavr features: feature '${name}' is not defined (no code and no appended features). object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
+      },500)
       // ну и что что фичи нет - потом может появится..
       //return;
+      var unbind1 = env.on(`feature-registered-${normalize_feature_name(name)}`,(name,newf) => {
+        console.log(`viewzavr features: feature '${name}' is post-applied!`)
+        clearTimeout( error_report_tmr );
+        newf( target_env,...args );
+        unbind1();
+      })
+      target_env.on("remove",() => unbind1() );
+      // todo то же самое с appends
     }
         
     // so, apply the feature
@@ -315,3 +338,43 @@ export function add_feature_map( env ) {
            interpret( code, n, registry_env );
       }
     }
+
+export function add_features_post_apply( env ) {
+  var o1 = env.register_feature;
+  env.register_feature = (name,f) => {
+    return o1(name,f);
+  }
+}
+
+export function add_events( env ) {
+  var nanoevents = createNanoEvents();
+  env.emit = nanoevents.emit.bind(nanoevents);
+  env.on = nanoevents.on.bind(nanoevents);
+  env.off = nanoevents.off.bind(nanoevents);
+
+  env.once = (event,cb) => {
+    let unbind_once;
+    unbind_once = nanoevents.on( event, (...args) => {
+      cb(...args)
+      if (unbind_once) unbind_once();
+      unbind_once = null;
+    } );
+    return unbind_once;
+  }
+}
+
+/////////
+export var createNanoEvents = () => ({
+  events: {},
+  emit(event, ...args) {
+    ;(this.events[event] || []).forEach(i => i(...args))
+  },
+  on(event, cb) {
+    ;(this.events[event] = this.events[event] || []).push(cb)
+    return () =>
+      (this.events[event] = (this.events[event] || []).filter(i => i !== cb))
+  },
+  off(event, cb) {
+    ;(this.events[event] = (this.events[event] || []).filter(i => i !== cb))
+  }
+})
