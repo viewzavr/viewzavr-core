@@ -34,6 +34,11 @@ export default function setup( vz ) {
       if (!currentRefTo) return;
       
       if (!currentRefFrom) return;
+
+      if (currentParamNameFrom == ".") {
+        currentRefTo.setParam( currentParamNameTo,currentRefFrom, obj.params.manual_mode );
+        return;
+      }
       
       var val = currentRefFrom ? currentRefFrom.getParam( currentParamNameFrom  ) : null;
 
@@ -122,6 +127,9 @@ export default function setup( vz ) {
       if (!paramname) {
         console.warn("Link: source param is blank",arr );
         return;
+      }
+
+      if (paramname == ".") {
       }
       
       if (sobj)

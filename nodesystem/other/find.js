@@ -43,6 +43,9 @@ export default function setup( vz ) {
     if (path[0] == "." && path[1] == "/") // example: ./child
       path = path.substring(2);
 
+    if (path[0] == "@") // find by id @name or @name/sub/path
+      return vz.find_by_id_scopes( obj,path.slice(1) )
+
     if (!Array.isArray(path)) path = path.split("/");
 
     var c1 = obj.ns.getChildByName( path[0] );
@@ -50,6 +53,22 @@ export default function setup( vz ) {
       return vz.find_by_path( c1, path.slice(1) );
     }
     return null;
+  }
+
+
+  // алгоритм поиска объекта по имени
+  vz.find_by_id_scopes = function (startobj,name,skipobj,allow_up=true ) {
+    
+    var c1 = startobj.ns.getChildByName( name );
+    if (c1) return c1;
+    for (let o of startobj.ns.getChildren()) {
+      if (o === skipobj) continue;
+      let res = vz.find_by_id_scopes( o, name, null, false );
+      if (res) return res;
+    }
+    // прошлись по дереву детей - не нашли. идем к соседям и далее рекурсивно
+    if (allow_up)
+        return vz.find_by_id_scopes( startobj.ns.parent, name, startobj, true );
   }
   
   vz.get_path = function( obj ) {
