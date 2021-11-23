@@ -18,6 +18,7 @@ export default function setup( vz ) {
   vz.createLink = function( opts ) {
     opts.name ||= "link";
     var obj = vz.createObj( opts );
+    obj.is_link = true;
 
     var currentRefFrom;
     var currentRefTo;
@@ -320,7 +321,21 @@ vz.chain("create_obj",function( obj, opts ) {
     opts.parent = obj;
     opts.type = "link";
     //var q = vz.createLink( opts );
-    var q = vz.createObjByType( {...opts} );
+
+    var q;
+    // используем существующие, заодно удалим дубликаты
+    var existing = obj.linksToParam( paramname );
+    if (existing[0]) {
+      var toremove = existing;
+      if (existing[0].params.tied_to_parent && existing[0].ns.parent == obj) {
+        q = existing[0];
+        toremove = existing.slice(1);
+      }
+      toremove.map( (e) => e.remove() )
+    }
+    
+    if (!q) q = vz.createObjByType( {...opts} );
+
     if (paramname && paramname.length > 0)
         q.setParam( "to", obj.getPath() + "->" + paramname, opts.manual );
         //q.setParamWithoutEvents( "to", obj.getPath() + "->" + paramname, opts.manual ); // will emit events on 'from'?
@@ -339,7 +354,13 @@ vz.chain("create_obj",function( obj, opts ) {
     return (howManyLinksOfParam( obj,pname,false,true ) > 0);
   }
   obj.hasLinksFromParam = function(pname) {
-    return (howManyLinksOfParam( obj,pname,false,true ) > 0);
+    return (howManyLinksOfParam( obj,pname,true,false ) > 0);
+  }
+  obj.linksToParam = function(name) {
+    return linksOfParam(obj,name,false,true);
+  }
+  obj.linksFromParam = function(name) {
+    return linksOfParam(obj,name,true,false);
   }
 
   this.orig( obj, opts );
@@ -401,6 +422,21 @@ function howManyLinksOfParam( obj,name, needfrom=true, needto=true ) {
     var paramname = arr[1];
     return (paramname == name);
   } ).length;
+}
+
+function linksOfParam( obj,name, needfrom=true, needto=true ) {
+  return (obj.links_to_me || []).filter( function(link) {
+    var i = obj.links_to_me.indexOf( link );
+    var isFrom = obj.links_to_me_direction[i];
+
+    if (isFrom && !needfrom) return;
+    if (!isFrom && !needto) return;
+
+    var nama = isFrom ? "from" : "to";
+    var arr = (link.getParam(nama) || "").split("->");
+    var paramname = arr[1];
+    return (paramname == name);
+  } );
 }
 
 

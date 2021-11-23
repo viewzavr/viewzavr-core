@@ -67,7 +67,7 @@ export default function setup( vz ) {
       if (res) return res;
     }
     // прошлись по дереву детей - не нашли. идем к соседям и далее рекурсивно
-    if (allow_up)
+    if (allow_up && startobj.ns.parent)
         return vz.find_by_id_scopes( startobj.ns.parent, name, startobj, true );
   }
   
