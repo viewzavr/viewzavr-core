@@ -88,6 +88,12 @@ function setup_params_events(x) {
   }
   x.signalParam = x.signalTracked;
 
+  x.onvalue = function(name,fn) {
+    var res = x.trackParam(name,fn);
+    if (x.params[name]) fn( x.params[name] );
+    return res;
+  }
+
   // todo сделать тут setParam?...
 }
 
@@ -106,6 +112,7 @@ function setup_params_events_old(x) {
     
     x.pevents.addEventListener(name,fn);
   }
+  
   x.untrackParam = function(name,fn) {
     // find z by fn...
     x.pevents.removeEventListener(name,fn);
