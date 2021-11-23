@@ -27,6 +27,9 @@ export default function setup( vz ) {
     var currentParamNameTo;
     var tracode;
 
+    obj.currentRefFrom = () => currentRefFrom;
+    obj.currentRefTo = () => currentRefTo;
+
     // tied_to_parent
     
     // вызывается когда исходный параметр изменяется
@@ -314,6 +317,7 @@ export default function setup( vz ) {
 
 vz.chain("create_obj",function( obj, opts ) {
 
+  // createLinkTo( { param: "someparam", from: sourcestring})
   obj.createLinkTo = function( opts ) {
     //console.log("CLT called,.opts=",opts);
     var paramname = opts.param;

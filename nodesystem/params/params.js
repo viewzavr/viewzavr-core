@@ -59,7 +59,11 @@ export default function setup(x) {
 
   x.getParamsNames = function() {
     return Object.keys( x.params );
-  }  
+  }
+
+  x.hasParam = function(name) {
+    return x.params.hasOwnProperty(name);
+  }
 
   x.setParams = function(value) {
     x.params = value;
