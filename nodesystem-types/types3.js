@@ -42,6 +42,11 @@ m.addItemType = function(code,title,fn,opts) {
   
   opts.title = title;
   // todo: fn тоже в опции, пусть все там будет
+  if (!fn) fn = (opts) => {
+    // фича имени code будет подключена в createObj
+    return m.createObj( opts );
+    //return vz.createObj( {name:"compolang",...opts,features:"simple_lang_interpreter"})
+  }
 
   // если уже был такой тип - заменяем новым
   if (itemtypes_dic[code]) {
