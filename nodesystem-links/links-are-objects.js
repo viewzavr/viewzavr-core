@@ -47,12 +47,9 @@ export default function setup( vz ) {
       var val = currentRefFrom ? currentRefFrom.getParam( currentParamNameFrom  ) : null;
 
       if (typeof(val) == "undefined" || val == null) {
-        console.warn("Links: incoming value undefined, skipping assign");
-        console.warn('me=',obj.getPath(),'currentRefFrom=',currentRefFrom ? currentRefFrom.getPath() : null,"currentParamNameFrom=",currentParamNameFrom );
-        //var v = obj.getParam("from");
-        console.warn("from=",obj.getParam("from"),"to=",obj.getParam("to"));
-        //if (currentParamNameFrom === "origin")
-//          debugger;
+//        console.warn("Links: incoming value undefined, skipping assign");
+        //console.warn('me=',obj.getPath(),'currentRefFrom=',currentRefFrom ? currentRefFrom.getPath() : null,"currentParamNameFrom=",currentParamNameFrom );
+//        console.warn("from=",obj.getParam("from"),"to=",obj.getParam("to"));
         return;
       }
       
@@ -79,6 +76,7 @@ export default function setup( vz ) {
         // IMPORTANT: need call this before setting param value (currently this is a bug)
         // update: no need to mark it internal! because of manual_mode, see below
         // currentRefTo.setParamOption( currentParamNameTo,"internal",obj.params.manual_mode ? false : true );
+        // console.log("LINK PASS VALUE TO ",currentRefTo.getPath(),currentParamNameTo)
         
         currentRefTo.setParam( currentParamNameTo,val, obj.params.manual_mode ); // F-LINKS-MANUAL
         // bug: if one invokes signal on source param, without changing param value (say by ref to array)
@@ -341,7 +339,8 @@ vz.chain("create_obj",function( obj, opts ) {
     if (!q) q = vz.createObjByType( {...opts} );
 
     if (paramname && paramname.length > 0)
-        q.setParam( "to", obj.getPath() + "->" + paramname, opts.manual );
+        q.setParam( "to", ".->" + paramname, opts.manual );
+        //q.setParam( "to", obj.getPath() + "->" + paramname, opts.manual );
         //q.setParamWithoutEvents( "to", obj.getPath() + "->" + paramname, opts.manual ); // will emit events on 'from'?
     q.setParam( "from", sourcestring );
     q.setParam( "tied_to_parent",true, opts.manual );
