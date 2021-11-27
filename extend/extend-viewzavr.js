@@ -52,8 +52,16 @@ function vz_activate_features_from_new_obj_params( vz, f_from_options ) {
   //let orig = vz.create_obj;
   vz.chain( "create_obj", function (obj,options) {
     this.orig( obj, options );
-    if (f_from_options( options ))
-      obj.extend( f_from_options( options ) );
+    if (f_from_options( options )) {
+      var ff = f_from_options( options );
+      if (typeof(ff) == "string" || Array.isArray(ff))
+        obj.feature( ff );
+      else if (typeof(ff) == "object") {    
+        for (let k of Object.keys(ff)) {
+          obj.feature( k, ff[k].params );
+        }
+      }
+    }
     return obj;
   });
 }

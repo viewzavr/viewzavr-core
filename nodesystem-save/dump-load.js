@@ -40,6 +40,10 @@ export default function setup( m ) {
     }
     // в dump должно быть поле type, оно нам все и создаст что надо
 
+    m.restoreFeatures( dump, obj, manualParamsMode );
+    // таким образом фичи имеют возможность заменить obj.restoreFromDump
+    // и стать функторами
+
     
     return new Promise( function (resolve, reject) {
         obj.restoreFromDump( dump,manualParamsMode ).then( (res) => {
@@ -74,26 +78,68 @@ export default function setup( m ) {
     }
     // в dump должно быть поле type, оно нам все и создаст что надо
 
+    m.restoreFeatures( dump, obj );
+    // таким образом фичи имеют возможность заменить obj.restoreFromDump
+    // и стать функторами
+
     obj.restoreFromDump( dump );
     return obj;
   }
-  
-  // this is made specially so obj.restoreFromDump may be overriden
-  m.restoreObjFromDump = function( dump, obj, manualParamsMode ) {
-    var h = dump.params || {};
-    var keys = Object.keys(h);
 
-    //var objismanual = obj.ismanual();
-
+  m.restoreParams = function ( dump, obj, manualParamsMode) {
     if (dump.manual) manualParamsMode = true; // такой вот прием.. а то "ручные объекты" потом не сохранить получается..
 
+    var h = dump.params || {};
+    var keys = Object.keys(h);
     keys.forEach( function(name) {
       //console.log("setting param",name,h[name]);
       obj.setParam( name, h[name], manualParamsMode ); // ставим true - в том смысле что это установка из
     });
+  }
 
-    m.removeChildrenByDump( dump, obj, manualParamsMode );
+  m.restoreFeatures = function ( dump, obj) {
     
+    // получается что здесь происходит повторный вызов obj.feature
+    // (первый в конструкторе объекта за счет опций .features)
+    // пока отменим тут 
+
+    // нет не отменим. применение фич на этапе конструкции объекта оказалось тем странно, что
+    // фичи применяются вперед, на самом базовом createObj
+
+    for (let fn of Object.keys(dump.features || {})) 
+    {
+      // тут считается что feature-code совпадает с feature-name
+      // в целом же наверняка это можно расширить до того что код нескольких фич может совпадать.
+      // но это надо тогда будет учесть и feature-tools (там отсекается повторное применение фич с одинаковым кодом)
+      obj.feature( fn, dump.features[fn].params );
+    }
+  }
+
+  m.restoreLinks = function( dump, obj ) {
+    for (var lname of Object.keys(dump.links || {})) {
+      
+      var lrec = dump.links[lname];
+      var arr = lrec.to.split("->");
+      if (arr[0] == ".")
+        obj.createLinkTo( {param: arr[1], from: lrec.from } );
+      else
+      {
+        m.createLink( {parent: obj});
+        m.setParam("to",lrec.to);
+        m.setParam("from",lrec.from);
+      }
+    }
+  }
+  
+  // this is made specially so obj.restoreFromDump may be overriden
+  m.restoreObjFromDump = function( dump, obj, manualParamsMode ) {
+    m.restoreParams( dump, obj,manualParamsMode );
+    m.restoreLinks( dump, obj,manualParamsMode );
+    m.restoreFeatures( dump, obj,manualParamsMode );
+    // тут идет дублирование restoreFeatures с createSyncFromDump, но ничего, мы переживем.
+
+    if (dump.manual) manualParamsMode = true; // такой вот прием.. а то "ручные объекты" потом не сохранить получается..
+    m.removeChildrenByDump( dump, obj, manualParamsMode );
     return m.createChildrenByDump( dump, obj, manualParamsMode );
   }
   

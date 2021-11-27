@@ -16,7 +16,7 @@ export default function setup(x) {
     rec.events.addEventListener( "visible-changed",() => {
       x.emit("gui-visible-changed",rec.name);
     } );
-*/    
+*/
 
     return res;
   };

@@ -140,6 +140,15 @@ export function create_feature_table() {
 export function feature_names_to_arr( names ) {
   if (!names || names == "") return [];
   if (names.split) names = names.split(/[\s,]+/);
+  /*
+  else
+  if (typeof(names) === "object") {
+    if (!Array.isArray(names))
+      names = Object.keys(names);
+  }
+  */
+  // тут у нас идет потеря аргументов фич.. если фичи активировались как
+  // obj.feature( { feature1: {params...}, feature2: {params...}})
   return names;
 }
 
@@ -147,8 +156,8 @@ export function feature_names_to_arr( names ) {
 export function add_features_registry( env ) {
   env.feature_table = create_feature_table();
   // here names is array of feature names, or a string in form "feature1 feature2, feature3"
-  env.feature_for = (target_env, names, ...args) => {
-    names = feature_names_to_arr(names);
+  env.feature_for = (target_env, features, ...args) => {
+    var names = feature_names_to_arr(features);
     //if (names.split) names = names.split(/[\s,]+/);
     names.forEach( (name) => env.feature_table.apply( name, target_env, ...args ) );
 
