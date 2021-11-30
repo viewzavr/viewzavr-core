@@ -88,6 +88,7 @@ export default function setup(x) {
   x.addCmd = function( name, fn ) {
     // feature: when adding cmd, also add method to obj
     x[name] = fn;
+    //x.setParam( name, (...args) => callCmd(name,...args));
 
     return x.addGui( { type: "cmd", name: name, fn: fn });
   };

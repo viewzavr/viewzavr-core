@@ -84,7 +84,9 @@ function setup_params_events(x) {
   x.trackParam = x.pevents.on.bind( x.pevents );
   x.untrackParam = x.pevents.on.bind( x.pevents );
   x.signalTracked = function(name) {
-    x.pevents.emit( name,x.getParam(name) )
+    let value = x.getParam(name);
+    x.pevents.emit( name,value );
+    x.emit('param_changed',name,value);
   }
   x.signalParam = x.signalTracked;
 

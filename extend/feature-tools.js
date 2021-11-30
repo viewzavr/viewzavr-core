@@ -92,11 +92,17 @@ export function create_feature_table() {
 
   // adds a feature record to a table
   res.add = (name,f) => {
+    console.log("feature-tools: registering feature",name)
+    var name2 = normalize_feature_name(name); // i love feature-name, but it may arrive as feature_name (from functions names)
+    if (res.list[name] || res.list[name2]) {
+      console.error("feature-tools: feature named ",name,"already resigered. skipping add");
+      return;
+    }
     res.list[name] = f;
     // microfeature: dash-names
-    name = normalize_feature_name(name); // i love feature-name, but it may arrive as feature_name (from functions names)
-    res.list[name] = f;
-    res.emit(`feature-registered-${name}`,name,f);
+    res.list[name2] = f;
+    if (f)
+        res.emit(`feature-registered-${name2}`,name2,f);
   }
   res.get = (name) => {
     return res.list[name];

@@ -68,7 +68,7 @@ function vz_activate_features_from_new_obj_params( vz, f_from_options ) {
 
 function vz_add_feature_object_to_new_objects( vz, f_from_options ) {
   //let orig = vz.create_obj;
-  vz.register_feature( "viewzavr-object", () => {} );
+  vz.register_feature( "viewzavr-object", undefined );
   vz.chain( "create_obj", function (obj,options) {
     this.orig( obj, options );
     obj.feature( "viewzavr-object" );
@@ -86,12 +86,12 @@ function vz_add_type_as_feature( vz ) {
 
   vz.chain("addItemType", function(code,title,fn,opts) {
      // зарегаем тип как фичу
-     if (!vz.get_feature_core( code )) vz.register_feature( code, () => {} );
+     if (!vz.get_feature_core( code )) vz.register_feature( code, undefined );
      var res = this.orig( code, title, fn, opts );
      // зарегаем категории как фичи (они могут появиться только после срабатывания addItemType)
      var cats = vz.getCatsByType( code );
      for (var q of cats) {
-        if (!vz.get_feature_core( q )) vz.register_feature( q, () => {} );
+        if (!vz.get_feature_core( q )) vz.register_feature( q, undefined );
      }
 
      return res;

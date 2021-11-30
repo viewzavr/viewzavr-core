@@ -50,6 +50,15 @@ export default function setup( vz ) {
 //        console.warn("Links: incoming value undefined, skipping assign");
         //console.warn('me=',obj.getPath(),'currentRefFrom=',currentRefFrom ? currentRefFrom.getPath() : null,"currentParamNameFrom=",currentParamNameFrom );
 //        console.warn("from=",obj.getParam("from"),"to=",obj.getParam("to"));
+
+        // доп хак чтобы можно было ссылаться на команды
+        if (currentRefFrom && currentRefFrom.hasCmd( currentParamNameFrom )) {
+           val = (...args) => {
+              currentRefFrom.callCmd( currentParamNameFrom, ...args );
+           }
+           currentRefTo.setParam( currentParamNameTo,val, obj.params.manual_mode );
+        }
+
         return;
       }
       
@@ -122,6 +131,7 @@ export default function setup( vz ) {
       if (!sobj) {
         if (enable_retry) {
           console.warn("Link: source obj not found! Will retry!",arr,'me=',obj.getPath() );
+          //sobj = obj.ns.parent.findByPath( objname );
           linkScannerAdd( obj );
         }
         return;
