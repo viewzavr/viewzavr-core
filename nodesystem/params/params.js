@@ -29,7 +29,8 @@ export default function setup(x) {
     else
 */
 
-    if (old != value) {
+    // iiiiimport. хорошо бы 
+    if (old != value || typeof(old) != typeof(value)) {
       x.signalTracked( name );
     }
     return x;

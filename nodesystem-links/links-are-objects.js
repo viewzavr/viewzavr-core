@@ -78,14 +78,16 @@ export default function setup( vz ) {
       */  
 
       // feature: set only if val changes; in other case, we will lose manual effect..
-      if (currentRefTo.getParam( currentParamNameTo ) != val) {
+      var curpv = currentRefTo.getParam( currentParamNameTo );
+      // вторая проверка проверяет ситуацию такую в js: '' == 0 оказывается 
+      if (curpv != val || typeof(curpv) != typeof(val)) {
         // feature: if setting param value by link, mark it as internal
         // so this value will not go to dump
         // + F-LINKS-MANUAL
         // IMPORTANT: need call this before setting param value (currently this is a bug)
         // update: no need to mark it internal! because of manual_mode, see below
         // currentRefTo.setParamOption( currentParamNameTo,"internal",obj.params.manual_mode ? false : true );
-        // console.log("LINK PASS VALUE TO ",currentRefTo.getPath(),currentParamNameTo)
+         console.log("LINK PASS VALUE TO ",currentRefTo.getPath(),currentParamNameTo,val)
         
         currentRefTo.setParam( currentParamNameTo,val, obj.params.manual_mode ); // F-LINKS-MANUAL
         // bug: if one invokes signal on source param, without changing param value (say by ref to array)

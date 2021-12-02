@@ -9,6 +9,7 @@ export default function setup(m) {
 
     // вопрос, это получается сигнал то на объекте у нас а не на дереве
     // ну пусть так пока будет
+    // это сигнал наверх
     obj[tree_name].signalOnTree = function( ...args ) {
       var p = obj;
       while (p) {

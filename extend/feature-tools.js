@@ -86,15 +86,17 @@ export function normalize_feature_name(name) {
 
 
 export function create_feature_table() {
-  let res = { list: {} };
+  let res = { list: {}
+            };
   // feature_list in form feature_id -> feature_function( target_env ).
   // here target_env is some object, say viewzavr or viewzavr's object.
 
   // adds a feature record to a table
   res.add = (name,f) => {
-    console.log("feature-tools: registering feature",name)
+    //console.log("feature-tools: registering feature",name)
     var name2 = normalize_feature_name(name); // i love feature-name, but it may arrive as feature_name (from functions names)
-    if (res.list[name] || res.list[name2]) {
+    var existing = res.list[name] || res.list[name2]; 
+    if (existing && !existing.may_override) {
       console.error("feature-tools: feature named ",name,"already resigered. skipping add");
       return;
     }
@@ -102,7 +104,7 @@ export function create_feature_table() {
     // microfeature: dash-names
     res.list[name2] = f;
     if (f)
-        res.emit(`feature-registered-${name2}`,name2,f);
+       res.emit(`feature-registered-${name2}`,name2,f);
   }
   res.get = (name) => {
     return res.list[name];
@@ -268,19 +270,22 @@ export function add_appends_to_table(env) {
       //return;
       var unbind1 = env.on(`feature-registered-${normalize_feature_name(name)}`,(name,newf) => {
         console.log(`viewzavr features: feature '${name}' is post-applied!`)
+        unbind1();
         clearTimeout( error_report_tmr );
         newf( target_env,...args );
-        unbind1();
       })
       target_env.on("remove",() => unbind1() );
       // todo то же самое с appends
     }
         
     // so, apply the feature
-    if (f) 
+    if (f) {
+      if (f.func) f = f.func;
       f( target_env,...args );
+    }
     if (appends) 
       env.run_appends( name, target_env, ...args );
+    // todo: добавить вызов новых аппендов
     return true;
    }
 }

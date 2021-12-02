@@ -45,6 +45,7 @@ export default function setup(vz) {
       //var vv = gatherParams( crit_fn || default_crit_fn, desired_parent );
       //x.setParamOption( name, "values",vv);
       setrec();
+      update_status();
     });
     x.addLabel(`status-${name}`);
 
@@ -68,25 +69,20 @@ export default function setup(vz) {
     }
 
     // вот эта штука вообще ток для гуи актуальна... пока эта гуи работает.... странно все это...
-    x.trackParam(name,(v) => {
-       var [obj,param] = v.split("->");
-       var status = "ok";
-       obj = desired_parent.findByPath( obj );
-       if (!obj) status = "obj no found";
-       x.addLabel(`status-${name}`,"status: "+status);
+    x.trackParam(name,update_status)
+    function update_status() {
+       var v = x.getParam(name);
+       if (v.split) {
+        var [obj,param] = v.split("->");
+        var status = "ok";
+        obj = desired_parent.findByPath( obj );
+        if (!obj) status = "obj no found";
+        x.setParam(`status-${name}`,"status: "+status);
+      }
+        else x.setParam(`status-${name}`,"status: invalid value");
        //console.log("checked param ",name,"v=",v,"result=",obj)
-    })
-    /*
-    rec.on("connect",() => {
-      x.callCmd(`rescan-${name}`);
-    })
-    */
+    }
 
-    // x.setParamOption( name,"value-find-helper", rec.notFound );
-    //x.trackParamOption
-    //x.setParamOption( name, "values" );
-    // special case to convert absolute links comming from parameter values to relative links
-    
     return rec;
   }
   // здесь crit_fn по объекту должна выдать перечень имен его допустимых параметров
