@@ -58,7 +58,7 @@ function vz_activate_features_from_new_obj_params( vz, f_from_options ) {
         obj.feature( ff );
       else if (typeof(ff) == "object") {    
         for (let k of Object.keys(ff)) {
-          obj.feature( k, ff[k].params );
+          obj.feature( k, ff[k].params || {}, options );
         }
       }
     }
