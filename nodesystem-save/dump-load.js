@@ -93,6 +93,10 @@ export default function setup( m ) {
     var keys = Object.keys(h);
     keys.forEach( function(name) {
       //console.log("setting param",name,h[name]);
+
+      // F-KEEP-EXISTING-PARAMS
+      if (dump.keepExistingParams && obj.hasParam( name )) return;
+
       obj.setParam( name, h[name], manualParamsMode ); // ставим true - в том смысле что это установка из
     });
   }
@@ -145,8 +149,14 @@ export default function setup( m ) {
     // тут идет дублирование restoreFeatures с createSyncFromDump, но ничего, мы переживем.
 
     if (dump.manual) manualParamsMode = true; // такой вот прием.. а то "ручные объекты" потом не сохранить получается..
-    m.removeChildrenByDump( dump, obj, manualParamsMode );
-    return m.createChildrenByDump( dump, obj, manualParamsMode );
+
+    if (!dump.keepExistingChildren)
+        m.removeChildrenByDump( dump, obj, manualParamsMode );
+    var result =  m.createChildrenByDump( dump, obj, manualParamsMode );
+
+    
+
+    return result;
   }
   
   m.removeChildrenByDump = function( dump, obj, manualParamsMode )

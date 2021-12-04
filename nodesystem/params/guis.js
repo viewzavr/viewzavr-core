@@ -90,7 +90,17 @@ export default function setup(x) {
     x[name] = fn;
     //x.setParam( name, (...args) => callCmd(name,...args));
 
-    return x.addGui( { type: "cmd", name: name, fn: fn });
+
+    var res = x.addGui( { type: "cmd", name: name, fn: fn });
+
+    // F-PENDING-CMDS
+    if (x.pendingCmds && x.pendingCmds[name]) {
+      var args = x.pendingCmds[name];
+      delete x.pendingCmds[name];
+      fn( ...args );
+    }
+
+    return res;
   };
 
   x.hasCmd = function(name) {
@@ -99,8 +109,15 @@ export default function setup(x) {
   }
   x.callCmd = function( name, ...args ) {
     let gui = x.getGui( name );
-    if (gui?.type === "cmd")
+    if (gui?.type === "cmd") {
       return gui.fn.apply( gui.fn, args );
+    }
+    else
+    {
+        // F-PENDING-CMDS
+        x.pendingCmds ||= {};
+        x.pendingCmds[name] = [args];
+    }
   }
   
   x.addColor = function( name, value, fn ) {

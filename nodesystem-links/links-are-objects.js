@@ -95,7 +95,6 @@ export default function setup( vz ) {
         // and maybe send it manually
        }
       
-      
 
     }
     
@@ -217,8 +216,13 @@ export default function setup( vz ) {
 
     //var references_obj = obj.getParam("tied_to_parent") ? obj.ns.parent : obj;
     var references_obj = obj.ns.parent;
-    obj.addParamRef("from","",filter_from,setupFromLink, references_obj ); // R-LINKS-FROM-OBJ
-    obj.addParamRef("to","",filter_to,setupToLink, references_obj ); // R-LINKS-FROM-OBJ
+
+    obj.feature("delayed");
+    var setupFromLink_DELAYED = obj.delayed( () => setupFromLink(true) );
+    var setupToLink_DELAYED = obj.delayed( () => setupToLink(true) );
+
+    obj.addParamRef("from","",filter_from,setupFromLink_DELAYED, references_obj ); // R-LINKS-FROM-OBJ
+    obj.addParamRef("to","",filter_to,setupToLink_DELAYED, references_obj ); // R-LINKS-FROM-OBJ
     // note: we set here obj.ns.parent as desired parent for params pathes. probably it is only the case for tied_to_parent version
 
     obj.trackParam("manual_mode",qqq); // F-LINKS-MANUAL

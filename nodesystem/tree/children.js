@@ -21,6 +21,7 @@ export default function setup( obj, nf ) {
     if (cnf.parent)  cnf.parent.ns.forgetChild( cobj );
 
     if (!obj.hasChild( cobj)) obj.children.push( cobj );
+    
     if (!name) {
       console.error("WARNING: appendChild: no name specified");
     }
