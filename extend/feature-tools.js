@@ -98,6 +98,7 @@ export function create_feature_table() {
     var existing = res.list[name] || res.list[name2]; 
     if (existing && !existing.may_override) {
       console.error("feature-tools: feature named ",name,"already resigered. skipping add");
+      //console.trace();
       return;
     }
     res.list[name] = f;

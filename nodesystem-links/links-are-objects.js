@@ -94,6 +94,8 @@ export default function setup( vz ) {
         // here we hide that propagation. we have to somehow understand that event will not propagate
         // and maybe send it manually
        }
+//       else
+//        console.log("LINK is not passed, vals and types same",currentRefTo.getPath(),currentParamNameTo,val)
       
 
     }
@@ -117,6 +119,13 @@ export default function setup( vz ) {
       if (!obj.ns.parent) return; // seems this link is abandoned
       
       var arr = v.split("->");
+
+      // оказалось полезно уметь давать ссылку типа from не с параметра
+      // а с объекта. в том смысле что если мы хотим объект по ссылке передать...
+      // (конкретно это понадобилось для объекта рендеринга параметров)
+      if (arr.length == 1)
+          arr.push("."); // ссылка просто на объект, обозначаем внутри как .
+
       if (arr.length != 2) {
         console.error("Link: source arr length not 2!",arr );
         return;
