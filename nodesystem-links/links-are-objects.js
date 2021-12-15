@@ -132,11 +132,13 @@ export default function setup( vz ) {
       }
       var objname = arr[0];
       var paramname = arr[1];
-      //var sobj = obj.findByPath( objname );
-      //R-LINKS-FROM-OBJ
-      var sobj = obj.ns.parent.findByPath( objname );
+      
       // R-LINKS-FROM-OBJ
+      // var sobj = obj.ns.parent.findByPath( objname );
+      // R-LINKS-FROM-OBJ + R-LINKS-DIFFER
       // var sobj = (obj.getParam("tied_to_parent") ? obj.ns.parent : obj).findByPath( objname );
+      var start_from_obj = (obj.getParam("tied_to_parent") ? obj.ns.parent : obj);
+      var sobj = start_from_obj.findByPath( objname );
       
       if (!sobj) {
         if (enable_retry) {
@@ -191,8 +193,10 @@ export default function setup( vz ) {
       var paramname = arr[1];
       //var sobj = obj.findByPath( objname );
       // R-LINKS-FROM-OBJ
-      var sobj = obj.ns.parent.findByPath( objname );
-      //var sobj = (obj.getParam("tied_to_parent") ? obj.ns.parent : obj).findByPath( objname );
+      //var sobj = obj.ns.parent.findByPath( objname );
+      // R-LINKS-FROM-OBJ + R-LINKS-DIFFER
+      var start_from_obj = (obj.getParam("tied_to_parent") ? obj.ns.parent : obj);
+      var sobj = start_from_obj.findByPath( objname );
       
       if (!sobj) {
         if (enable_retry) {

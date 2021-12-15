@@ -133,3 +133,13 @@ In other way, it may be non-user friendly to generate name only by type.
 
 # R-REMOVEPARAM-REMOVES-GUI
 obj.removeParam should remove gui record also, so it is not visible in gui editor.
+
+# R-LINKS-FROM-OBJ
+Полезно отсчитывать относительные пути для ссылки, раз уж она объект,
+не от объекта ссылки, а от объекта к которому она закреплена
+(tied_to_parent)
+
+# R-LINKS-DIFFER
+Но оказалось что при ручном размещении ссылки (не tied_to_parent)
+все-таки удобно если отсчет ведется от объека ссылки
+(раз уж они у нас объекты) а не от родителя (как в R-LINKS-FROM-OBJ)
