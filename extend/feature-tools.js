@@ -168,9 +168,12 @@ export function add_features_registry( env ) {
   env.feature_for = (target_env, features, ...args) => {
     var names = feature_names_to_arr(features);
     //if (names.split) names = names.split(/[\s,]+/);
-    names.forEach( (name) => env.feature_table.apply( name, target_env, ...args ) );
+    var result;
+    names.forEach( (name) => {
+       result = env.feature_table.apply( name, target_env, ...args );
+    } );
 
-    return env; // mm?
+    return result;
   }
 
   env.register_feature = (name,f) => {
@@ -280,14 +283,15 @@ export function add_appends_to_table(env) {
     }
         
     // so, apply the feature
+    var result = true;
     if (f) {
       if (f.func) f = f.func;
-      f( target_env,...args );
+      result = f( target_env,...args );
     }
     if (appends) 
       env.run_appends( name, target_env, ...args );
     // todo: добавить вызов новых аппендов
-    return true;
+    return result;
    }
 }
 
