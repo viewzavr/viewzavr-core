@@ -10,6 +10,7 @@ export default function setup(x) {
   var orig = x.addGui;
   x.addGui = function(rec) {
     var res = orig(rec);
+    //console.log("______ GPN emit gui-added",rec.name,x.getPath())
     x.emit("gui-added",rec.name);
 
 /*

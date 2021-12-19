@@ -17,6 +17,8 @@ export function findObjects( root, criteria_text ) {
       let acc = [];
       if (!criteria_text || criteria_text.length === 0) return acc;
 
+      console.log("FIND_OBJECTS",criteria_text)
+
       let lines = criteria_text.split(/[\n|]+/);
       let or_criterias = lines.map( line => tocrit(line) )
 
@@ -24,24 +26,27 @@ export function findObjects( root, criteria_text ) {
          var parts = line.trim().split(/\s+/);
          var and_tests = [];
           
-         if (parts[0] && parts[0][0] != "@") {
+         // первая часть это про путь
+         if (parts[0]) {
             // это путь
             var regexp_string = parts[0].replaceAll("**",".+").replaceAll("*","[^\/]+")
             var re = new RegExp( regexp_string );
             and_tests.push( (obj) => {
               //console.log("HHHHHHHHHH obj.getPath()=",obj.getPath(),re,re.test( obj.getPath() ))
+              // получается что поиск объекта по пути "@name" не сработает..
               return re.test( obj.getPath() ) 
             })
             parts.shift();
          }
 
+         // остальные части про требуемые фичи
          var need_features = [];
          for (let p of parts) {
-            if (p[0] == "@")
-                need_features.push( p.slice(1) );
+            if (p == "//") break;
+            need_features.push( p );
          }
          if (need_features.length > 0)
-            and_tests.push( function(obj) { 
+            and_tests.push( function(obj) {
               for (let f of need_features)
                 if (!obj.is_feature_applied(f)) return false;
               return true;

@@ -91,10 +91,52 @@ function setup_params_events(x) {
   }
   x.signalParam = x.signalTracked;
 
+
   x.onvalue = function(name,fn) {
     var res = x.trackParam(name,fn);
     if (x.params[name]) fn( x.params[name] );
     return res;
+  }
+
+  x.onvalues = function(names,fn) {
+    if (!Array.isArray(names)) names=[names];
+
+    // вызов
+    function fn2() {
+       var vals = [];
+       for (let name of names) 
+        vals.push( x.params[name] );
+       //    fn.call( undefined, ...vals ); // зис им перебиваем конеш
+       // может тут тоже требовать чтобы все было, до кучи уж
+       fn( ...vals );
+    }
+    // если все ненулевые значения - сработаем сразу
+    function call_if_all_exist() {
+      var all_params_exist=true;
+      for (let name of names) {
+         if (typeof(x.params[name]) == "undefined" ) {
+           all_params_exist = false;
+         }
+      }
+      if (all_params_exist) 
+        fn2();
+    }
+
+    var fn2_delayed = _delayed( call_if_all_exist );    
+
+    var acc = [];
+    for (let name of names) {
+      var res = x.trackParam(name,fn2_delayed);
+      acc.push( res );
+    }
+    // всеобщая отписка
+    let resall = () => {
+      acc.forEach( (x) => x() );
+    }
+
+    call_if_all_exist();
+
+    return resall;
   }
 
   // todo сделать тут setParam?...
@@ -136,4 +178,19 @@ function setup_params_events_old(x) {
     x.pevents = undefined; // to help remove things in gc
   });
   */  
+}
+
+
+function _delayed( f,delay=0 ) {
+  var t;
+
+  var res = function() {
+    if (t) return;
+    t = setTimeout( () => {
+      t=null;
+      f();
+    },delay);
+  }
+
+  return res;
 }
