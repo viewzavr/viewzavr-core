@@ -58,10 +58,14 @@ export default function setup( vz ) {
     // ну не вызывают такие точки - и ладно.
     obj.on("name_changed", () => {
       obj.$vz_path = undefined;
+      // короче выяснилось что удобно всегда видеть путь при отладке в браузере
+      vz.get_path( obj ); 
     })
 
     obj.on("parent_change", () => {
       obj.$vz_path = undefined;
+      // короче выяснилось что удобно всегда видеть путь при отладке в браузере
+      vz.get_path( obj ); 
     })
 
   };

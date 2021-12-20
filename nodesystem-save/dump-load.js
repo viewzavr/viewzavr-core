@@ -150,13 +150,15 @@ export default function setup( m ) {
 
     if (dump.manual) manualParamsMode = true; // такой вот прием.. а то "ручные объекты" потом не сохранить получается..
 
-    if (!dump.keepExistingChildren)
-        m.removeChildrenByDump( dump, obj, manualParamsMode );
-    var result =  m.createChildrenByDump( dump, obj, manualParamsMode );
+    // выделяем восстановление детей в отдельный метод в контексте obj
+    // чтобы фичи объекта могли успеть его поменять (конкретно это надо было для repeater)
+    obj.restoreChildrenFromDump ||= (dump, ismanual) => {
+      if (!dump.keepExistingChildren)
+          m.removeChildrenByDump( dump, obj, ismanual );
+      return m.createChildrenByDump( dump, obj, ismanual );
+    }
 
-    
-
-    return result;
+    return obj.restoreChildrenFromDump( dump, manualParamsMode );
   }
   
   m.removeChildrenByDump = function( dump, obj, manualParamsMode )
@@ -208,7 +210,13 @@ export default function setup( m ) {
         promises_arr.push( Promise.reject() );
         return;
       }
-      var r = m.createSyncFromDump( c[name], cobj, obj, name, manualParamsMode );
+      /// история из keepExistingChildren по сохранению объектов-детей, которые уже созданы другими фичами
+      /// данного окружения. мысль - распространяем keepExistingChildren на все восстанавливаемое поддерево.
+      var child_dump = c[name];
+      if (dump.keepExistingChildren)
+          child_dump.keepExistingChildren = dump.keepExistingChildren;
+
+      var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode );
       promises_arr.push( r );
       
       // the only way to catch errors is here, allSettled will ignore that error

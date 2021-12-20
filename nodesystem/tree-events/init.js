@@ -26,6 +26,7 @@ export default function setup(m) {
       obj.signal("appendChild", cobj);
       obj.signal("childrenChanged", cobj);
       cobj.signal("parent_change");
+      cobj.signal("parentChanged");
       obj[tree_name].signalOnTree("change_in_tree");
       return res;
     }
@@ -42,6 +43,7 @@ export default function setup(m) {
       obj.signal("forgetChild", cobj);
       obj.signal("childrenChanged", cobj);
       cobj.signal("parent_change", cobj );
+      cobj.signal("parentChanged", cobj );
       obj[tree_name].signalOnTree("change_in_tree");
       return res;
     }
