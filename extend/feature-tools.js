@@ -187,7 +187,12 @@ export function add_features_registry( env ) {
   env.register_feature_set = ( featureset ) => {
     for (var name of Object.keys(featureset)) {
         if (name == "setup") continue;
-        env.register_feature( name, featureset[name] );
+        // фича если идет префикс feature_ то выкусить.
+        // иначе не удается в функциях использовать красивые имена типа if
+        var reging_name = name;
+        if (reging_name.startsWith("feature_"))
+            reging_name = reging_name.slice( 8 );
+        env.register_feature( reging_name, featureset[name] );
     }
   }
 }
