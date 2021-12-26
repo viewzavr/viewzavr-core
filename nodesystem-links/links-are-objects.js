@@ -87,7 +87,7 @@ export default function setup( vz ) {
         // IMPORTANT: need call this before setting param value (currently this is a bug)
         // update: no need to mark it internal! because of manual_mode, see below
         // currentRefTo.setParamOption( currentParamNameTo,"internal",obj.params.manual_mode ? false : true );
-        // console.log("LINK PASS VALUE TO ",currentRefTo.getPath(),currentParamNameTo,val)
+        // console.log("LINK ",obj.getPath(),"PASS VALUE TO ",currentRefTo.getPath(),currentParamNameTo,val,"from",currentRefFrom.getPath(),currentParamNameFrom)
         
         currentRefTo.setParam( currentParamNameTo,val, obj.params.manual_mode ); // F-LINKS-MANUAL
         // bug: if one invokes signal on source param, without changing param value (say by ref to array)
@@ -119,7 +119,7 @@ export default function setup( vz ) {
       if (!obj.ns.parent) return; // seems this link is abandoned
 
       if (!v.split) {
-        console.error("Link: invalid 'from' value. v=",v);
+        console.error("Link: invalid 'from' path value. v=",v,"link path=",obj.getPath());
         return;
       }
       
