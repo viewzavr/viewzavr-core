@@ -275,11 +275,12 @@ export function add_appends_to_table(env) {
       let ms = 5000;
       let error_report_tmr = setTimeout( () => {
         console.error(`viewzavr features: feature '${name}' is not defined (no code and no appended features) even after ${ms}ms timeout. object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
+        // todo поставить тут проверку что еще может что-то загружается.. а то таймаут это не о чем
       },ms)
       // ну и что что фичи нет - потом может появится..
       //return;
       var unbind1 = env.on(`feature-registered-${normalize_feature_name(name)}`,(name,newf) => {
-        console.log(`viewzavr features: feature '${name}' is post-applied!`)
+        //console.log(`viewzavr features: feature '${name}' is post-applied!`)
         unbind1();
         clearTimeout( error_report_tmr );
         newf( target_env,...args );
