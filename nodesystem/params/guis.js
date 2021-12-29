@@ -140,9 +140,18 @@ export default function setup(x) {
     return x.addGui( { type: "label", name: name, value: value, fn: fn });
     //return x.addGui( { type: "label", name: name, value: value, fn: fn, forceUseGuiValue: true });
   };
+
+/*
+  x.addStatus = function( name, value, fn ) {
+    x.setParamOption( name,"internal",true ); // R-DO-NOT-SAVE-LABEL-VALUE
+    return x.addGui( { type: "status", name: name, value: value, fn: fn });
+  };
+*/  
+
 //  x.addUrl = function( name, value, fn ) {
 //    return x.addGui( { type: "url", name: name, value: value, fn: fn });
 //  };
+
   x.addFile = function( name, value, fn ) {
     return x.addGui( { type: "file", name: name, value: value, fn: fn });
   };
