@@ -131,12 +131,14 @@ export default function setup( m ) {
       var lrec = dump.links[lname];
       var arr = lrec.to.split("->");
       if (arr[0] == ".")
-        obj.createLinkTo( {param: arr[1], from: lrec.from } );
+        obj.createLinkTo( {param: arr[1], from: lrec.from, name: "arg_link_to" } );
       else
       {
-        m.createLink( {parent: obj});
+        m.createLink( {parent: obj, name: "arg_link"});
         m.setParam("to",lrec.to);
         m.setParam("from",lrec.from);
+        // крайне важно давать имена тут ссылкам (типа arg_...) потому что иначе они смешиваются со ссылками
+        // задаваемыми через children и начинают с ними конфликтовать по именам (перезаписывают их)
       }
     }
   }
