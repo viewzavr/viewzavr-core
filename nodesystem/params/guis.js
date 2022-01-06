@@ -116,7 +116,7 @@ export default function setup(x) {
     {
         // F-PENDING-CMDS
         x.pendingCmds ||= {};
-        x.pendingCmds[name] = [args];
+        x.pendingCmds[name] = [...args];
     }
   }
   

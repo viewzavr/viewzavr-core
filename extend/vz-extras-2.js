@@ -81,8 +81,8 @@ export function find_track(obj) {
 
 /////////////////////////////////////////////////////////////////////   
 
-export function delayed( env ) {
-  env.delayed = _delayed;
+export function delayed( env, feature_env ) {
+  feature_env.delayed = _delayed;
 }
 
 /////////////////////////////////////////////////////////////////////   

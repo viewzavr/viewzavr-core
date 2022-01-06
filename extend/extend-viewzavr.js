@@ -10,12 +10,14 @@ export default function setup( vz ) {
   FT.add_create_env( vz, vz );
   
   vz_add_features_to_new_objs( vz );
+  /* оказывается вредно вроде как..
   vz_activate_features_from_new_obj_params( vz, (o) => o.features );
   vz_activate_features_from_new_obj_params( vz, (o) => o.feature );
   vz_activate_features_from_new_obj_params( vz, (o) => o.params?.features );
   vz_activate_features_from_new_obj_params( vz, (o) => o.params?.feature );
   vz_activate_features_from_new_obj_params( vz, (o) => o.extend );
   vz_activate_features_from_new_obj_params( vz, (o) => o.params?.extend );
+  */
   // потребность "фича object на новых объектах" => можно создавать новые объекты вообще только из фич
   vz_add_feature_object_to_new_objects( vz );
 

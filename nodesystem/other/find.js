@@ -39,7 +39,16 @@ export default function setup( vz ) {
       return obj.master_env?.ns?.parent || obj.ns.parent;
       //return obj.lexicalParent || obj.ns.parent || obj.master_env;
     }
-    if (path == "." || path == "") { // example: .
+    if (path == ".") { // example: .
+      //return obj;
+      return obj.master_env || obj;
+    }
+    if (path == "")
+      return obj;
+    
+    // // F-FEAT-PARAMS
+    if (path == "~") { // example: ~
+      //return obj.master_env || obj;
       return obj;
     }
     if (path[0] == "." && path[1] == "/") // example: ./child

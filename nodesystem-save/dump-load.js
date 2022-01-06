@@ -138,11 +138,13 @@ export default function setup( m ) {
 
     // а теперь фиче-листы... F-FEAT-PARAMS
     // restoreFeatures вызывается многократно, и если от однократных фич у нас есть защита то тут нет
-    if (!obj.features_list_is_restored) {
+    obj.features_list_is_restored ||= new Set();
+    if (!obj.features_list_is_restored.has(dump.features_list)) {
       var arr = [];
       for (let fr of (dump.features_list || [])) 
       {
          fr.feature_of_env = obj;
+         //fr.keepExistingChildren = true; // странно это все...
          let feature_obj = m.createSyncFromDumpNow( fr, null, null, fr.$name );
          arr.push( feature_obj );
          //feature_obj.lexialParent = obj;
@@ -155,8 +157,9 @@ export default function setup( m ) {
          
          feature_obj.$feature_name = fr.$name || "some_feature"; /// ......
       }
-      obj.features_list_is_restored=true;
-      obj.$feature_list_envs = arr;
+      obj.features_list_is_restored.add( dump.features_list ) ;
+      obj.$feature_list_envs = (obj.$feature_list_envs || []).concat( arr );
+      // тут бы списочег...
       //obj.setParam("feature_list_envs",arr);
     }
 
@@ -256,11 +259,14 @@ export default function setup( m ) {
         promises_arr.push( Promise.reject() );
         return;
       }
+
       /// история из keepExistingChildren по сохранению объектов-детей, которые уже созданы другими фичами
       /// данного окружения. мысль - распространяем keepExistingChildren на все восстанавливаемое поддерево.
       var child_dump = c[name];
       if (dump.keepExistingChildren)
           child_dump.keepExistingChildren = dump.keepExistingChildren;
+
+      if (dump.keepExistingChildren) cobj = null; // R-NEW-CHILDREN
 
       var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode );
       promises_arr.push( r );

@@ -39,7 +39,7 @@ export default function setup( vz ) {
       
       if (!currentRefFrom) return;
 
-      if (currentParamNameFrom == ".") {
+      if (currentParamNameFrom == "." || currentParamNameFrom == "~") {
         currentRefTo.setParam( currentParamNameTo,currentRefFrom, obj.params.manual_mode );
         return;
       }
@@ -129,7 +129,7 @@ export default function setup( vz ) {
       // а с объекта. в том смысле что если мы хотим объект по ссылке передать...
       // (конкретно это понадобилось для объекта рендеринга параметров)
       if (arr.length == 1)
-          arr.push("."); // ссылка просто на объект, обозначаем внутри как .
+          arr.push("~"); // ссылка просто на объект, обозначаем внутри как .
 
       if (arr.length != 2) {
         console.error("Link: source arr length not 2!",arr );
@@ -158,7 +158,7 @@ export default function setup( vz ) {
         return;
       }
 
-      if (paramname == ".") {
+      if (paramname == "~") {
       }
       
       if (sobj)
@@ -387,7 +387,7 @@ vz.chain("create_obj",function( obj, opts ) {
     if (!q) q = vz.createObjByType( {...opts} );
 
     if (paramname && paramname.length > 0)
-        q.setParam( "to", ".->" + paramname, opts.manual );
+        q.setParam( "to", "~->" + paramname, opts.manual );
         //q.setParam( "to", obj.getPath() + "->" + paramname, opts.manual );
         //q.setParamWithoutEvents( "to", obj.getPath() + "->" + paramname, opts.manual ); // will emit events on 'from'?
     q.setParam( "from", sourcestring );
