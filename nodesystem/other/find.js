@@ -35,7 +35,9 @@ export default function setup( vz ) {
       return vz.find_by_path( obj.ns.parent, path.substring(3) );
     }
     if (path == "..") {    // example: ..
-      return obj.ns.parent;
+      // F-FEAT-PARAMS
+      return obj.master_env?.ns?.parent || obj.ns.parent;
+      //return obj.lexicalParent || obj.ns.parent || obj.master_env;
     }
     if (path == "." || path == "") { // example: .
       return obj;
@@ -55,7 +57,6 @@ export default function setup( vz ) {
     return null;
   }
 
-
   // алгоритм поиска объекта по имени
   vz.find_by_id_scopes = function (startobj,name,skipobj,allow_up=true ) {
     
@@ -66,13 +67,25 @@ export default function setup( vz ) {
       let res = vz.find_by_id_scopes( o, name, null, false );
       if (res) return res;
     }
+
     // прошлись по дереву детей - не нашли. идем к соседям и далее рекурсивно
+
+    if (allow_up && startobj.master_env) // F-FEAT-PARAMS
+        return vz.find_by_id_scopes( startobj.master_env, name, startobj, true );
+    if (allow_up && startobj.lexicalParent)
+        return vz.find_by_id_scopes( startobj.lexicalParent, name, startobj, true );      
+    else
     if (allow_up && startobj.ns.parent)
         return vz.find_by_id_scopes( startobj.ns.parent, name, startobj, true );
   }
   
   vz.get_path = function( obj ) {
     if (!obj) return undefined;
+
+    if (obj.master_env) { // F-FEAT-PARAMS
+       return vz.get_path( obj.master_env ) + ":" + obj.$feature_name;
+    }
+
     if (!obj.ns.parent) return "/";
     
     var root = obj.findRoot();

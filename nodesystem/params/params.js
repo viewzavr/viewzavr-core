@@ -19,6 +19,7 @@ export default function setup(x) {
   }
 
   x.setParam = function(name,value) {
+    //if (name == "width" && value == "10px") debugger;
 
     var old = x.setParamWithoutEvents( name, value );
     

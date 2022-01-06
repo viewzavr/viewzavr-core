@@ -40,6 +40,12 @@ export default function setup( m ) {
     }
     // в dump должно быть поле type, оно нам все и создаст что надо
 
+    // F-FEAT-PARAMS
+    if (dump.feature_of_env) {
+      obj.master_env = dump.feature_of_env;
+      //obj.lexicalParent = dump.feature_of_env;
+    }
+
     m.restoreFeatures( dump, obj, manualParamsMode );
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
     // и стать функторами
@@ -77,6 +83,12 @@ export default function setup( m ) {
       }
     }
     // в dump должно быть поле type, оно нам все и создаст что надо
+
+    // F-FEAT-PARAMS
+    if (dump.feature_of_env) {
+      obj.master_env = dump.feature_of_env;
+      //obj.lexicalParent = dump.feature_of_env;
+    }
 
     m.restoreFeatures( dump, obj );
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
@@ -123,6 +135,31 @@ export default function setup( m ) {
       // но это надо тогда будет учесть и feature-tools (там отсекается повторное применение фич с одинаковым кодом)
       obj.feature( fn, dump.features[fn].params );
     }
+
+    // а теперь фиче-листы... F-FEAT-PARAMS
+    // restoreFeatures вызывается многократно, и если от однократных фич у нас есть защита то тут нет
+    if (!obj.features_list_is_restored) {
+      var arr = [];
+      for (let fr of (dump.features_list || [])) 
+      {
+         fr.feature_of_env = obj;
+         let feature_obj = m.createSyncFromDumpNow( fr, null, null, fr.$name );
+         arr.push( feature_obj );
+         //feature_obj.lexialParent = obj;
+         //feature_obj.master_env = obj;
+         //obj.feature_
+         // todo надо бы их в дерево посадить... тем более там по именам потом захочется ходить..
+         obj.on("remove",() => {
+            feature_obj.remove();
+         })
+         
+         feature_obj.$feature_name = fr.$name || "some_feature"; /// ......
+      }
+      obj.features_list_is_restored=true;
+      obj.$feature_list_envs = arr;
+      //obj.setParam("feature_list_envs",arr);
+    }
+
   }
 
   m.restoreLinks = function( dump, obj ) {
@@ -130,8 +167,15 @@ export default function setup( m ) {
       
       var lrec = dump.links[lname];
       var arr = lrec.to.split("->");
-      if (arr[0] == ".")
+      if (arr[0] == ".") {
+        if (dump.keepExistingParams) {
+          // особый режим сохранения уже существующих параметров
+          // проблема что hasLinksToParam заработает только при активации ссылки, которая у нас отложенная...
+          // F-LINKS-OVERWRITE
+          if (obj.hasLinksToParam( arr[1] ) || obj.hasParam( arr[1] )) continue;
+        }
         obj.createLinkTo( {param: arr[1], from: lrec.from, name: "arg_link_to" } );
+      }
       else
       {
         m.createLink( {parent: obj, name: "arg_link"});

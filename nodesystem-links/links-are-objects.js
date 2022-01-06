@@ -248,9 +248,16 @@ export default function setup( vz ) {
     obj.addParamRef("to","",filter_to,setupToLink_DELAYED, references_obj ); // R-LINKS-FROM-OBJ
     // note: we set here obj.ns.parent as desired parent for params pathes. probably it is only the case for tied_to_parent version
 
-    obj.addCheckbox( "tied_to_parent", undefined );
+    obj.addCheckbox( "tied_to_parent", obj.params.tied_to_parent );
+
+    obj.onvalue( "tied_to_parent",(v) => {
+      if (v) // это нам надо поскорее обозначить потому-что F-LINKS-OVERWRITE
+        addLinkTracking( obj.ns.parent, obj, false );
+    } );
 
     obj.trackParam("manual_mode",qqq); // F-LINKS-MANUAL
+
+    
 
     // todo speedup by func ptr
     function filter_to(o) {

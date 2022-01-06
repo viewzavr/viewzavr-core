@@ -283,7 +283,8 @@ export function add_appends_to_table(env) {
         //console.log(`viewzavr features: feature '${name}' is post-applied!`)
         unbind1();
         clearTimeout( error_report_tmr );
-        newf( target_env,...args );
+        //newf( target_env,...args );
+        invoke_feature_function( newf, target_env, ...args );
       })
       target_env.on("remove",() => unbind1() );
       // todo то же самое с appends
@@ -293,12 +294,24 @@ export function add_appends_to_table(env) {
     var result = true;
     if (f) {
       if (f.func) f = f.func;
-      result = f( target_env,...args );
+      //result = f( target_env,...args );
+      result = invoke_feature_function( f, target_env, ...args );
     }
     if (appends) 
       env.run_appends( name, target_env, ...args );
     // todo: добавить вызов новых аппендов
     return result;
+   }
+
+   // F-FEAT-PARAMS
+   function invoke_feature_function(f,target_env,...args) {
+      if (target_env.master_env) {
+        // ситуация когда target_env является спец-окружением для фичи, которая по факту прицеплена к другому окружению
+        // задаваемому master_env
+        return f( target_env.master_env, target_env, ...args );
+      }
+      else // простая ситуация - фича в этом же окружении
+        return f( target_env,target_env, ...args );
    }
 }
 
