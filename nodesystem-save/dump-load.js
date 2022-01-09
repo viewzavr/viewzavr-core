@@ -113,6 +113,32 @@ export default function setup( m ) {
     });
   }
 
+  // цель - активировать в окружении новую фичу, определенную в dump
+  // отличие в том, что там не просто имя, а целое новое под-окружение
+  // и мы не можем создать сначала под-окружение а потом его прицепить
+  // потому что при создании происходит активация фич, и им уже надо знать
+  // что они активируются в режиме аттача к основному новому окружению..
+  m.importAsParametrizedFeature = function( dump,obj ) {
+     // todo заменить это все на работу с деревом..
+     dump.feature_of_env = obj;
+
+     //fr.keepExistingChildren = true; // странно это все...
+     let feature_obj = m.createSyncFromDumpNow( dump, null, null, dump.$name );
+     //arr.push( feature_obj );
+     //feature_obj.lexialParent = obj;
+     //feature_obj.master_env = obj;
+     //obj.feature_
+     // todo надо бы их в дерево посадить... тем более там по именам потом захочется ходить..
+     obj.on("remove",() => {
+        feature_obj.remove();
+     });
+
+     feature_obj.$feature_name = dump.$name || "some_feature"; /// ......
+
+     obj.$feature_list_envs ||= [];
+     obj.$feature_list_envs.push( feature_obj );
+  }
+
   m.restoreFeatures = function ( dump, obj) {
     
     // получается что здесь происходит повторный вызов obj.feature
@@ -140,25 +166,13 @@ export default function setup( m ) {
     // restoreFeatures вызывается многократно, и если от однократных фич у нас есть защита то тут нет
     obj.features_list_is_restored ||= new Set();
     if (!obj.features_list_is_restored.has(dump.features_list)) {
-      var arr = [];
+      //var arr = [];
       for (let fr of (dump.features_list || [])) 
       {
-         fr.feature_of_env = obj;
-         //fr.keepExistingChildren = true; // странно это все...
-         let feature_obj = m.createSyncFromDumpNow( fr, null, null, fr.$name );
-         arr.push( feature_obj );
-         //feature_obj.lexialParent = obj;
-         //feature_obj.master_env = obj;
-         //obj.feature_
-         // todo надо бы их в дерево посадить... тем более там по именам потом захочется ходить..
-         obj.on("remove",() => {
-            feature_obj.remove();
-         })
-         
-         feature_obj.$feature_name = fr.$name || "some_feature"; /// ......
+         m.importAsParametrizedFeature( fr, obj );
       }
       obj.features_list_is_restored.add( dump.features_list ) ;
-      obj.$feature_list_envs = (obj.$feature_list_envs || []).concat( arr );
+      //obj.$feature_list_envs = (obj.$feature_list_envs || []).concat( arr );
       // тут бы списочег...
       //obj.setParam("feature_list_envs",arr);
     }
@@ -170,14 +184,16 @@ export default function setup( m ) {
       
       var lrec = dump.links[lname];
       var arr = lrec.to.split("->");
-      if (arr[0] == ".") {
+      if (arr[0] == "." || arr[0] == "~") {
         if (dump.keepExistingParams) {
           // особый режим сохранения уже существующих параметров
           // проблема что hasLinksToParam заработает только при активации ссылки, которая у нас отложенная...
           // F-LINKS-OVERWRITE
           if (obj.hasLinksToParam( arr[1] ) || obj.hasParam( arr[1] )) continue;
         }
-        obj.createLinkTo( {param: arr[1], from: lrec.from, name: "arg_link_to" } );
+        // разделяем ситуацию куда же нам направить местную ссылку - на себя (на фичу) или на главное окружение
+
+        obj.createLinkTo( {param: arr[1], from: lrec.from, name: "arg_link_to", target_master_env: (arr[0] == ".") } );
       }
       else
       {

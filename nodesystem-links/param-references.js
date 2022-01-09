@@ -41,6 +41,8 @@ export default function setup(vz) {
     var rec;
     setrec();
 
+    
+
     x.addCmd(`rescan-${name}`,() => {
       //var vv = gatherParams( crit_fn || default_crit_fn, desired_parent );
       //x.setParamOption( name, "values",vv);

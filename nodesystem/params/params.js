@@ -139,7 +139,48 @@ function setup_params_events(x) {
     call_if_all_exist();
 
     return resall;
-  }
+  } // onvalues
+
+  x.onvalues_any = function(names,fn) {
+    if (!Array.isArray(names)) names=[names];
+
+    // вызов
+    function fn2() {
+       var vals = [];
+       for (let name of names) 
+        vals.push( x.params[name] );
+       //    fn.call( undefined, ...vals ); // зис им перебиваем конеш
+       // может тут тоже требовать чтобы все было, до кучи уж
+       fn( ...vals );
+    }
+    // если есть ненулевые значения - сработаем сразу
+    function call_if_any_exist() {
+      var some_params_exist=false;
+      for (let name of names) {
+         if (typeof(x.params[name]) !== "undefined" ) {
+           some_params_exist = true;
+         }
+      }
+      if (some_params_exist) 
+        fn2();
+    }
+
+    var fn2_delayed = _delayed( call_if_any_exist );    
+
+    var acc = [];
+    for (let name of names) {
+      var res = x.trackParam(name,fn2_delayed);
+      acc.push( res );
+    }
+    // всеобщая отписка
+    let resall = () => {
+      acc.forEach( (x) => x() );
+    }
+
+    call_if_any_exist();
+
+    return resall;
+  } // onvalues
 
   // todo сделать тут setParam?...
 }

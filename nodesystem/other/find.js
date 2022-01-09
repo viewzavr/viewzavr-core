@@ -45,12 +45,13 @@ export default function setup( vz ) {
     }
     if (path == "")
       return obj;
-    
+
     // // F-FEAT-PARAMS
     if (path == "~") { // example: ~
       //return obj.master_env || obj;
       return obj;
     }
+
     if (path[0] == "." && path[1] == "/") // example: ./child
       path = path.substring(2);
 
@@ -59,19 +60,31 @@ export default function setup( vz ) {
 
     if (!Array.isArray(path)) path = path.split("/");
 
-    var c1 = obj.ns.getChildByName( path[0] );
+    // вход в дерево фич:  ./&/somechild
+    /*
+    if (path[0] == "&") {      
+      var c1 = obj.ft.getChildByName( path[1] ); // это работает потому что теперь path это массив
+      if (c1) {
+        return vz.find_by_path( c1, path.slice(2) );
+      }
+      return null
+    }
+    */
+
+    var c1 = obj.ns.getChildByName( path[0] ); // это работает потому что теперь path это массив
     if (c1) {
       return vz.find_by_path( c1, path.slice(1) );
     }
+
     return null;
   }
 
   // алгоритм поиска объекта по имени
-  vz.find_by_id_scopes = function (startobj,name,skipobj,allow_up=true ) {
+  vz.find_by_id_scopes = function (startobj,name,skipobj,allow_up=true,tree_name="ns" ) {
     
-    var c1 = startobj.ns.getChildByName( name );
+    var c1 = startobj[tree_name].getChildByName( name );
     if (c1) return c1;
-    for (let o of startobj.ns.getChildren()) {
+    for (let o of startobj[tree_name].getChildren()) {
       if (o === skipobj) continue;
       let res = vz.find_by_id_scopes( o, name, null, false );
       if (res) return res;
@@ -79,15 +92,59 @@ export default function setup( vz ) {
 
     // прошлись по дереву детей - не нашли. идем к соседям и далее рекурсивно
 
-    if (allow_up && startobj.master_env) // F-FEAT-PARAMS
+    if (allow_up) {
+      if (startobj.master_env) // F-FEAT-PARAMS
         return vz.find_by_id_scopes( startobj.master_env, name, startobj, true );
-    if (allow_up && startobj.lexicalParent)
-        return vz.find_by_id_scopes( startobj.lexicalParent, name, startobj, true );      
-    else
-    if (allow_up && startobj.ns.parent)
-        return vz.find_by_id_scopes( startobj.ns.parent, name, startobj, true );
+        /*
+          return vz.find_by_id_scopes( startobj.master_env, name, startobj, true,"feature_tree" ) 
+                 || vz.find_by_id_scopes( startobj.master_env, name, startobj, true );
+        */         
+      if (startobj.lexicalParent)
+          return vz.find_by_id_scopes( startobj.lexicalParent, name, startobj, true );      
+      else
+      if (startobj.ns.parent)
+          return vz.find_by_id_scopes( startobj.ns.parent, name, startobj, true );
+    }
+  }
+
+  vz.get_path = function( obj,known_root_obj ) {
+    if (!obj) return undefined;
+
+    if (obj.master_env) { // F-FEAT-PARAMS
+       //if (!obj.$feature_name) debugger;
+       let fn = obj.$feature_name || obj.ns.name; // временный хак по поиску как же это назвали
+       return vz.get_path( obj.master_env,known_root_obj ) + ":" + fn;
+    }
+
+    if (!obj.ns.parent) return "/";
+    
+    known_root_obj ||= obj.findRoot(); // это нам надо чтобы уметь делать остановки на промежуточных слоях (например vzPlayer - scene здесь scene будет рутом)
+    if (obj == known_root_obj) return "/";
+
+    let parental = vz.get_path( obj.ns.parent,known_root_obj );
+    if (parental == "/") parental = "";
+    
+    return parental + "/" + obj.ns.name;
   }
   
+  /*
+  vz.get_path = function( obj ) {
+    if (!obj) return undefined;
+
+    if (obj.master_env) { // F-FEAT-PARAMS
+       return vz.get_path( obj.master_env ) + ":" + obj.$feature_name;
+    }
+
+    if (!obj.ns.parent) return "/";
+
+    let parental = vz.get_path( obj.ns.parent );
+    if (parental == "/") parental = "";
+    
+    return parental + "/" + obj.ns.name;
+  }
+  */
+
+  /*
   vz.get_path = function( obj ) {
     if (!obj) return undefined;
 
@@ -102,24 +159,20 @@ export default function setup( vz ) {
     
     var p = obj;
     var res = obj.ns.name;
+
+    return vz.get_path( obj.ns.parent ) + "/" + res;
+
     while (p != root) {
-      p = p.ns.parent;
+      //p = p.ns.parent;
+      p = p.ns.parent || p.master_env; // F-FEAT-PARAMS
       if (p == root)
         res = "/" + res;
       else
         res = p.ns.name + "/" + res;
     }
     return res;
-    
-
-/*    
-    var res = vz.get_path( obj.ns.parent );
-    if (res == "/") 
-      return "/" + obj.ns.name;
-    else
-      return res + "/" + obj.ns.name;
-*/      
   }
+  */
   
   // computes path to obj relative to basisobj
   vz.get_path_rel = function( obj, basisobj ) {
@@ -162,6 +215,8 @@ export default function setup( vz ) {
   vz.chain( "create_obj", function (obj,options) {
 
     obj.findRoot = function() {
+      if (obj.master_env) return obj.master_env.findRoot(); // F-FEAT-PARAMS
+
       if (!obj.ns.parent) return obj;
       return obj.ns.parent.findRoot();
     }
