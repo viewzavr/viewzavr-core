@@ -90,6 +90,11 @@ export default function setup( vz ) {
       if (res) return res;
     }
 
+    // воткнем сюда проверку на доп-имена
+    // F-FEAT-ROOT-NAME
+    if (startobj.$env_extra_names && startobj.$env_extra_names[ name ])
+       return startobj; // это мы
+
     // прошлись по дереву детей - не нашли. идем к соседям и далее рекурсивно
 
     if (allow_up) {
