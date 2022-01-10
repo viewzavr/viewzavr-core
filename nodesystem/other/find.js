@@ -57,6 +57,7 @@ export default function setup( vz ) {
 
     if (path[0] == "@") // find by id @name or @name/sub/path
       return vz.find_by_id_scopes( obj,path.slice(1) )
+      // todo: @name:subenv ?
 
     if (!Array.isArray(path)) path = path.split("/");
 
@@ -74,6 +75,19 @@ export default function setup( vz ) {
     var c1 = obj.ns.getChildByName( path[0] ); // это работает потому что теперь path это массив
     if (c1) {
       return vz.find_by_path( c1, path.slice(1) );
+    }
+
+    // случай доступа во вложенную фичу, F-SUBFEAT-PATH
+    let parts = path[0].split(":");
+    if (parts[1]) { 
+      var c2 = obj.ns.getChildByName( parts[0] ); // это работает потому что теперь path это массив
+      if (c2 && c2.$feature_list_envs_table) {
+
+        let maybe_feature = c2.$feature_list_envs_table[ parts[1] ];
+        if (maybe_feature) {
+           return vz.find_by_path( maybe_feature, path.slice(1) );
+        }
+      }
     }
 
     return null;
