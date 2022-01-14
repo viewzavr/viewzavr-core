@@ -305,6 +305,9 @@ export function add_appends_to_table(env) {
 
    // F-FEAT-PARAMS
    function invoke_feature_function(f,target_env,...args) {
+      return f( target_env, ...args );
+
+/*
       if (target_env.master_env) {
         // ситуация когда target_env является спец-окружением для фичи, которая по факту прицеплена к другому окружению
         // задаваемому master_env
@@ -312,6 +315,7 @@ export function add_appends_to_table(env) {
       }
       else // простая ситуация - фича в этом же окружении
         return f( target_env,target_env, ...args );
+*/        
    }
 }
 

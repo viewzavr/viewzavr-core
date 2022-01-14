@@ -42,9 +42,13 @@ export default function setup( m ) {
 
     // F-FEAT-PARAMS
     if (dump.feature_of_env) {
-      obj.master_env = dump.feature_of_env;
+      obj.hosted = true;
+      obj.host = dump.feature_of_env;
+      // obj.master_env = dump.feature_of_env;
       //obj.lexicalParent = dump.feature_of_env;
     }
+    else
+      obj.host = obj;
 
     m.restoreFeatures( dump, obj, manualParamsMode );
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
@@ -86,9 +90,13 @@ export default function setup( m ) {
 
     // F-FEAT-PARAMS
     if (dump.feature_of_env) {
-      obj.master_env = dump.feature_of_env;
+      obj.hosted = true;
+      obj.host = dump.feature_of_env;
+      // obj.master_env = dump.feature_of_env;
       //obj.lexicalParent = dump.feature_of_env;
     }
+    else
+      obj.host = obj;
 
     m.restoreFeatures( dump, obj );
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
@@ -198,7 +206,7 @@ export default function setup( m ) {
         }
         // разделяем ситуацию куда же нам направить местную ссылку - на себя (на фичу) или на главное окружение
 
-        obj.createLinkTo( {param: arr[1], from: lrec.from, name: "arg_link_to", target_master_env: (arr[0] == ".") } );
+        obj.createLinkTo( {param: arr[1], from: lrec.from, name: "arg_link_to", target_host_env: (arr[0] == ".") } );
       }
       else
       {

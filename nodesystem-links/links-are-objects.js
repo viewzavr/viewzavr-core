@@ -374,7 +374,7 @@ vz.chain("create_obj",function( obj, opts ) {
 
     var q;
     // используем существующие, заодно удалим дубликаты
-    // todo здесь уже конфликт появился - если мы ставим target_master_env
+    // todo здесь уже конфликт появился - если мы ставим target_host_env
     // то и там надо вычищать, у мастера
     var existing = obj.linksToParam( paramname );
     if (existing[0]) {
@@ -389,7 +389,7 @@ vz.chain("create_obj",function( obj, opts ) {
     if (!q) q = vz.createObjByType( {...opts} );
 
     if (paramname && paramname.length > 0) {
-        let prefix = opts.target_master_env ? ".->" : "~->";
+        let prefix = opts.target_host_env ? ".->" : "~->";
         q.setParam( "to", prefix + paramname, opts.manual );
       }
         //q.setParam( "to", obj.getPath() + "->" + paramname, opts.manual );

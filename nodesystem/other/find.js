@@ -36,12 +36,12 @@ export default function setup( vz ) {
     }
     if (path == "..") {    // example: ..
       // F-FEAT-PARAMS
-      return obj.master_env?.ns?.parent || obj.ns.parent;
+      return obj.host.ns.parent;
       //return obj.lexicalParent || obj.ns.parent || obj.master_env;
     }
     if (path == ".") { // example: .
       //return obj;
-      return obj.master_env || obj;
+      return obj.host;
     }
     if (path == "")
       return obj;
@@ -112,8 +112,8 @@ export default function setup( vz ) {
     // прошлись по дереву детей - не нашли. идем к соседям и далее рекурсивно
 
     if (allow_up) {
-      if (startobj.master_env) // F-FEAT-PARAMS
-        return vz.find_by_id_scopes( startobj.master_env, name, startobj, true );
+      if (startobj.hosted) // F-FEAT-PARAMS
+        return vz.find_by_id_scopes( startobj.host, name, startobj, true );
         /*
           return vz.find_by_id_scopes( startobj.master_env, name, startobj, true,"feature_tree" ) 
                  || vz.find_by_id_scopes( startobj.master_env, name, startobj, true );
@@ -129,10 +129,10 @@ export default function setup( vz ) {
   vz.get_path = function( obj,known_root_obj ) {
     if (!obj) return undefined;
 
-    if (obj.master_env) { // F-FEAT-PARAMS
+    if (obj.hosted) { // F-FEAT-PARAMS
        //if (!obj.$feature_name) debugger;
        let fn = obj.$feature_name || obj.ns.name; // временный хак по поиску как же это назвали
-       return vz.get_path( obj.master_env,known_root_obj ) + ":" + fn;
+       return vz.get_path( obj.host,known_root_obj ) + ":" + fn;
     }
 
     if (!obj.ns.parent) return "/";
@@ -234,7 +234,7 @@ export default function setup( vz ) {
   vz.chain( "create_obj", function (obj,options) {
 
     obj.findRoot = function() {
-      if (obj.master_env) return obj.master_env.findRoot(); // F-FEAT-PARAMS
+      if (obj.hosted) return obj.host.findRoot(); // F-FEAT-PARAMS
 
       if (!obj.ns.parent) return obj;
       return obj.ns.parent.findRoot();

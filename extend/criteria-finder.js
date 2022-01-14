@@ -177,10 +177,10 @@ function delayed( f,delay=0 ) {
   return res;
 }
 
-export function find_by_criteria( env,feature_env ) {
-  feature_env.findObjects = findObjects;
-  feature_env.trackObjects = trackObjects;
-  feature_env.addObjects = addObjects.bind( undefined, feature_env );
+export function find_by_criteria( env ) {
+  env.findObjects = findObjects;
+  env.trackObjects = trackObjects;
+  env.addObjects = addObjects.bind( undefined, env );
 }
 
 export function setup( vz,me ) 
