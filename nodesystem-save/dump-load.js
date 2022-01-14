@@ -146,10 +146,14 @@ export default function setup( m ) {
      obj.$feature_list_envs ||= [];
      obj.$feature_list_envs.push( feature_obj );
      obj.$feature_list_envs_table ||= {};
-     if (obj.$feature_list_envs_table[feature_obj.$feature_name]) {
-        console.warn("$feature_list_envs_table DUPLICATE DETECTED, $feature_name=",$feature_name)
+
+     let kname = feature_obj.$feature_name;
+     while (obj.$feature_list_envs_table[kname]) {
+        console.warn("$feature_list_envs_table DUPLICATE DETECTED, $feature_name=",kname)
+        kname = kname + "_x";
+        console.warn("renamed to",kname);
      }
-     obj.$feature_list_envs_table[feature_obj.$feature_name] = feature_obj;
+     obj.$feature_list_envs_table[kname] = feature_obj;
   }
 
   m.restoreFeatures = function ( dump, obj) {
