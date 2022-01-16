@@ -10,6 +10,8 @@ export default function setup( vz ) {
   FT.add_create_env( vz, vz );
   
   vz_add_features_to_new_objs( vz );
+  vz_add_host_field_to_new_objects( vz );
+
   /* оказывается вредно вроде как..
   vz_activate_features_from_new_obj_params( vz, (o) => o.features );
   vz_activate_features_from_new_obj_params( vz, (o) => o.feature );
@@ -64,6 +66,15 @@ function vz_activate_features_from_new_obj_params( vz, f_from_options ) {
         }
       }
     }
+    return obj;
+  });
+}
+
+function vz_add_host_field_to_new_objects( vz, f_from_options ) {
+  //let orig = vz.create_obj;
+  vz.chain( "create_obj", function (obj,options) {
+    this.orig( obj, options );
+    obj.host = obj; // may be changed later
     return obj;
   });
 }
