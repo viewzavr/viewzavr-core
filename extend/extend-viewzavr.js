@@ -70,6 +70,7 @@ function vz_activate_features_from_new_obj_params( vz, f_from_options ) {
   });
 }
 
+// F-HOST
 function vz_add_host_field_to_new_objects( vz, f_from_options ) {
   //let orig = vz.create_obj;
   vz.chain( "create_obj", function (obj,options) {
