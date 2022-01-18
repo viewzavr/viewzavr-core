@@ -47,8 +47,22 @@ export function findObjects( root, criteria_text ) {
          }
          if (need_features.length > 0)
             and_tests.push( function(obj) {
-              for (let f of need_features)
-                if (!obj.is_feature_applied(f)) return false;
+              for (let f of need_features) {
+                if (!obj.is_feature_applied(f)) {
+                  // второй тест сюды - пошукаем в субфичах
+                  if (obj.$feature_list_envs) {
+                    let found_in_subfeature = false;
+                    for (let subfeature of obj.$feature_list_envs)
+                      if (subfeature.is_feature_applied(f)) {
+                        found_in_subfeature = true;
+                        //break;
+                        return true;
+                      }
+                  }
+
+                  return false;
+                }
+              }
               return true;
             })
 
