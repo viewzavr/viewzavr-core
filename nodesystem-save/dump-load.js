@@ -135,7 +135,8 @@ export default function setup( m ) {
      //feature_obj.master_env = obj;
      //obj.feature_
      // todo надо бы их в дерево посадить... тем более там по именам потом захочется ходить..
-     obj.on("remove",() => {
+     let forget_that = obj.on("remove",() => {
+        forget_that = () => {};
         feature_obj.remove();
      });
 
@@ -154,7 +155,21 @@ export default function setup( m ) {
      obj.$feature_list_envs_table[kname] = feature_obj;
      // надо бы запомнить, как мы ее запомнили..
      feature_obj.$feature_name = kname;
+
+     // если фичу просто так удалять будут - надо освободить родителя
+     feature_obj.on("remove",() => {
+      forget_that()
+
+      if (!obj.removed) {
+         // почистить таблицу еще надо
+         // по сути мы тут children-таблицу заново пишем.. эх
+         delete obj.$feature_list_envs_table[kname];
+         let myindex = obj.$feature_list_envs.indexOf( feature_obj );
+         if (myindex >= 0) obj.$feature_list_envs.splice( myindex,1 );
+      }
+     });
      
+     return feature_obj;
   }
 
   m.restoreFeatures = function ( dump, obj) {
