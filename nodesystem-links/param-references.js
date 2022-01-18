@@ -71,7 +71,9 @@ export default function setup(vz) {
     }
 
     // вот эта штука вообще ток для гуи актуальна... пока эта гуи работает.... странно все это...
-    x.trackParam(name,update_status)
+    // x.trackParam(name,update_status)
+    // @byrequest @optimize тут я вижу это часто вызывается (ибо линки) - надо по запросу..
+
     function update_status() {
        var v = x.getParam(name);
        if (v.split) {

@@ -21,51 +21,6 @@ export default function setup( m ) {
   // короче я все еще в сомнениях - тут смешано получается создание дерева по описанию
   // и 2) синхронизация этого дерева из описания, и 
   // и еще это упирается в ситуацию а что если корень дерева в памяти не того типа что в описании?
-  
-  // returns promise
-
-  
-  m.createSyncFromDump = function( dump, _existingObj, parent, desiredName, manualParamsMode )
-  {
-    var obj = _existingObj;
-    if (!obj || (dump.type && obj.historicalType != dump.type && dump.manual)) {
-      if (!obj || obj.ns.parent) {  // пусть это работает пока не для корня дерева - там непонятно мне пока
-         // var opts = { parent: parent, type: dump.type, name: dump.name }
-         var opts = Object.assign( {}, dump, { parent: parent, name: desiredName } );
-         obj = dump.type ? m.create_obj_by_type( opts ) : m.createObj( opts );
-         if (!obj) {
-           console.error("createSyncFromDump: failed to create object! opts=",opts);
-           console.error("will create some obj to avoid js errors, but it is not the desired one");
-           obj = m.createObj( { parent: parent, name: desiredName || "ehh" });
-         }
-      }
-    }
-    // в dump должно быть поле type, оно нам все и создаст что надо
-
-    // F-FEAT-PARAMS
-    if (dump.feature_of_env) {
-      obj.hosted = true;
-      obj.host = dump.feature_of_env;
-      // obj.master_env = dump.feature_of_env;
-      //obj.lexicalParent = dump.feature_of_env;
-    }
-    else
-      obj.host = obj;
-
-    m.restoreFeatures( dump, obj, manualParamsMode );
-    // таким образом фичи имеют возможность заменить obj.restoreFromDump
-    // и стать функторами
-
-    
-    return new Promise( function (resolve, reject) {
-        obj.restoreFromDump( dump,manualParamsMode ).then( (res) => {
-          resolve( obj );
-        }).catch( (err) => {
-          reject( err );
-        })
-    })
-  }
-  
 
   // тестовое - получается создает obj а наполнение потом уж
   m.createSyncFromDumpNow = function( dump, _existingObj, parent, desiredName )
@@ -118,6 +73,8 @@ export default function setup( m ) {
       obj.setParam( name, h[name], manualParamsMode ); // ставим true - в том смысле что это установка из
     });
   }
+
+  m.createSyncFromDump = m.createSyncFromDumpNow;
 
   // цель - активировать в окружении новую фичу, определенную в dump
   // отличие в том, что там не просто имя, а целое новое под-окружение
@@ -278,16 +235,14 @@ export default function setup( m ) {
     // console.log("examining incoming children",c);
     // добавляем тех что есть во входящем списке но нет у нас
     // а мы добавим в общем списке..
-  
-    // todo отсортировать в порядке order..
-    var promises_arr = [];
+    
     //var actual_children_table
+    var result_p = [];
     ckeys.forEach( function(name) {
       var cobj = obj.ns.getChildByName( name );
       if (!c[name].manual && !cobj && !c[name].forcecreate) {
         // ситуация когда объект должен был быть создан автоматически - но его нет!
         console.error("load_from_dump: no child of name found! name=",name,"obj=",obj);
-        promises_arr.push( Promise.reject() );
         return;
       }
 
@@ -300,12 +255,7 @@ export default function setup( m ) {
       if (dump.keepExistingChildren) cobj = null; // R-NEW-CHILDREN
 
       var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode );
-      promises_arr.push( r );
-      
-      // the only way to catch errors is here, allSettled will ignore that error
-      r.catch( (err) => {
-        console.error("createChildrenByDump: error!",err );
-      });
+      result_p.push(r);
     });
 
     //return Promise.allSettled( promises_arr );
@@ -314,6 +264,7 @@ export default function setup( m ) {
     // и есть текущий список детей внутри объекта
     // и надо чтобы порядок текущего списка соответствовал входящему списку
 
+/*
     var result_p = new Promise( (resolv, reject) => {
       Promise.allSettled( promises_arr ).then( (arr_of_objects_res) => {
 
@@ -338,6 +289,7 @@ export default function setup( m ) {
     });
     
     return result_p;
+*/    
 
   }
   

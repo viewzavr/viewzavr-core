@@ -232,6 +232,7 @@ export default function setup( vz ) {
     }
     
     obj.setupLinks = function( may_retry_from = true, may_retry_to = true ) {
+      if (obj.removed) return; // ничего такого не надо делать если эту ссылку уже удалили
       //console.error("Link: setupLinks called");
       if (setupFromLink(false, may_retry_from, false)) // 1st false => do not set param value, 3rd true => do not signal
           setupToLink(true, may_retry_to, true);       // 1st true => set param value if all ok, 3rd true => signal if ok
@@ -440,14 +441,22 @@ function addLinkTracking( obj, link, isFrom ) {
   if (firstTime)
   obj.chain("remove",function() {
     this.orig();
-    (obj.links_to_me || []).forEach( function(l) {
-      l.setupLinks( true, l.parent ? true : false ); // forget this object
-      // we achieved that if object if deleted and 
-      // if some link has arrow from this object
-      //   then link will retry to find object with same name (which may appear soon, as in js-code object)
-      // if some link has arrow to this object
-      //   then link will retry only in case the link has parent (which means link is not child of current, deleted object).
-    });
+    // @optimized - выяснилось что мы удаляем выражения, и вот часть удалили, а другие ссылки еще ссылаются на эту часть
+    // и мы начинаем их ресканить.. зачем? когда можно чутка подождать и вообще будет не надо уже
+
+    setTimeout( () => {
+
+      (obj.links_to_me || []).forEach( function(l) {
+        l.setupLinks( true, l.parent ? true : false ); // forget this object
+        // we achieved that if object if deleted and 
+        // if some link has arrow from this object
+        //   then link will retry to find object with same name (which may appear soon, as in js-code object)
+        // if some link has arrow to this object
+        //   then link will retry only in case the link has parent (which means link is not child of current, deleted object).
+      });
+
+    }, 0);
+
   });
 }
 
