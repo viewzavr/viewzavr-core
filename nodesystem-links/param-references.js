@@ -26,6 +26,9 @@ export default function setup(vz) {
 
   vz.chain("create_obj",function( x, opts ) {
 
+  x.getParamRefs = () => Object.keys( x.references_to_params || {} );
+  x.getParamRefsRecords = () => Object.values( x.references_to_params || {} );
+
   // name - имя параметра который является ссылкой
   // value - значение, строка в форме ПУТЬОБЪЕКТА->ИМЯПАРАМЕТРА
   // crit_fn - критерий отбора параметров, f(obj)->names
@@ -33,6 +36,10 @@ export default function setup(vz) {
   // desired_parent - относительно кого отсчитывать пути
 
   // todo - нужен какой-то более удобный критерий отбора объектов..
+
+  // было бы гораздо удобнее, если бы obj.addParamRef создавал бы какое-то свое
+  // окружение с которым можно было бы поговорить через доп-методы
+  // а не только через непойми что
   x.addParamRef = function( name, value, crit_fn, fn, desired_parent0 ) {
     var desired_parent = desired_parent0 || x;
     //desired_parent ||= x;
@@ -41,7 +48,9 @@ export default function setup(vz) {
     var rec;
     setrec();
 
-    
+    // фича - сохранить чтобы можно было потом сообщить
+    x.references_to_params ||= {};
+    x.references_to_params[ name ] = { desired_parent: desired_parent, name: name };
 
     x.addCmd(`rescan-${name}`,() => {
       //var vv = gatherParams( crit_fn || default_crit_fn, desired_parent );
@@ -56,17 +65,18 @@ export default function setup(vz) {
       rec.getValues = function() {
         return gatherParams( crit_fn || default_crit_fn, desired_parent );
        }
-      rec.notFound = function( param_path, values ) { // в параметре значение, которого нет в комбо-бокс значениях
+      rec.notFound = function( param_path, values ) { 
+        // в параметре значение, которого нет в комбо-бокс значениях
         // это случай вероятно, когда param_path абсолютный
-      if (param_path && param_path[0] == '/') {
-         let [objpath,paramname] = param_path.split("->");
-         let obj = desired_parent.findByPath( objpath );
-         if (obj) {
-           let newpath = obj.getPathRelative( desired_parent ) + "->" + paramname;
-           return values.indexOf( newpath );
-         } else 
-           return 0;
-       }
+          if (param_path && param_path[0] == '/') {
+             let [objpath,paramname] = param_path.split("->");
+             let obj = desired_parent.findByPath( objpath );
+             if (obj) {
+               let newpath = obj.getPathRelative( desired_parent ) + "->" + paramname;
+               return values.indexOf( newpath );
+             } else 
+               return 0;
+           }
        } // not found
     }
 

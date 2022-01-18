@@ -36,7 +36,13 @@ export default function setup( vz ) {
     }
     if (path == "..") {    // example: ..
       // F-FEAT-PARAMS
-      return obj.host.ns.parent;
+      if (obj.host.ns.parent)
+        return obj.host.ns.parent;
+
+      if (obj.host.host != obj.host) // ну вот так вот.. смысл чтобы как-то выходить из вложенных окружений..
+        return obj.host.host;
+      return null;
+      //return obj.host.ns.parent;
       //return obj.lexicalParent || obj.ns.parent || obj.master_env;
     }
     if (path == ".") { // example: .
@@ -84,6 +90,13 @@ export default function setup( vz ) {
       if (c2 && c2.$feature_list_envs_table) {
 
         let maybe_feature = c2.$feature_list_envs_table[ parts[1] ];
+
+        // надо добавить путешествие дальше, ибо мб a:b:c
+        for (let qq=2; qq<parts.length; qq++) {
+          if (!maybe_feature) break;
+          maybe_feature = maybe_feature.$feature_list_envs_table[ parts[qq] ];
+        }
+
         if (maybe_feature) {
            return vz.find_by_path( maybe_feature, path.slice(1) );
         }

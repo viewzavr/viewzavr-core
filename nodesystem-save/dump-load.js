@@ -152,6 +152,9 @@ export default function setup( m ) {
         console.warn("renamed to",kname);
      }
      obj.$feature_list_envs_table[kname] = feature_obj;
+     // надо бы запомнить, как мы ее запомнили..
+     feature_obj.$feature_name = kname;
+     
   }
 
   m.restoreFeatures = function ( dump, obj) {
