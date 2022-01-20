@@ -247,6 +247,7 @@ export default function setup( vz ) {
 
     obj.addParamRef("from","",filter_from,setupFromLink_DELAYED, references_obj ); // R-LINKS-FROM-OBJ
     obj.addParamRef("to","",filter_to,setupToLink_DELAYED, references_obj ); // R-LINKS-FROM-OBJ
+    obj.setParamOption( "to","is_outgoing",true);
     // note: we set here obj.ns.parent as desired parent for params pathes. probably it is only the case for tied_to_parent version
 
     obj.addCheckbox( "tied_to_parent", obj.params.tied_to_parent );
