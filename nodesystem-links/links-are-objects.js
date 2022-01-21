@@ -106,6 +106,7 @@ export default function setup( vz ) {
     function setupFromLink(enable_qqq,enable_retry=true,enable_signal=true) {
       //console.error("Link: setupFromLink called",obj);
       var v = obj.getParam("from");
+
       
       if (currentRefFrom) {
         currentRefFrom.untrackParam( currentParamNameFrom,qqq )
@@ -378,9 +379,15 @@ vz.chain("create_obj",function( obj, opts ) {
     // используем существующие, заодно удалим дубликаты
     // todo здесь уже конфликт появился - если мы ставим target_host_env
     // то и там надо вычищать, у мастера
-    var existing = obj.linksToParam( paramname );
+
+    // оч важно тут различать цель и искать existing в правильном месте - у себя или у хоста
+    var existing = (opts.target_host_env ? obj.host : obj).linksToParam( paramname );
+
+    // но вообще конечно.. с дубликами.. может они и не дубликаты вовсе?...
     if (existing[0]) {
       var toremove = existing;
+      // обработаем такой случай, что не будем пересоздавать встроенную ссылку.. зачем-то
+      // а заюзаем существующий экземпляр
       if (existing[0].params.tied_to_parent && existing[0].ns.parent == obj) {
         q = existing[0];
         toremove = existing.slice(1);
