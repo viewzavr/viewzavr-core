@@ -127,6 +127,7 @@ export default function setup( m ) {
   m.importAsParametrizedFeature = function( dump,obj ) {
      // todo заменить это все на работу с деревом..
      dump.feature_of_env = obj;
+     dump.keepExistingChildren = true; // без этой штуки оно начинает стирать своих собственных детей
 
      //fr.keepExistingChildren = true; // странно это все...
      let feature_obj = m.createSyncFromDumpNow( dump, null, null, dump.$name );

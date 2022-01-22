@@ -68,7 +68,10 @@ export default function setup( obj, nf ) {
   obj.updateChildrenTable = () => {
     let ct = {};
     for (let c of obj.children) ct[ nf(c).name ] = c;
-    obj.childrenTable = ct;
+    //obj.childrenTable = ct; // так нельзя стирать ибо у нас на childrenTable ссылка стоит из items и из $vz_items
+    for (let k of Object.keys(obj.childrenTable))
+       delete obj.childrenTable[k];
+    Object.assign( obj.childrenTable, ct );
   }
   
   obj.getChildByName = function(name) {
