@@ -148,9 +148,10 @@ export default function setup( m ) {
 
      let kname = feature_obj.$feature_name;
      while (obj.$feature_list_envs_table[kname]) {
-        console.warn("$feature_list_envs_table DUPLICATE DETECTED, $feature_name=",kname)
+        // @todo это место пипец конечно.. надо под-окружения уникальные создавать или типа того..
+        //console.warn("$feature_list_envs_table DUPLICATE DETECTED, $feature_name=",kname)
         kname = kname + "_x";
-        console.warn("renamed to",kname);
+        //console.warn("renamed to",kname);
      }
      obj.$feature_list_envs_table[kname] = feature_obj;
      // надо бы запомнить, как мы ее запомнили..
