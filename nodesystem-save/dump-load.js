@@ -141,6 +141,7 @@ export default function setup( m ) {
         feature_obj.remove();
      });
 
+     // $feature_name затем используется... выяснить какую семантику я в него вложил..
      feature_obj.$feature_name = dump.$name || "some_feature"; /// ......
 
      obj.$feature_list_envs ||= [];
