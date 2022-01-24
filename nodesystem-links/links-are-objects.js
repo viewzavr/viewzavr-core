@@ -117,7 +117,7 @@ export default function setup( vz ) {
       
       if (!v || v.length == 0) return;
 
-      if (!obj.ns.parent) return; // seems this link is abandoned
+      if (!obj.ns.parent && !obj.hosted) return; // seems this link is abandoned
 
       if (!v.split) {
         console.error("Link: invalid 'from' path value. v=",v,"link path=",obj.getPath());
@@ -144,6 +144,10 @@ export default function setup( vz ) {
       // R-LINKS-FROM-OBJ + R-LINKS-DIFFER
       // var sobj = (obj.getParam("tied_to_parent") ? obj.ns.parent : obj).findByPath( objname );
       var start_from_obj = (obj.getParam("tied_to_parent") ? obj.ns.parent : obj);
+
+      // новая альтернативная история
+      if (obj.hosted) start_from_obj = obj.host;
+
       var sobj = start_from_obj.findByPath( objname );
       
       if (!sobj) {
@@ -186,7 +190,7 @@ export default function setup( vz ) {
     
       if (!v || v.length == 0) return;
 
-      if (!obj.ns.parent) return; // seems abandoned
+      if (!obj.ns.parent && !obj.hosted) return; // seems abandoned
 
       if (!v.split) {
         console.error("Link: invalid 'to' value. v=",v);
@@ -207,6 +211,10 @@ export default function setup( vz ) {
       //var sobj = obj.ns.parent.findByPath( objname );
       // R-LINKS-FROM-OBJ + R-LINKS-DIFFER
       var start_from_obj = (obj.getParam("tied_to_parent") ? obj.ns.parent : obj);
+
+      // новая альтернативная история
+      if (obj.hosted) start_from_obj = obj.host;
+
       var sobj = start_from_obj.findByPath( objname );
       
       if (!sobj) {
