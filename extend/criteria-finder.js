@@ -100,6 +100,11 @@ function traverse_if( obj, fn ) {
   for (var cobj of cc) {
     traverse_if( cobj,fn );
   }
+  // экспериментально - пойдем ка по прицепленным фичам
+  cc = obj.$feature_list_envs || [];
+  for (var cobj of cc) {
+    traverse_if( cobj,fn );
+  }
 }
 
 /*

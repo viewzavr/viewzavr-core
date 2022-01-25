@@ -182,6 +182,12 @@ function setup_params_events(x) {
     return resall;
   } // onvalues
 
+    // эксперимент todo
+    // names это массив вида [ env, name1, name2, env2, name3 ]
+    // ну или еще как..
+    x.monitor_values = function(names,fn) {
+    };
+
   // todo сделать тут setParam?...
 }
 
