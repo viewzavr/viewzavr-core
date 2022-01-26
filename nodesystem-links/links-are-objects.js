@@ -165,6 +165,21 @@ export default function setup( vz ) {
 
       if (paramname == "~") {
       }
+
+      // ну а если его нет... это же нормальное явление...
+      // может сделать soft-признак.. типа x=@.->ширина? и этот ? это запись для soft..
+      // но у нас и ситуация - типа ничего страшного, если сейчас параметра нет, может
+      // быть появится потом... ну и получается что тогда мы не можем проверить, может быть
+      // мы ошиблись написанием.. ех... 
+      /*
+      if (!sobj.hasParam( paramname )) {
+          linkScannerAdd( obj );
+      }
+      */
+      /*
+      if (!sobj.hasParam( paramname )) 
+         console.warn( "Link: source object has no param at time of linking", paramname, sobj.getPath());
+      */
       
       if (sobj)
           sobj.trackParam( paramname, qqq );
@@ -552,6 +567,6 @@ linkScannerAdd = function ( link ) {
       if (link.linkScannerCounter < 10)
           scannerLinks.push( link );
       else
-          console.error("Link: retry counter finished, will not retry anymore.")
+          console.error("Link: retry counter finished, will not retry anymore.",link)
   }
 }

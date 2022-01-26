@@ -90,7 +90,6 @@ export default function setup(x) {
     x[name] = fn;
     //x.setParam( name, (...args) => callCmd(name,...args));
 
-
     var res = x.addGui( { type: "cmd", name: name, fn: fn });
 
     // F-PENDING-CMDS
@@ -110,6 +109,7 @@ export default function setup(x) {
   x.callCmd = function( name, ...args ) {
     let gui = x.getGui( name );
     if (gui?.type === "cmd") {
+      // может тут событий повызывать?
       return gui.fn.apply( gui.fn, args );
     }
     else
