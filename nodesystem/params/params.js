@@ -113,7 +113,8 @@ function setup_params_events(x) {
        fn( ...vals );
     }
     // если все ненулевые значения - сработаем сразу
-    function call_if_all_exist() {
+    function call_if_all_exist( ename, evalue ) {
+      
       var all_params_exist=true;
       for (let name of names) {
          if (typeof(x.params[name]) == "undefined" ) {
@@ -233,11 +234,11 @@ function setup_params_events_old(x) {
 function _delayed( f,delay=0 ) {
   var t;
 
-  var res = function() {
+  var res = function(...args) {
     if (t) return;
     t = setTimeout( () => {
       t=null;
-      f();
+      f(...args);
     },delay);
   }
 

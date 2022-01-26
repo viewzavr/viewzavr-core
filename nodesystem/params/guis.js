@@ -146,7 +146,7 @@ export default function setup(x) {
     x.setParamOption( name,"internal",true ); // R-DO-NOT-SAVE-LABEL-VALUE
     return x.addGui( { type: "status", name: name, value: value, fn: fn });
   };
-*/  
+*/
 
 //  x.addUrl = function( name, value, fn ) {
 //    return x.addGui( { type: "url", name: name, value: value, fn: fn });

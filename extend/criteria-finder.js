@@ -137,7 +137,9 @@ export function trackObjects0( root, finder_func, cb ) {
 // версия с кешем
 export function trackObjects( root, finder_func, cb ) {
   root.vz.feature( "viewzavr_object_uniq_ids");
-  var result_id = "";
+  //var result_id = "";
+  var result_id = undefined; // важно чтобы тут было не "" т.к. мы можем не найти объектов и это корректный результат
+  // который надо передать
 
   function rescan2() {
     let acc = finder_func(root);

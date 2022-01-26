@@ -91,11 +91,11 @@ export function delayed( env ) {
 function _delayed( f,delay=0 ) {
   var t;
 
-  var res = function() {
+  var res = function(...args) {
     if (t) return;
     t = setTimeout( () => {
       t=null;
-      f();
+      f(...args);
     },delay);
   }
 
