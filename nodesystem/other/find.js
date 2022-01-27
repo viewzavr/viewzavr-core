@@ -117,6 +117,14 @@ export default function setup( vz ) {
       if (res) return res;
     }
 
+    // походим по субфичам
+    if (startobj.$feature_list_envs_table) {
+      let c2 = startobj.$feature_list_envs_table[ name ];
+      if (c2) return c2;
+      // хотя вопросов это много вызывает, очень много...
+      // и да, мы пока тут не заходим внутрь этих субфич, т.е. это работает ток на первый их слой..
+    }
+
     // воткнем сюда проверку на доп-имена
     // F-FEAT-ROOT-NAME
     if (startobj.$env_extra_names && startobj.$env_extra_names[ name ])
