@@ -94,8 +94,13 @@ function _delayed( f,delay=0 ) {
   var res = function(...args) {
     if (t) return;
     t = setTimeout( () => {
-      t=null;
+
+      // t=null; фундаментально - рестарт разрешаем только после того как все закончено..
+      
       f(...args);
+
+      t=null;
+      
     },delay);
   }
 

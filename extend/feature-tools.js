@@ -232,6 +232,8 @@ export function add_create_env( target_env, registry_env ) {
 // потребность - чтобы при срабатывании фичи NAME1 срабатывали еще дополнительные фичи по списку, связанному с NAME1
 // особенность - контроль чтобы в списке доп-фич фичи не было дублирования, чтобы одну и ту же суб-фичу не применять два раза.
 
+var reported_feautures = {};
+
 export function add_appends_to_table(env) {
   env.appends = {}
   env.append = (name,name2) => {
@@ -272,11 +274,16 @@ export function add_appends_to_table(env) {
       }
       else
       */
-      let ms = 5000;
-      let error_report_tmr = setTimeout( () => {
-        console.error(`viewzavr features: feature '${name}' is not defined (no code and no appended features) even after ${ms}ms timeout. object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
-        // todo поставить тут проверку что еще может что-то загружается.. а то таймаут это не о чем
-      },ms)
+
+      let error_report_tmr;
+      if (!reported_feautures[name]) { // будем ток 1 раз ныть
+        reported_feautures[name] = true;
+        let ms = 5000;
+        let error_report_tmr = setTimeout( () => {
+          console.error(`viewzavr features: feature '${name}' is not defined (no code and no appended features) even after ${ms}ms timeout. object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
+          // todo поставить тут проверку что еще может что-то загружается.. а то таймаут это не о чем
+        },ms)
+      }
       // ну и что что фичи нет - потом может появится..
       //return;
       var unbind1 = env.on(`feature-registered-${normalize_feature_name(name)}`,(name,newf) => {
