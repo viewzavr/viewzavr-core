@@ -59,7 +59,9 @@ export default function setup( vz ) {
            currentRefTo.setParam( currentParamNameTo,val, obj.params.manual_mode );
         }
 
-        return;
+        // теперь undefined скрываем только если ссылка добрая/мягкая/необязательная
+        if (obj.params.soft_mode)
+            return;
       }
       
       /*
@@ -234,7 +236,7 @@ export default function setup( vz ) {
       
       if (!sobj) {
         if (enable_retry) {
-          // console.log("Link: target obj not found! Will retry!",arr );
+          console.log("Link: target obj not found! Will retry!",arr );
           linkScannerAdd( obj );
         }
         return;
@@ -411,10 +413,17 @@ vz.chain("create_obj",function( obj, opts ) {
       var toremove = existing;
       // обработаем такой случай, что не будем пересоздавать встроенную ссылку.. зачем-то
       // а заюзаем существующий экземпляр
+
+      // как выясняется это плохой случай. потому что та уже существующая ссылка это может быть
+      // совершенно посторонняя ссылка.. у которой может быть еще и управляемый параметр по другой ссылке
+      // и получится так что та другая управляющая ссылка начнет тут вдруг нами рулить
+      // лучше уж все стереть. или хотя бы подавить, enabled false выставить
+      /*
       if (existing[0].params.tied_to_parent && existing[0].ns.parent == obj) {
         q = existing[0];
         toremove = existing.slice(1);
       }
+      */
       toremove.map( (e) => e.remove() )
     }
     
@@ -428,6 +437,7 @@ vz.chain("create_obj",function( obj, opts ) {
         //q.setParamWithoutEvents( "to", obj.getPath() + "->" + paramname, opts.manual ); // will emit events on 'from'?
     q.setParam( "from", sourcestring );
     q.setParam( "tied_to_parent",true, opts.manual );
+    q.setParam( "soft_mode", opts.soft_mode, opts.manual );
     return q;
   }
   obj.linkParam = function( paramname, link_source ) {

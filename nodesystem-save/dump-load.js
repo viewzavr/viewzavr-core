@@ -229,11 +229,17 @@ export default function setup( m ) {
         }
         // разделяем ситуацию куда же нам направить местную ссылку - на себя (на фичу) или на главное окружение
 
-        obj.createLinkTo( {param: arr[1], from: lrec.from, name: "arg_link_to", target_host_env: (arr[0] == ".") } );
+        obj.createLinkTo( {param: arr[1], 
+                           from: lrec.from,
+                           name: "arg_link_to", 
+                           target_host_env: (arr[0] == "."),
+                           soft_mode: lrec.soft_mode 
+                         } );
       }
       else
       {
         m.createLink( {parent: obj, name: "arg_link"});
+        m.setParam("soft_mode",lrec.soft_mode);
         m.setParam("to",lrec.to);
         m.setParam("from",lrec.from);
         // крайне важно давать имена тут ссылкам (типа arg_...) потому что иначе они смешиваются со ссылками
