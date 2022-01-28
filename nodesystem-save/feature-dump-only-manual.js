@@ -40,15 +40,26 @@ export default function setup(m) {
         obj.params_manual_dump ||= {};
         let dump = dumporig( name );
         obj.params_manual_dump[name] = {value: dump};
+        //obj.setParamOption( name, "manual", true );
       }
       else
       {
         if (obj.params_manual_dump && obj.params_manual_dump[name]) {
           delete obj.params_manual_dump[name];
         }
+        //obj.setParamOption( name, "manual", false );
       }
       return res;
     });
+
+/*  вроде как пока потребность отпала (надо было для window-hash но там можно и так ismanual проверить)
+    // надо ж узнавать уметь.. хотя может это стоит выставить в список param options...
+    obj.isParamManual = function(name) {
+      if (obj.params_manual_dump && obj.params_manual_dump[name])
+        return true;
+      return false;
+    }
+*/    
 
     // created this method(tpu) to implement R-SETREF-OBJ
     P.chain(obj,"dumpParam", function(name) {
