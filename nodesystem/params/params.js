@@ -15,6 +15,12 @@ export default function setup(x) {
 
     var old = x.params[name];
     x.params[name]=value;
+
+    // вот тут мы видим великую засаду теперь...
+    // кто угодно может писать в params и мы это не можем отловить..
+    // ибо и читающие - x.params.name...
+    // хотя может можно таки ловить записи...
+    
     return old;
   }
 
