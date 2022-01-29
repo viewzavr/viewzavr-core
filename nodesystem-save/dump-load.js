@@ -52,6 +52,10 @@ export default function setup( m ) {
     else
       obj.host = obj;
 
+    // F-LEXICAL-PARENT
+    if (dump.lexicalParent)
+      obj.lexicalParent = dump.lexicalParent;
+
     m.restoreFeatures( dump, obj, manualParamsMode );
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
     // и стать функторами
@@ -95,6 +99,11 @@ export default function setup( m ) {
     else
       obj.host = obj;
 
+    // F-LEXICAL-PARENT
+
+    if (dump.lexicalParent)
+      obj.lexicalParent = dump.lexicalParent;
+
     m.restoreFeatures( dump, obj );
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
     // и стать функторами
@@ -115,8 +124,37 @@ export default function setup( m ) {
       // F-KEEP-EXISTING-PARAMS
       if (dump.keepExistingParams && obj.hasParam( name )) return;
 
-      obj.setParam( name, h[name], manualParamsMode ); // ставим true - в том смысле что это установка из
+      let v = h[name];
+      // F-LEXICAL-PARENT
+      if (v.needLexicalParent) {
+         //v.lexicalParent = obj;
+         if (Array.isArray(v)) // там список окружений - всем назначим..
+            for (let q of v)
+              q.lexicalParent = obj;
+       }
+
+      obj.setParam( name, v, manualParamsMode ); // ставим true - в том смысле что это установка из
     });
+
+    ///// особый случай - параметры значение которых это список окружений
+    // им надо выставить lexicalParent
+
+/*
+    var h = dump.env_list_params || {};
+    var keys = Object.keys(h);
+    keys.forEach( function(name) {
+      //console.log("setting param",name,h[name]);
+
+      // F-KEEP-EXISTING-PARAMS
+      if (dump.keepExistingParams && obj.hasParam( name )) return;
+
+      let v = h[name];
+      v.lexicalParent = obj;
+
+      obj.setParam( name, v, manualParamsMode ); // ставим true - в том смысле что это установка из
+    });
+*/
+    
   }
 
   // цель - активировать в окружении новую фичу, определенную в dump
