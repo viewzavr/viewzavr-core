@@ -13,6 +13,8 @@
 
 // кстати можно разбить на две - подготовка критериев и собственно поиск (компиляция условия и поиск по нему)
 // по аналогии с regexp получится, прикольно. var finder = compile(text) finder.find( root, .... )
+
+// идея была - разбить на набор явных признаков. т.е. path, features..
 export function findObjects( root, criteria_text ) {
       let acc = [];
       if (!criteria_text || criteria_text.length === 0) return acc;
@@ -174,7 +176,15 @@ export function addObjects(obj, name,criteria_text,cb,desired_root) {
             cb( acc );
        } )
   });
-  obj.signalParam(name); // чтобы начала шевелиться
+
+  // хак
+  obj.onvalue( name + "_root",(newroot) => {
+    desired_root = newroot;
+    if (unsubscribe) unsubscribe(); unsubscribe = null;
+    obj.signalParam(name);
+  });
+
+  obj.signalParam(name);
 
   obj.on("remove",() => {
     if (unsubscribe) unsubscribe(); unsubscribe = null;
