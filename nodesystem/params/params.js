@@ -8,6 +8,8 @@ export default function setup(x) {
   // заданное через гуи, на этапе инициализации - считается что события "параметр изменился" там при этом
   // происходить не должно. @todo разобраться со всей этой историей, построить ясную модель.
   x.setParamWithoutEvents = function(name,value) {
+
+    //x.addParam( name );
     /*
     if (name === "origin" && x.getPath() === "/view-cmp-Lidar_crop_p3_4")
       debugger;
@@ -52,6 +54,13 @@ export default function setup(x) {
     delete x.params[name];
     return x;
   }
+
+  // все-таки копить параметры..
+  /*
+  x.addParam = function(name) {
+    if (!x.hasParam(name)) x.params[name] = undefined;
+  }
+  */
   
   /* 
   x.hasParam = function(name) {
