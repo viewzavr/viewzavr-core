@@ -90,7 +90,6 @@ export default function setup(x) {
   /////
   setup_params_events( x );
 
-
   return x;
 }
 
@@ -105,6 +104,9 @@ function setup_params_events(x) {
     x.pevents.emit( name,value );
     x.emit('param_changed',name,value);
     x.emit(`param_${name}_changed`,name,value); // все-таки мне удобно так тоже ловить, из compolang
+
+    x.setParamOption( name,"changed_timestamp", performance.now() );
+    // @todo move out
   }
   x.signalParam = x.signalTracked;
 

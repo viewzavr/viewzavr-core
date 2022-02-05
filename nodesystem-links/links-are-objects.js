@@ -98,8 +98,12 @@ export default function setup( vz ) {
 
         //obj.emit("passed_value");
         // todo я до сих пор не умею красиво добавлять добавки..
-        obj.passed_value_timestamp = performance.now();
+        //obj.passed_value_timestamp = performance.now();
        }
+       // ну и что что не передала - сработала же..
+       obj.passed_value_timestamp = performance.now();
+       // @todo move out
+
 //       else
 //        console.log("LINK is not passed, vals and types same",currentRefTo.getPath(),currentParamNameTo,val)
       
