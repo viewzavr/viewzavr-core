@@ -106,6 +106,7 @@ export default function setup( vz ) {
     
     // enable_qqq = выполнить разовый вызов qqq в ходе настройки (работы алгоритма setupFromLink)
     function setupFromLink(enable_qqq,enable_retry=true,enable_signal=true) {
+
       //console.error("Link: setupFromLink called",obj);
       var v = obj.getParam("from");
 
@@ -199,7 +200,8 @@ export default function setup( vz ) {
     }
     
     function setupToLink(enable_qqq,enable_retry=true,enable_signal=true) {
-      var v = obj.getParam("to");
+
+      var v = obj.getParam("to");      
       
       if (currentRefTo) forgetLinkTracking( currentRefTo );
       currentRefTo = undefined;
@@ -285,7 +287,8 @@ export default function setup( vz ) {
 
     obj.trackParam("manual_mode",qqq); // F-LINKS-MANUAL
 
-    
+    // обнуление таймера повторного поиска ссылок
+    obj.onvalues_any(["from","to"],() => linkScannerReset( obj ));
 
     // todo speedup by func ptr
     function filter_to(o) {
@@ -337,54 +340,6 @@ export default function setup( vz ) {
       }
       return acc;
     }
-
-/*
-    function filter_from(o) {
-      // вход - объект o
-      // выход - список имен параметров которые мы у него берем
-
-      // если не выбрали куда - то ограничимся
-      if (!(currentRefTo && currentParamNameTo)) return o.getParamsNames();
-
-      var acc = []  
-      // а теперь введем ограничения хотя бы даже по гуи
-      var myguitype = currentRefTo.getGui( currentParamNameTo )?.getType();
-      var myparamtype = currentRefTo.getParamOption("type");
-      var onames = o.getParamsNames();
-      
-      // вообще тупняк тут алгоритмы разводить. должна быть четкая функция
-      // "можно ли к этому параметру прилинковать тот?"
-      for (var pn of onames) {
-        var oguitype = o.getGui( pn )?.getType();
-        var oparamtype = o.getParamOption("type");
-        if (myparamtype) 
-          { // если у исходного параметра указан тип то ориентируемся на него
-
-          }
-          else
-          {
-            if (oguitype == myguitype) acc.push(pn);
-          }
-      }
-
-      return acc;
-
-    }
-    */
-
-/*
-    obj.addCheckbox( "transform-enabled",false,qqq );
-    obj.addText("transform-code","// enter transform code here. arg: v - input value\nreturn v",function(cod) {
-       if (!cod || cod.length == 0) {
-          tracode = undefined; // new Function("v","return v");
-          qqq();
-          return;
-       }
-       tracode = new Function("v",cod);
-       qqq();
-    } );
-*/
-    // todo: if link object is removed - forget all back-references (e.g. forgetLinkTracking)
 
     return obj;
   }
@@ -579,4 +534,8 @@ linkScannerAdd = function ( link ) {
       else
           console.error("Link: retry counter finished, will not retry anymore.",link)
   }
+}
+
+var linkScannerReset = function(link) {
+  link.linkScannerCounter = 0;
 }

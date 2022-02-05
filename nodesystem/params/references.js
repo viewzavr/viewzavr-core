@@ -16,8 +16,8 @@ export default function setup(vz, x) {
   }
   x.addObjectRef = x.addObjRef;
 
-  var ref_values = {};
-  var ref_event_unbinds = {};
+  var ref_values = {};        // хранит поданные в setParam пути к объектам
+  var ref_event_unbinds = {}; // функции отписки от объектов
   
   x.chain("setParam",function (name, value) {
     if (x.isReference( name )) {

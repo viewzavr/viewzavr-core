@@ -63,7 +63,8 @@ export default function setup(vz) {
     function setrec() {
       rec = x.addGui( { type: "editablecombo", name: name, value: value, values: values, crit_fn: crit_fn, fn: fn } );
       rec.getValues = function() {
-        return gatherParams( crit_fn || default_crit_fn, desired_parent );
+        let crit_fn1 = x.getParamOption( name, "crit_fn") || crit_fn || default_crit_fn;
+        return gatherParams( crit_fn1, desired_parent );
        }
       rec.notFound = function( param_path, values ) { 
         // в параметре значение, которого нет в комбо-бокс значениях
@@ -86,7 +87,7 @@ export default function setup(vz) {
 
     function update_status() {
        var v = x.getParam(name);
-       if (v.split) {
+       if (v?.split) {
         var [obj,param] = v.split("->");
         var status = "ok";
         obj = desired_parent.findByPath( obj );

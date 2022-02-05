@@ -81,8 +81,11 @@ export default function setup(x) {
   x.addComboString = x.addComboValue;
 
   x.addEditableCombo = function(name, value, values, fn) {
-    //x.setParamOption( name,"values",values);
-    return x.addGui( { type: "editablecombo", name: name, value: value, values: values, fn: fn } );
+    if (values)
+        x.setParamOption( name,"values",values);
+    let rec = x.addGui( { type: "editablecombo", name: name, value: value, values: values, fn: fn } );
+    rec.getValues = () => x.getParamOption("name","values");
+    return rec;
   };
 
   x.addCmd = function( name, fn ) {
