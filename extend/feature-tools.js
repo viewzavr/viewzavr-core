@@ -240,6 +240,8 @@ export function add_appends_to_table(env) {
     env.appends[name] ||= [];
     if (env.appends[name].indexOf(name2) < 0) 
         env.appends[name].push( name2 ); // todo optimize
+    // по идее теперь надо найти все объекты и применить к ним это обновление
+    // todo  
   }
   /*
   let orig = env.apply;

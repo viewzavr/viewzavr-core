@@ -95,6 +95,10 @@ export default function setup( vz ) {
         // bug: if one invokes signal on source param, without changing param value (say by ref to array)
         // here we hide that propagation. we have to somehow understand that event will not propagate
         // and maybe send it manually
+
+        //obj.emit("passed_value");
+        // todo я до сих пор не умею красиво добавлять добавки..
+        obj.passed_value_timestamp = performance.now();
        }
 //       else
 //        console.log("LINK is not passed, vals and types same",currentRefTo.getPath(),currentParamNameTo,val)
