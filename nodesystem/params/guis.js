@@ -158,6 +158,10 @@ export default function setup(x) {
   x.addFile = function( name, value, fn ) {
     return x.addGui( { type: "file", name: name, value: value, fn: fn });
   };
+
+  x.addFiles = function( name, value, fn ) {
+    return x.addGui( { type: "files", name: name, value: value, fn: fn });
+  };
   
   x.addArray = function( name, value, text_formating_options, fn ) {
     //x.setParam( name,value );
