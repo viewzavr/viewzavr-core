@@ -32,10 +32,33 @@ export default function setup(m) {
       return this.orig( name, value );
     });*/
 
+    obj.getParamManualFlag = function(name) {
+      return obj.params_manual_dump && obj.params_manual_dump[name];
+    }
+
+    obj.setParamManualFlag = function(name,ismanual) {
+      if (ismanual) {
+        if (!obj.isParamManual(name)) {
+          obj.params_manual_dump ||= {};
+          let dump = dumporig( name );
+          obj.params_manual_dump[name] = {value: dump};
+          //obj.setParamOption( name, "manual", true );
+        }
+      }
+      else
+      {
+        if (obj.getParamManualFlag(name)) {
+          delete obj.params_manual_dump[name];
+        }
+        //obj.setParamOption( name, "manual", false );
+      }
+    }
+
 
     // запоминаем что выставлено руками
     P.chain(obj,"setParam", function(name,value,ismanual) {
       let res = this.orig( name, value );
+      
       if (ismanual) {
         obj.params_manual_dump ||= {};
         let dump = dumporig( name );
