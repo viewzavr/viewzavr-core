@@ -43,14 +43,12 @@ export default function setup( m ) {
     // в dump должно быть поле type, оно нам все и создаст что надо
 
     // F-FEAT-PARAMS
+    // F-OBJ-ACCESS-FROM-DECLARATIVE
     if (dump.feature_of_env) {
       obj.hosted = true;
-      obj.host = dump.feature_of_env;
-      // obj.master_env = dump.feature_of_env;
-      //obj.lexicalParent = dump.feature_of_env;
+      obj.setParam("host",dump.feature_of_env);
+      //obj.host = dump.feature_of_env;
     }
-    else
-      obj.host = obj;
 
     // F-LEXICAL-PARENT
     if (dump.lexicalParent)
@@ -90,14 +88,12 @@ export default function setup( m ) {
     // в dump должно быть поле type, оно нам все и создаст что надо
 
     // F-FEAT-PARAMS
+    // F-OBJ-ACCESS-FROM-DECLARATIVE
     if (dump.feature_of_env) {
       obj.hosted = true;
-      obj.host = dump.feature_of_env;
-      // obj.master_env = dump.feature_of_env;
-      //obj.lexicalParent = dump.feature_of_env;
+      obj.setParam("host",dump.feature_of_env);
+      //obj.host = dump.feature_of_env;
     }
-    else
-      obj.host = obj;
 
     // F-LEXICAL-PARENT
 

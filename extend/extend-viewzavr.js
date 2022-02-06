@@ -75,7 +75,13 @@ function vz_add_host_field_to_new_objects( vz, f_from_options ) {
   //let orig = vz.create_obj;
   vz.chain( "create_obj", function (obj,options) {
     this.orig( obj, options );
-    obj.host = obj; // may be changed later
+
+    // F-OBJ-ACCESS-FROM-DECLARATIVE
+    obj.onvalue("host",(h) => {
+      obj.host = h; // may be changed later  
+    })
+    obj.setParam("host",obj);
+    
     return obj;
   });
 }
