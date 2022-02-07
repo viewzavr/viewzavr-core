@@ -25,12 +25,13 @@ export function param_mirror(obj) {
     obj.addParamMirror = function(toname, source ) {
       let arr = source.split("->");
       obj.findByPathTrack( arr[0], (o) => {
+        if (o.hasCmd( arr[1])) // команды не линкуем пока - там зацикливанье
+          return;
         let gr = o.getGui( arr[1] );
         //if (obj.par)
         let vv = obj.params[toname];
         // если у нас выставлено значение - передадим подопечному...
         if (typeof(vv) != "undefined") {
-          
           o.setParam(arr[1],vv);
         }
         obj.addGui( {...gr,name:toname, fn:undefined, value: undefined } );
