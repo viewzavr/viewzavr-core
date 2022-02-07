@@ -76,11 +76,7 @@ function vz_add_host_field_to_new_objects( vz, f_from_options ) {
   vz.chain( "create_obj", function (obj,options) {
     this.orig( obj, options );
 
-    // F-OBJ-ACCESS-FROM-DECLARATIVE
-    obj.onvalue("host",(h) => {
-      obj.host = h; // may be changed later  
-    })
-    obj.setParam("host",obj);
+    obj.host = obj;
     
     return obj;
   });

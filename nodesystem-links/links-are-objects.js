@@ -43,22 +43,29 @@ export default function setup( vz ) {
         currentRefTo.setParam( currentParamNameTo,currentRefFrom, obj.params.manual_mode );
         return;
       }
-      
-      var val = currentRefFrom ? currentRefFrom.getParam( currentParamNameFrom  ) : null;
 
-      if (typeof(val) == "undefined" || val == null) {
-//        console.warn("Links: incoming value undefined, skipping assign");
-        //console.warn('me=',obj.getPath(),'currentRefFrom=',currentRefFrom ? currentRefFrom.getPath() : null,"currentParamNameFrom=",currentParamNameFrom );
-//        console.warn("from=",obj.getParam("from"),"to=",obj.getParam("to"));
+      var val = null;
 
-        // доп хак чтобы можно было ссылаться на команды
-        if (currentRefFrom && currentRefFrom.hasCmd( currentParamNameFrom )) {
+      if (currentRefFrom) {
+
+        // доступ к полю F-OBJ-ACCESS-FROM-DECLARATIVE 
+        if (currentParamNameFrom[0] == ".") {
+          let field = currentParamNameFrom.slice( 1 );
+          if (currentRefFrom)
+              val = currentRefFrom[field];
+        }
+        // ссылка на команду
+        else if (currentRefFrom.hasCmd( currentParamNameFrom )) {
            val = (...args) => {
               currentRefFrom.callCmd( currentParamNameFrom, ...args );
            }
-           currentRefTo.setParam( currentParamNameTo,val, obj.params.manual_mode );
-        }
+        }   
+        // доступ к параметру   
+        else
+          val = currentRefFrom.getParam( currentParamNameFrom  );
+      }  
 
+      if (typeof(val) == "undefined" || val == null) {
         // теперь undefined скрываем только если ссылка добрая/мягкая/необязательная
         if (obj.params.soft_mode)
             return;
