@@ -19,7 +19,7 @@ export function findObjects( root, criteria_text ) {
       let acc = [];
       if (!criteria_text || criteria_text.length === 0) return acc;
 
-      console.log("FIND_OBJECTS",criteria_text)
+      console.log("FIND_OBJECTS",criteria_text, root ? root.getPath() : null)
 
       let lines = criteria_text.split(/[\n|]+/);
       let or_criterias = lines.map( line => tocrit(line) )

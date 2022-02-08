@@ -112,7 +112,9 @@ function setup_params_events(x) {
 
 
   x.onvalue = function(name,fn) {
-    var res = x.trackParam(name,fn);
+    var res = x.trackParam(name,(val) => {
+      if (val) fn(val);
+    });
     if (x.params[name]) fn( x.params[name] );
     return res;
   }
