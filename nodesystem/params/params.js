@@ -115,9 +115,12 @@ function setup_params_events(x) {
 
   x.onvalue = function(name,fn) {
     var res = x.trackParam(name,(val) => {
-      if (val) fn(val);
+      if (typeof(val) != "undefined") 
+        fn(val);
     });
-    if (x.params[name]) fn( x.params[name] );
+    let val = x.params[name];
+    if (typeof(val) != "undefined") 
+        fn(val);
     return res;
   }
 

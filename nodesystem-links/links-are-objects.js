@@ -120,7 +120,11 @@ export default function setup( vz ) {
     obj.addCheckbox( "enabled", true );
     
     // enable_qqq = выполнить разовый вызов qqq в ходе настройки (работы алгоритма setupFromLink)
+    let unsubFromParamTracking = () => {};
+    obj.on("remove",() => unsubFromParamTracking());
+
     function setupFromLink(enable_qqq,enable_retry=true,enable_signal=true) {
+      unsubFromParamTracking(); 
 
       //console.error("Link: setupFromLink called",obj);
       var v = obj.getParam("from");
@@ -199,8 +203,9 @@ export default function setup( vz ) {
          console.warn( "Link: source object has no param at time of linking", paramname, sobj.getPath());
       */
       
-      if (sobj)
-          sobj.trackParam( paramname, qqq );
+      if (sobj) {
+          unsubFromParamTracking = sobj.trackParam( paramname, qqq );
+      }    
   
       currentRefFrom = sobj;
       currentParamNameFrom = paramname;      
