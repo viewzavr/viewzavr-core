@@ -55,6 +55,12 @@ export default function setup( m ) {
     if (dump.lexicalParent)
       obj.lexicalParent = dump.lexicalParent;
 
+    // неописанное еще приключение
+    if (dump.$name) {
+      obj.$env_extra_names ||= {};
+      obj.$env_extra_names[ dump.$name ] = true;
+    };  
+
     m.restoreFeatures( dump, obj, manualParamsMode );
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
     // и стать функторами
@@ -101,6 +107,12 @@ export default function setup( m ) {
 
     if (dump.lexicalParent)
       obj.lexicalParent = dump.lexicalParent;
+
+    // неописанное еще приключение
+    if (dump.$name) {
+      obj.$env_extra_names ||= {};
+      obj.$env_extra_names[ dump.$name ] = true;
+    }      
 
     m.restoreFeatures( dump, obj );
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
