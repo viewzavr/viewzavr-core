@@ -111,9 +111,11 @@ export default function setup(x) {
   }
   x.callCmd = function( name, ...args ) {
     let gui = x.getGui( name );
-    if (gui?.type === "cmd") {
+    if (gui?.type === "cmd" && x[name]) {
       // может тут событий повызывать?
-      return gui.fn.apply( gui.fn, args );
+      //return gui.fn.apply( gui.fn, args );
+      // вроде так интереснее вызывать..
+      x[name].apply( x, args );
     }
     else
     {
@@ -139,17 +141,18 @@ export default function setup(x) {
   };
   
   x.addLabel = function( name, value, fn ) {
-    x.setParamOption( name,"internal",true ); // R-DO-NOT-SAVE-LABEL-VALUE
+    //x.setParamOption( name,"internal",true ); // R-DO-NOT-SAVE-LABEL-VALUE
     return x.addGui( { type: "label", name: name, value: value, fn: fn });
     //return x.addGui( { type: "label", name: name, value: value, fn: fn, forceUseGuiValue: true });
   };
 
 /*
-  x.addStatus = function( name, value, fn ) {
-    x.setParamOption( name,"internal",true ); // R-DO-NOT-SAVE-LABEL-VALUE
-    return x.addGui( { type: "status", name: name, value: value, fn: fn });
+  x.addStatus = function( name, value ) {
+    //x.setParamOption( name,"internal",true ); // R-DO-NOT-SAVE-LABEL-VALUE
+    // да вроде как не надо - запоминается нынче только manual-вещи
+    return x.addGui( { type: "status", name: name, value: value });
   };
-*/
+*/  
 
 //  x.addUrl = function( name, value, fn ) {
 //    return x.addGui( { type: "url", name: name, value: value, fn: fn });

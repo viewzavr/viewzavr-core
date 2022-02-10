@@ -17,8 +17,12 @@ export default function setup( obj ) {
             add_retry( obj, name, value );
             return;
           }
+          else
+            forget_retry( obj, name );
+
           value = target_obj; // будем класть на хранение уже объекты
       }
+        else forget_retry( obj, name );
     }
     return this.orig( name, value );
   });
@@ -36,15 +40,28 @@ export default function setup( obj ) {
 var retry_find_objs = [];
 var retry_timer = null;
 
+// todo такие таймеры это конечно вещь, особенно в сетевых приложениях
+// заменить на ожидание загрузки модулей @timers @todo и прочих операций
 function add_retry( obj, paramname, value ) {
+  obj.ref_retry_counters ||= {};
+  obj.ref_retry_counters[paramname] ||= 1;
+
   setTimeout( function() {
     if (obj.removed) return;
+    if (!obj.ref_retry_counters[paramname]) return; // отпала необходимость
     console.warn("ref-as-obj: retry setting obj-ref, obj=",obj.getPath(), {paramname,value} );
-    obj.ref_retry_counters ||= {};
-    obj.ref_retry_counters[paramname] = (obj.ref_retry_counters[paramname] || 0)+1;
+
+    obj.ref_retry_counters[paramname] = obj.ref_retry_counters[paramname]+1;
+    
     if (obj.ref_retry_counters[paramname] < 30)
       obj.setParam( paramname, value );
     else
       console.error("ref-as-obj: stopped because of retry counter limit.")
-  }, 150 );
+  }, 50 );
+}
+
+export function forget_retry( obj, paramname ) {
+  if (obj.ref_retry_counters) {
+    delete obj.ref_retry_counters[paramname];
+  }
 }

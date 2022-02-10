@@ -12,6 +12,8 @@ export default function setup(x) {
     var res = orig(rec);
     //console.log("______ GPN emit gui-added",rec.name,x.getPath())
     x.emit("gui-added",rec.name);
+    //console.log("emit","gui-changed-"+rec.name)
+    x.emit("gui-changed-"+rec.name,rec.name);
 
 /*
     rec.events.addEventListener( "visible-changed",() => {

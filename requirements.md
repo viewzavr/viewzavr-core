@@ -93,6 +93,7 @@ An obj started behaving with default value, which were not the case (program han
 If one creates gui via addLabel, it should not be saved to storage.
 Solution: this parameter (represented by label) should become internal.
 This is because I think so (see such pattern).
+Дополнительно - мб можно этим не заморачиваться т.к. мы теперь сохраняем только manual-значения..
 
 # R-GUI-SKIP-LABEL-VALUE-FROM-PARAM?
 Comment: R-DO-NOT-SAVE-LABEL-VALUE maybe enought
