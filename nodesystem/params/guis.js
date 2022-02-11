@@ -14,6 +14,7 @@ export default function setup(x) {
 
   x.addGui = function(rec) {
     if (!rec.fn) rec.fn = function() {};
+    //console.log("addGui obj=",x.getPath(),rec.name)
 
     // R-NEED-GUI-TITLE
     // R-PROVIDE-GUI-TITLE

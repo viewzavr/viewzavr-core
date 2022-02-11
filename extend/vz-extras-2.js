@@ -90,7 +90,7 @@ export function find_track(obj) {
 // и еще мысль была - регистрировать фичи как функции env или vz или еще чего, фиче-тейбла
 // и вызывать их не по env.feature(name) а по env.name. аргументов много сходу их не помню.
 
-export function delayed( env ) {
+function delayed( env ) {
   env.delayed = _delayed;
   env.delayed_first = _delayed_first;
 }

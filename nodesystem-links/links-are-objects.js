@@ -524,15 +524,34 @@ function linksOfParam( obj,name, needfrom=true, needto=true ) {
 
 
 /////////////////////////////////////////////
-
 // восстановление ненайденных ссылок
 
-var scannerLinks = [];
-/* заоверрайдено фичей ниже.. почему в js нельзя переопределять функцию? */
-/* но быть может потому что это надо делать через точку передачи управления */
-/* сделал через перехват точки управления (было function linkScannerAdd) */
+var linkScannerReset = function(link) {
+  link.linkScannerCounter = 0;
+}
 
 var linkScannerAdd = function ( link ) {
+
+  if (!link.rescan_it_delayed)
+    link.rescan_it_delayed = link.delayed( () => link.setupLinks(),3 );
+    // идея добавить так чтобы был сдвиг по времени при повторном вызове
+    // с текущей реализацией delayed это сделать реально
+
+  link.linkScannerCounter = (link.linkScannerCounter || 0) + 1;
+  if (link.linkScannerCounter < 100)
+    link.rescan_it_delayed();
+  
+}
+
+
+/*
+
+var scannerLinks = [];
+// заоверрайдено фичей ниже.. почему в js нельзя переопределять функцию?
+// но быть может потому что это надо делать через точку передачи управления
+// сделал через перехват точки управления (было function linkScannerAdd)
+
+var linkScannerAdd1 = function ( link ) {
   if (scannerLinks.indexOf( link ) < 0) 
       scannerLinks.push( link );
 }
@@ -544,21 +563,19 @@ setInterval( function() {
   //console.error("Link: retrying to connect links",x);
   //if (x.length > 0) debugger;
   x.forEach( link => link.setupLinks() ); // она там себя добавит если облом
-}, 1000 );
+}, 10 );
 
 ///////////////////////////////////////////
 /// фича - несколько попыток и идите в лес
 /// перехватываем вот то управление.. можно было бы там метод какой-то типа doAddToArr?
-linkScannerAdd = function ( link ) {
+linkScannerAdd2 = function ( link ) {
   if (scannerLinks.indexOf( link ) < 0) {
       link.linkScannerCounter = (link.linkScannerCounter || 0) + 1;
-      if (link.linkScannerCounter < 10)
+      if (link.linkScannerCounter < 100)
           scannerLinks.push( link );
       else
           console.error("Link: retry counter finished, will not retry anymore.",link)
   }
 }
+*/
 
-var linkScannerReset = function(link) {
-  link.linkScannerCounter = 0;
-}
