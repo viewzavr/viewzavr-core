@@ -115,6 +115,7 @@ function _delayed( f,delay=0 ) {
       
     },delay);
   }
+  res.stop = () => { if(t) clearTimeout(t);t=null; };
 
   return res;
 }
@@ -132,9 +133,10 @@ function _delayed_first( f,delay=0 ) {
       f(...args);
 
       t=null;
-      
+
     },delay);
   }
+  res.stop = () => { if(t) clearTimeout(t);t=null; };
 
   return res;
 }

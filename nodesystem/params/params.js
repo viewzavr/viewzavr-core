@@ -29,6 +29,7 @@ export default function setup(x) {
   x.setParam = function(name,value) {
     //if (name == "width" && value == "10px") debugger;
 
+    //var old = x.getParam()
     var old = x.setParamWithoutEvents( name, value );
     
 
@@ -122,11 +123,12 @@ function setup_params_events(x) {
     if (typeof(val) != "undefined") 
         callfn(val);
     function callfn( val ) {
-       try {
+       //try {
          fn( val );
-       } catch( err ) {
-         console.error("obj.onvalue: error during calling user callback. obj=", x.getPath(),"name=",name,"fn=",fn,"err=",err);
-       }      
+       //} catch ( err ) {
+       //  console.error("obj.onvalue: error during calling user callback. obj=", x.getPath(),"name=",name,"fn=",fn,"err=",err);
+       //  throw err;
+       //}      
     }
     return res;
   }
@@ -141,11 +143,12 @@ function setup_params_events(x) {
         vals.push( x.params[name] );
        //    fn.call( undefined, ...vals ); // зис им перебиваем конеш
        // может тут тоже требовать чтобы все было, до кучи уж
-       try {
+       //try {
          fn( ...vals );
-       } catch( err ) {
-         console.error("obj.onvalues: error during calling user callback. obj=",x.getPath(),"names=",names,"fn=",fn,"err=",err);
-       }
+       //} catch ( err ) {
+       //  console.error("obj.onvalues: error during calling user callback. obj=",x.getPath(),"names=",names,"fn=",fn,"err=",err);
+       //  throw err;
+      // }
     }
     // если все ненулевые значения - сработаем сразу
     function call_if_all_exist( ename, evalue ) {

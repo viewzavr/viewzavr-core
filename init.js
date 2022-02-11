@@ -11,8 +11,14 @@ import sw from "./features/special-vars.js";
 //import extend from "./extend/extend.js";
 import extend from "./extend/init.js";
 
+//import * as EventsSetup from "./nodesystem/events/init.js";
+
+
 export function setup( m, opts={} ) {
   m.vz = m;
+
+  //EventsSetup.addEventsTo( m ); // события вьюзавру добавим..
+  // вроде как на этом уровне это еще не надо - это надо фичатулсам пусть они и добавляют
 
   utils_setup( m ); // ну пусть пока будет
   nodesystem_setup( m );

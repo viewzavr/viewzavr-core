@@ -1,6 +1,8 @@
 import * as FT from "./feature-tools.js";
 
 export default function setup( vz ) {
+
+  FT.add_events( vz );
    
   FT.add_features_registry( vz );
     FT.add_appends( vz ); // думаю вызов фичи должен быть здесь. аддитивность - подключаем фичу один раз.

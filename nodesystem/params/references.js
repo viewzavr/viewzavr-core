@@ -5,6 +5,8 @@
 
 // словарь obj.references хранит список имен параметров, являющихся ссылками
 
+// короче этот файл про хранение ссылок в целом
+
 import ref_as_obj_setup from "./ref-as-obj.js";
 
 export default function setup(vz, x) {
@@ -19,7 +21,7 @@ export default function setup(vz, x) {
   var ref_values = {};        // хранит поданные в setParam пути к объектам
   var ref_event_unbinds = {}; // функции отписки от объектов
   
-  x.chain("setParam",function (name, value) {
+  x.chain("setParamWithoutEvents",function (name, value) {
     if (x.isReference( name )) {
       // ага это ссылка
       if (ref_event_unbinds[ name ]) ref_event_unbinds[ name ]();
@@ -35,7 +37,7 @@ export default function setup(vz, x) {
       ref_values[name] = value?.getPath ? value.getPath() : value;
     }
     //x.setReference( name, value ); // ставим флаг что у нас есть ссылка
-    this.orig( name, value );
+    return this.orig( name, value );
   });
   
   x.setReference = function( name ) {

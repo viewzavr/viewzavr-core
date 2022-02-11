@@ -207,6 +207,9 @@ export function add_features_use( env, registry_env ) {
     name = name.replaceAll("_","-");
     env.$features_applied ||= {};    
     env.$features_applied[name] = true;
+
+    // ТПУ
+    env.emit(`feature-applied-${name}`);
   }
   env.is_feature_applied = (name) => {
     name = name.replaceAll("_","-");

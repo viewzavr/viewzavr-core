@@ -1,9 +1,11 @@
 // R-SETREF-OBJ we should be able to set references to objects as objects, not as strings
 // also, sets value to object. thus getParam("some-ref") returns object.
 
+// а этот файл про то что на getParam мы выдаем таки объект а не строчку
+
 export default function setup( obj ) {
 
-  obj.chain("setParam",function (name, value) {
+  obj.chain("setParamWithoutEvents",function (name, value) {
     if (obj.isReference( name )) {
       if (value && !value.setParam) { // то есть value это текстовая ссылка
           //var tree_to_find_in = obj.getParamOption(name,"tree") || obj;
@@ -15,7 +17,7 @@ export default function setup( obj ) {
 
           if (!target_obj) {
             add_retry( obj, name, value );
-            return;
+            return obj.getParam( name ); // по протоколу setParamWithoutEvents надо старое вернуть
           }
           else
             forget_retry( obj, name );

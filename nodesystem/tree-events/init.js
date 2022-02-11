@@ -22,12 +22,12 @@ export default function setup(m) {
 
     obj[tree_name].appendChild = function(cobj, name, rename) {
       var res = orig(cobj, name, rename);
-      obj[tree_name].signalOnTree("appendChildInTree");
+      obj[tree_name].signalOnTree("appendChildInTree"); // дорого
       obj.signal("appendChild", cobj);
       obj.signal("childrenChanged", cobj);
       cobj.signal("parent_change");
       cobj.signal("parentChanged");
-      obj[tree_name].signalOnTree("change_in_tree");
+      obj[tree_name].signalOnTree("change_in_tree"); // дорого
       return res;
     }
 
