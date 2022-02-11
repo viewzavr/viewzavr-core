@@ -162,6 +162,9 @@ export function trackObjects( root, finder_func, cb ) {
 
 /////////////////////////////////////////////////////////////////////
 export function addObjects(obj, name,criteria_text,cb,desired_root) {
+  console.error("addObjects is temporary down!")
+  return;
+
   let unsubscribe;
   let removed;
 

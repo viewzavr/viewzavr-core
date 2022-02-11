@@ -17,7 +17,7 @@ export default function setup( obj, nf ) {
     nf( existing ).name = newname;
 
     _obj.signal("child_renamed", existing ); // тпу
-    obj.signalOnTree( "change_in_tree", _obj ); // todo сделать новое имя этому сигналу.. мб проще даже типа treechange
+    //obj.signalOnTree( "change_in_tree", _obj ); // todo сделать новое имя этому сигналу.. мб проще даже типа treechange
     existing.signal("name_changed", name, newname );
 
     return existing;

@@ -10,6 +10,8 @@ export default function setup(m) {
     // вопрос, это получается сигнал то на объекте у нас а не на дереве
     // ну пусть так пока будет
     // это сигнал наверх
+
+    /* признаю это дорогим и засим вредным вызовом
     obj[tree_name].signalOnTree = function( ...args ) {
       var p = obj;
       while (p) {
@@ -17,17 +19,18 @@ export default function setup(m) {
         p = p[tree_name].parent;
       }
     }
+    */
 
     var orig = obj[tree_name].appendChild;
 
     obj[tree_name].appendChild = function(cobj, name, rename) {
       var res = orig(cobj, name, rename);
-      obj[tree_name].signalOnTree("appendChildInTree"); // дорого
+      //obj[tree_name].signalOnTree("appendChildInTree"); // дорого
       obj.signal("appendChild", cobj);
       obj.signal("childrenChanged", cobj);
       cobj.signal("parent_change");
       cobj.signal("parentChanged");
-      obj[tree_name].signalOnTree("change_in_tree"); // дорого
+      //obj[tree_name].signalOnTree("change_in_tree"); // дорого
       return res;
     }
 
@@ -39,12 +42,12 @@ export default function setup(m) {
 
       if (!cobj) return;
       
-      obj[tree_name].signalOnTree("forgetChildInTree");
+      //obj[tree_name].signalOnTree("forgetChildInTree");
       obj.signal("forgetChild", cobj);
       obj.signal("childrenChanged", cobj);
       cobj.signal("parent_change", cobj );
       cobj.signal("parentChanged", cobj );
-      obj[tree_name].signalOnTree("change_in_tree");
+      //obj[tree_name].signalOnTree("change_in_tree");
       return res;
     }
 
