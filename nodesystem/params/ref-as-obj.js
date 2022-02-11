@@ -57,7 +57,7 @@ function add_retry( obj, paramname, value ) {
       obj.setParam( paramname, value );
     else
       console.error("ref-as-obj: stopped because of retry counter limit.")
-  }, 50 );
+  }, 150 );
 }
 
 export function forget_retry( obj, paramname ) {

@@ -135,12 +135,23 @@ export default function setup( m ) {
       if (dump.keepExistingParams && obj.hasParam( name )) return;
 
       let v = h[name];
+
+      // фишка. v это у нас общее описание на уровне dump.
+      // если мы туда прописываем lexicalParent то мы пишем в общую запись
+      // это надо специальным образом как-то зарешать
+
       // F-LEXICAL-PARENT
+      // здесь происходит назначение "лексического родителя" в dump-описания окружений, хранимых в параметрах
       if (v.needLexicalParent) {
          //v.lexicalParent = obj;
          if (Array.isArray(v)) // там список окружений - всем назначим..
-            for (let q of v)
-              q.lexicalParent = obj;
+         {
+            // старое for (let q of v) q.lexicalParent = obj;
+            // новое - сделаем тупо, потом можно оптимизировать например создавая спец-структуру
+            // вида newrecord -> lexicalparent, array..
+            v = v.map(a => ({...a}));
+            for (let q of v) q.lexicalParent = obj;
+         }
        }
 
       obj.setParam( name, v, manualParamsMode ); // ставим true - в том смысле что это установка из
@@ -379,7 +390,7 @@ export default function setup( m ) {
       
       // the only way to catch errors is here, allSettled will ignore that error
       r.catch( (err) => {
-        console.error("createChildrenByDump: error!",err );
+        console.error("createChildrenByDump: error! parent=",obj.getPath(),"child_dump=",child_dump,"error=",err );
       });
     });
 

@@ -116,11 +116,18 @@ function setup_params_events(x) {
   x.onvalue = function(name,fn) {
     var res = x.trackParam(name,(val) => {
       if (typeof(val) != "undefined") 
-        fn(val);
+        callfn(val);
     });
     let val = x.params[name];
     if (typeof(val) != "undefined") 
-        fn(val);
+        callfn(val);
+    function callfn( val ) {
+       try {
+         fn( val );
+       } catch( err ) {
+         console.error("obj.onvalue: error during calling user callback. obj=", x.getPath(),"name=",name,"fn=",fn,"err=",err);
+       }      
+    }
     return res;
   }
 
@@ -134,7 +141,11 @@ function setup_params_events(x) {
         vals.push( x.params[name] );
        //    fn.call( undefined, ...vals ); // зис им перебиваем конеш
        // может тут тоже требовать чтобы все было, до кучи уж
-       fn( ...vals );
+       try {
+         fn( ...vals );
+       } catch( err ) {
+         console.error("obj.onvalues: error during calling user callback. obj=",x.getPath(),"names=",names,"fn=",fn,"err=",err);
+       }
     }
     // если все ненулевые значения - сработаем сразу
     function call_if_all_exist( ename, evalue ) {
