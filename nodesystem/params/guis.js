@@ -91,7 +91,11 @@ export default function setup(x) {
 
   x.addCmd = function( name, fn ) {
     // feature: when adding cmd, also add method to obj
-    x[name] = fn;
+    // ну получается.. я тут делаю ||= и это значит что если уже есть - то не будет.
+    // сейчас это используется когда мы заменяем rescan_params для dom_group (то ли в 2д то ли в 3д)
+    // может быть тут стоит событийные вещи какие-то приделать или что-то другое
+    
+    x[name] ||= fn;
     //x.setParam( name, (...args) => callCmd(name,...args));
 
     var res = x.addGui( { type: "cmd", name: name, fn: fn });
