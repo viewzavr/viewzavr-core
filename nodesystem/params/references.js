@@ -7,6 +7,8 @@
 
 // короче этот файл про хранение ссылок в целом
 
+// идея - может не crit-fn а а) функция поставки объектов в целом? б) набор фич для поиска?
+
 import ref_as_obj_setup from "./ref-as-obj.js";
 
 export default function setup(vz, x) {

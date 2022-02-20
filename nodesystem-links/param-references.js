@@ -61,6 +61,7 @@ export default function setup(vz) {
     x.addLabel(`status-${name}`);
 
     function setrec() {
+      // ну так то это неправильно - фиксировать через какое гуи мы тут пойдем
       rec = x.addGui( { type: "editablecombo", name: name, value: value, values: values, crit_fn: crit_fn, fn: fn } );
       rec.getValues = function() {
         let crit_fn1 = x.getParamOption( name, "crit_fn") || crit_fn || default_crit_fn;

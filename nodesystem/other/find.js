@@ -32,7 +32,7 @@ export default function setup( vz ) {
     }
     
     if (path[0] == "." && path[1] == "." && path[2] == "/") {    // example: ../camera
-      return vz.find_by_path( obj.ns.parent, path.substring(3) );
+      return vz.find_by_path( obj.ns.parent || obj.host.ns.parent, path.substring(3) );
     }
     if (path == "..") {    // example: ..
       // F-FEAT-PARAMS
@@ -109,8 +109,11 @@ export default function setup( vz ) {
   // алгоритм поиска объекта по имени
   vz.find_by_id_scopes = function (startobj,name,skipobj,allow_up=true,tree_name="ns" ) {
     
+    // поищем в ребенке узла
     var c1 = startobj[tree_name].getChildByName( name );
     if (c1) return c1;
+
+    // поищем во всех поддеревьях всех ребенков узла
     for (let o of startobj[tree_name].getChildren()) {
       if (o === skipobj) continue;
       let res = vz.find_by_id_scopes( o, name, null, false );
