@@ -6,5 +6,8 @@ export default function setup( obj, nf ) {
 
   _obj.items = obj.childrenTable;
 
+  
+  //Object.defineProperty( )
+
   return obj;
 }

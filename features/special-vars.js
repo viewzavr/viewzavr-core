@@ -92,8 +92,15 @@ export default function setup( vz ) {
   vz.chain( "create_obj", function (obj,options) {
     this.orig( obj, options );
     
+    // удобно для отладки все три - в dev tools смотреть
     obj.$vz_items = obj.items;
     obj.$vz_params = obj.params;
+    
+    
+    Object.defineProperty( obj, "$vz_parent",{
+      enumerable: true, // тогда видно в девтулс
+      get: function() { return obj.ns.parent; }
+    } );
 
     return obj;
   });
