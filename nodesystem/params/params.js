@@ -133,6 +133,7 @@ function setup_params_events(x) {
     return res;
   }
 
+  // мониторит набор параметров и если все не undefined то срабатывает
   x.onvalues = function(names,fn) {
     if (!Array.isArray(names)) names=[names];
 
@@ -180,6 +181,7 @@ function setup_params_events(x) {
     return resall;
   } // onvalues
 
+  // если хотя бы 1 не undefined то срабатывает
   x.onvalues_any = function(names,fn) {
     if (!Array.isArray(names)) names=[names];
 
@@ -219,12 +221,42 @@ function setup_params_events(x) {
     call_if_any_exist();
 
     return resall;
-  } // onvalues
+  } // onvalues_any
 
     // эксперимент todo
     // names это массив вида [ env, name1, name2, env2, name3 ]
     // ну или еще как..
+    // мб это просто trackParams
     x.monitor_values = function(names,fn) {
+
+      if (!Array.isArray(names)) names=[names];
+
+    // вызов
+    function fn2() {
+       var vals = [];
+       for (let name of names) 
+        vals.push( x.params[name] );
+       //    fn.call( undefined, ...vals ); // зис им перебиваем конеш
+       // может тут тоже требовать чтобы все было, до кучи уж
+       fn( ...vals );
+    }
+
+    var fn2_delayed = _delayed( fn2 );    
+
+    var acc = [];
+    for (let name of names) {
+      var res = x.trackParam(name,fn2_delayed);
+      acc.push( res );
+    }
+    // всеобщая отписка
+    let resall = () => {
+      acc.forEach( (x) => x() );
+    }
+
+    fn2_delayed();
+
+    return resall;
+
     };
 
   // todo сделать тут setParam?...

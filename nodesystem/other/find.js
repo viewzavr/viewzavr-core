@@ -41,6 +41,7 @@ export default function setup( vz ) {
 
       if (obj.host.host != obj.host) // ну вот так вот.. смысл чтобы как-то выходить из вложенных окружений..
         return obj.host.host;
+      
       return null;
       //return obj.host.ns.parent;
       //return obj.lexicalParent || obj.ns.parent || obj.master_env;

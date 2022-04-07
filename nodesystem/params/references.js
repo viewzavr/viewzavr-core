@@ -28,6 +28,12 @@ export default function setup(vz, x) {
       // ага это ссылка
       if (ref_event_unbinds[ name ]) ref_event_unbinds[ name ]();
 
+      let t = typeof(value);
+      if (value !== null && t !== "string" && t !== "undefined" && !(value && value.setParam)) {
+          console.error("setting invalid value to reference parameter. assign skipped. obj=",x.getPath(),"param=",name,"value=",value);
+          return this.orig( name, value );
+      }
+
       var obj = vz.find_by_path( x,value ); // todo fix use start tree, see ref-as-obj
 
       if (obj) {

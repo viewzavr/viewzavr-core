@@ -11,8 +11,20 @@ export default function setup( obj ) {
           //var tree_to_find_in = obj.getParamOption(name,"tree") || obj;
           //var target_obj  = obj.vz.find_by_path( tree_to_find_in,value );
           //var target_obj  = obj.vz.find_by_path( obj,value );
+
+          let t = typeof(value);
+          if (value !== null && t !== "string" && t !== "undefined") {
+              console.error("setting invalid value to reference parameter. assign skipped. obj=",obj.getPath(),"param=",name,"value=",value);
+              //return this.orig( name, value );
+              return;
+          }
+
+
           var f = obj.getParamOption(name,"tree_func");
           var tree_to_find_in = f ? f() : obj;
+
+          // TODO похоже у нас тут дублирующся find_by_path причем с разными tree_func
+
           var target_obj  = obj.vz.find_by_path( tree_to_find_in,value ); 
 
           if (!target_obj) {
