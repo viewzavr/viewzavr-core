@@ -15,6 +15,7 @@
 
 export default function setup( vz ) {
 
+  // создание ссылки, большой, в целом такой глобальной из себя всей.
   vz.createLink = function( opts ) {
     opts.name ||= "link";
     var obj = vz.createObj( opts );
@@ -80,8 +81,9 @@ export default function setup( vz ) {
         }
       }
       */
+      
+      //console.log("link ",obj.getPath(),"setting value from",obj.params.from,"to",obj.params.to,val);
       /*
-      console.log("link setting value from",obj.params.from,"to",obj.params.to);
       if (obj.params.to === "/view-cmp-Lidar_crop_p3_4->origin")
         debugger;
       */  
@@ -109,6 +111,8 @@ export default function setup( vz ) {
         //obj.emit("passed_value");
         // todo я до сих пор не умею красиво добавлять добавки..
         //obj.passed_value_timestamp = performance.now();
+
+        obj.setParam("last_passed_value",val);
        }
        // ну и что что не передала - сработала же..
        obj.passed_value_timestamp = performance.now();
@@ -370,6 +374,8 @@ export default function setup( vz ) {
 vz.chain("create_obj",function( obj, opts ) {
 
   // createLinkTo( { param: "someparam", from: sourcestring})
+
+  // создание ссылки локальной для объекта
   obj.createLinkTo = function( opts ) {
     //console.log("CLT called,.opts=",opts);
     var paramname = opts.param;
