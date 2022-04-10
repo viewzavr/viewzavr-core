@@ -106,7 +106,7 @@ function setup_params_events(x) {
     let value = x.getParam(name);
     x.pevents.emit( name,value );
     x.emit('param_changed',name,value);
-    x.emit(`param_${name}_changed`,name,value); // все-таки мне удобно так тоже ловить, из compolang
+    x.emit(`param_${name}_changed`,value); // все-таки мне удобно так тоже ловить, из compolang
 
     x.setParamOption( name,"changed_timestamp", performance.now() );
     // @todo move out

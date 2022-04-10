@@ -46,30 +46,39 @@ export default function setup( vz ) {
       }
 
       var val = null;
+      var val_received = false;
 
       if (currentRefFrom) {
 
         // доступ к полю F-OBJ-ACCESS-FROM-DECLARATIVE 
         if (currentParamNameFrom[0] == ".") {
           let field = currentParamNameFrom.slice( 1 );
-          if (currentRefFrom)
+          if (currentRefFrom) {
               val = currentRefFrom[field];
+              val_received = true;
+          }
         }
         // ссылка на команду
         else if (currentRefFrom.hasCmd( currentParamNameFrom )) {
            val = (...args) => {
               currentRefFrom.callCmd( currentParamNameFrom, ...args );
            }
+           val_received = true;
         }   
         // доступ к параметру   
-        else
+        else {
           val = currentRefFrom.getParam( currentParamNameFrom  );
+          val_received = currentRefFrom.hasParam( currentParamNameFrom);
+        }
       }  
 
       if (typeof(val) == "undefined" || val == null) {
         // теперь undefined скрываем только если ссылка добрая/мягкая/необязательная
-        if (obj.params.soft_mode)
-            return;
+        if (obj.params.soft_mode) {
+            // обновление: скрываем только если и нет такого параметра. а если уж он там есть, а вернул ерунду - ну и ладно, передаем
+            if (!val_received) 
+              return;
+        }
       }
       
       /*
@@ -421,7 +430,7 @@ vz.chain("create_obj",function( obj, opts ) {
         //q.setParamWithoutEvents( "to", obj.getPath() + "->" + paramname, opts.manual ); // will emit events on 'from'?
     q.setParam( "from", sourcestring );
     q.setParam( "tied_to_parent",true, opts.manual );
-    q.setParam( "soft_mode", opts.soft_mode, opts.manual );
+    q.setParam( "soft_mode", opts.soft_mode || opts.soft , opts.manual );
     return q;
   }
   obj.linkParam = function( paramname, link_source ) {

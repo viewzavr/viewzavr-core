@@ -241,8 +241,10 @@ export function add_appends_to_table(env) {
   env.appends = {}
   env.append = (name,name2) => {
     env.appends[name] ||= [];
-    if (env.appends[name].indexOf(name2) < 0) 
+    if (env.appends[name].indexOf(name2) < 0) {
         env.appends[name].push( name2 ); // todo optimize
+        //console.log("vz: appended feature ",name2,"to",name)
+    }
     // по идее теперь надо найти все объекты и применить к ним это обновление
     // todo  
   }
@@ -254,6 +256,12 @@ export function add_appends_to_table(env) {
     for (let appended_name of (env.appends[name] || []))
         env.apply( appended_name, target_env, ...args );
   }
+
+/*
+  env.unapply = (name,target_env,...args) => {
+    if (!target_env.is_feature_applied(name))
+      return;
+  }*/
 
   env.apply = (name,target_env,...args) => {
     // F-ONCE
@@ -309,6 +317,7 @@ export function add_appends_to_table(env) {
       //result = f( target_env,...args );
       result = invoke_feature_function( f, target_env, ...args );
     }
+    //console.log("running desired appends for",name)
     if (appends) 
       env.run_appends( name, target_env, ...args );
     // todo: добавить вызов новых аппендов
