@@ -176,6 +176,32 @@ export function add_features_registry( env ) {
     return result;
   }
 
+  env.unfeature_for = (target_env, features, ...args) => {
+    var names = feature_names_to_arr(features);
+    var result;
+    names.forEach( (name) => {
+       result = env.feature_table.unapply( name, target_env, ...args );
+    } );
+
+    return result;
+  }
+
+  // вот это все результат того что я разрешил чтобы features были строкой с пробелами или массивом
+  // можно было остановиться и сказать что ток 1 штучка
+  env.toggle_feature_for = (target_env, features, ...args) => {
+    var names = feature_names_to_arr(features);
+    var result;
+    names.forEach( (name) => {
+
+       if (target_env.is_feature_applied(name))
+         result = env.feature_table.unapply( name, target_env, ...args );
+       else
+         result = env.feature_table.apply( name, target_env, ...args );
+    } );
+
+    return result;
+  }  
+
   env.register_feature = (name,f) => {
     env.feature_table.add( name, f );
     //env.emit("feature-registered",name,f);
@@ -201,16 +227,33 @@ export function add_features_use( env, registry_env ) {
   env.feature = (names,...args) => registry_env.feature_for( env, names,...args );
   // тут идет спор - это может быть использовано не для фич vz, а просто для поиска фич, find_feature.
 
+  env.unfeature = (names,...args) => registry_env.unfeature_for( env, names,...args );
+
+  env.toggle_feature = (names,...args) => registry_env.toggle_feature_for( env, names,...args );
+
   env.extend = env.feature; // пока идет конкурс имен
 
-  env.set_feature_applied = (name) => {
+  env.set_feature_applied = (name,value=true) => {
     name = name.replaceAll("_","-");
     env.$features_applied ||= {};    
-    env.$features_applied[name] = true;
+    if (value)
+      env.$features_applied[name] = value;
+    else
+      delete env.$features_applied[name];
 
     // ТПУ
-    env.emit(`feature-applied-${name}`);
+    // todo испускать события ток если первый раз это состояние
+    if (value)
+      env.emit(`feature-applied-${name}`);
+    else
+      env.emit(`feature-unapplied-${name}`);
+
+    // todo идея таки писать в параметры - всем проще станет..
+    //if (!env.setParam) debugger;
+    //env.setParam("$features_applied",Object.keys( env.$features_applied ))
   }
+
+
   env.is_feature_applied = (name) => {
     name = name.replaceAll("_","-");
     env.$features_applied ||= {};
@@ -257,11 +300,12 @@ export function add_appends_to_table(env) {
         env.apply( appended_name, target_env, ...args );
   }
 
-/*
   env.unapply = (name,target_env,...args) => {
     if (!target_env.is_feature_applied(name))
       return;
-  }*/
+    target_env.set_feature_applied(name,false);
+    // ок пока не умеем удалять
+  }
 
   env.apply = (name,target_env,...args) => {
     // F-ONCE
