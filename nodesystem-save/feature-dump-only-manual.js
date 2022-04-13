@@ -38,7 +38,7 @@ export default function setup(m) {
 
     obj.setParamManualFlag = function(name,ismanual) {
       if (ismanual) {
-        if (!obj.isParamManual(name)) {
+        if (!obj.getParamManualFlag(name)) {
           obj.params_manual_dump ||= {};
           let dump = dumporig( name );
           obj.params_manual_dump[name] = {value: dump};
@@ -59,6 +59,7 @@ export default function setup(m) {
     P.chain(obj,"setParam", function(name,value,ismanual) {
       let res = this.orig( name, value );
       
+      // странная вообще идея - дампить каждый раз..
       if (ismanual) {
         obj.params_manual_dump ||= {};
         let dump = dumporig( name );

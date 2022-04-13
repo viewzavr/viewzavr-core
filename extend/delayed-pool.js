@@ -12,6 +12,12 @@ function tick() {
   window.requestAnimationFrame( tick );
   // надо вначале зарядить а то потом по ошибкам повалимся и все цикл остановится
 
+  // гипотеза что 1 обхода не хватает и надо побольше. вроде 2 норм (проверял по работе гуи на ноуте)
+  for (let i=0; i<2; i++)
+    process_recs();
+}
+
+function process_recs() {
   if (qnext.length > 0) {
       //console.log("AF.stat",qnext.length);
       //console.log( qnext.map( it => it.funchint ))
@@ -29,8 +35,6 @@ function tick() {
     else
       qnext.push( rec );
   }
-
-  
 }
 
 function setTimeoutQ( func, delay, funchint ) {
