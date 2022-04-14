@@ -278,6 +278,8 @@ export function add_create_env( target_env, registry_env ) {
 // потребность - чтобы при срабатывании фичи NAME1 срабатывали еще дополнительные фичи по списку, связанному с NAME1
 // особенность - контроль чтобы в списке доп-фич фичи не было дублирования, чтобы одну и ту же суб-фичу не применять два раза.
 
+// F-APPEND-RECALL - если фичу расширяют после ее применения на окружении, то расширение надо применить и тогда
+
 var reported_feautures = {};
 
 export function add_appends_to_table(env) {
@@ -286,6 +288,7 @@ export function add_appends_to_table(env) {
     env.appends[name] ||= [];
     if (env.appends[name].indexOf(name2) < 0) {
         env.appends[name].push( name2 ); // todo optimize
+        env.emit(`feature-appended-${name}`,name2); // F-APPEND-RECALL
         //console.log("vz: appended feature ",name2,"to",name)
     }
     // по идее теперь надо найти все объекты и применить к ним это обновление
@@ -364,7 +367,14 @@ export function add_appends_to_table(env) {
     //console.log("running desired appends for",name)
     if (appends) 
       env.run_appends( name, target_env, ...args );
-    // todo: добавить вызов новых аппендов
+
+    // F-APPEND-RECALL - добавить вызов новых аппендов
+    let unbind_fa = env.on(`feature-appended-${name}`,(name2) => {
+      console.log("INTERESTING PLACE - feature appended",name,"with",name2)
+      env.run_appends( name, target_env, ...args );
+    }); 
+    target_env.on("remove",() => unbind_fa() );
+
     return result;
    }
 
@@ -393,7 +403,20 @@ export function add_appends( env ) {
    }
 }
 
+/////////////////////////////////// фича "реальная карта фич"
+// потребность - уметь по фиче сообщать список созданных окружений (объектов)
+// зачем - чтобы когда приделывают append-feature то вызывать надо до-активацию этих окружений
+// ну и плюс может быть это пригодится для индексации (хотя там в деревьях еще дела)
+
+// а кстати идея. нафига нам карту городить, когда мы можем подписаться на событие
+// "фича расширена".. и т.о. там где мы запускали appends - добавить подписку на карту фич.
+// но эта карта фич должна обладать такой возможностью.. ну и ладно..
+
+//export function add_track_features( env, registry_env ) {
+//}
+
 /////////////////////////////////// фича "карты фич"
+// update из будущего - какая-то невероятная муть..
 // потребность - уметь красиво задать карту добавок к фичам.
 /* пример: 
    var app = {

@@ -13,10 +13,10 @@ export function param_alias(obj) {
 			obj.setParamOption(fromname, "internal", true);
 		}
 
-}  
+}
 
 /////////////////////////////////////////////////////////////////////
-export function param_mirror(obj) {  
+export function param_mirror(obj) {
 
     obj.feature("find_track");
 

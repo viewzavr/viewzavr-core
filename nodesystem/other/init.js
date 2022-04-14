@@ -17,7 +17,7 @@ export default function setup(m) {
       return this.orig();
     });  
     return this.orig( obj, options );
-  });  
+  });
 
   ///////// фича "у объекта есть метод chain"
 
