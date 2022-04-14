@@ -370,7 +370,7 @@ export function add_appends_to_table(env) {
 
     // F-APPEND-RECALL - добавить вызов новых аппендов
     let unbind_fa = env.on(`feature-appended-${name}`,(name2) => {
-      console.log("INTERESTING PLACE - feature appended",name,"with",name2)
+      // console.log("INTERESTING PLACE - feature appended",name,"with",name2)
       env.run_appends( name, target_env, ...args );
     }); 
     target_env.on("remove",() => unbind_fa() );
@@ -403,17 +403,6 @@ export function add_appends( env ) {
    }
 }
 
-/////////////////////////////////// фича "реальная карта фич"
-// потребность - уметь по фиче сообщать список созданных окружений (объектов)
-// зачем - чтобы когда приделывают append-feature то вызывать надо до-активацию этих окружений
-// ну и плюс может быть это пригодится для индексации (хотя там в деревьях еще дела)
-
-// а кстати идея. нафига нам карту городить, когда мы можем подписаться на событие
-// "фича расширена".. и т.о. там где мы запускали appends - добавить подписку на карту фич.
-// но эта карта фич должна обладать такой возможностью.. ну и ладно..
-
-//export function add_track_features( env, registry_env ) {
-//}
 
 /////////////////////////////////// фича "карты фич"
 // update из будущего - какая-то невероятная муть..
