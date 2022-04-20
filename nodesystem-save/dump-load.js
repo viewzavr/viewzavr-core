@@ -280,11 +280,15 @@ export default function setup( m ) {
       var lrec = dump.links[lname];
       var arr = lrec.to.split("->");
       if (arr[0] == "." || arr[0] == "~") {
+        //console.log("cre-link-to",lrec, obj.getPath()) 
         if (dump.keepExistingParams) {
           // особый режим сохранения уже существующих параметров
           // проблема что hasLinksToParam заработает только при активации ссылки, которая у нас отложенная...
           // F-LINKS-OVERWRITE
-          if (obj.hasLinksToParam( arr[1] ) || obj.hasParam( arr[1] )) continue;
+          if (obj.hasLinksToParam( arr[1] ) || obj.hasParam( arr[1] )) {
+              //console.log("orig link is kept - keepExistingParams")
+              continue;
+          }    
         }
         // разделяем ситуацию куда же нам направить местную ссылку - на себя (на фичу) или на главное окружение
 
@@ -297,6 +301,7 @@ export default function setup( m ) {
       }
       else
       {
+        //console.log("arg-link-to",lrec, obj.getPath())
         m.createLink( {parent: obj, name: "arg_link"});
         m.setParam("soft_mode",lrec.soft_mode);
         m.setParam("to",lrec.to);

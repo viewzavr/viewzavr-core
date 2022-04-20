@@ -317,8 +317,14 @@ export default function setup( vz ) {
     obj.addCheckbox( "tied_to_parent", obj.params.tied_to_parent );
 
     obj.onvalue( "tied_to_parent",(v) => {
-      if (v) // это нам надо поскорее обозначить потому-что F-LINKS-OVERWRITE
-        addLinkTracking( obj.ns.parent, obj, false );
+      if (v) { // это нам надо поскорее обозначить потому-что F-LINKS-OVERWRITE
+        let tobj = obj.ns.parent;
+        // тонкий момент. даже если мы tied-to-parent то может оказаться что ссылка на самом деле
+        // действует на хост а не на парента..
+        if ((obj.params.to || "")[0] == "." && obj.ns.parent.hosted)
+            tobj = tobj.host;
+        addLinkTracking( tobj, obj, false );
+      }  
     } );
 
     obj.trackParam("manual_mode",qqq); // F-LINKS-MANUAL
@@ -417,7 +423,12 @@ vz.chain("create_obj",function( obj, opts ) {
         toremove = existing.slice(1);
       }
       */
-      toremove.map( (e) => e.remove() )
+      
+
+      toremove.map( (e) => {
+        //console.log("removing existing link", e.getPath(), "for param",paramname)
+         e.remove()
+      } )
     }
     
     if (!q) q = vz.createObjByType( {...opts} );
