@@ -58,7 +58,7 @@ export function delayed( env ) {
 /////////////////////////////////////////////////////////////////////   
 
 
-function _delayed( f,delay=0 ) {
+export function _delayed( f,delay=0 ) {
   var t;
   var remembered_args;
 

@@ -164,7 +164,7 @@ function setup_params_events(x) {
         fn2();
     }
 
-    var fn2_delayed = _delayed( call_if_all_exist );    
+    var fn2_delayed = _delayed( call_if_all_exist );
 
     var acc = [];
     for (let name of names) {
@@ -227,6 +227,9 @@ function setup_params_events(x) {
     // names это массив вида [ env, name1, name2, env2, name3 ]
     // ну или еще как..
     // мб это просто trackParams
+
+    // monitor_values - мониторит параметры безо всякой проверки их содержимого
+    // разово вызывает fn и на старте
     x.monitor_values = function(names,fn) {
 
       if (!Array.isArray(names)) names=[names];
@@ -300,7 +303,10 @@ function setup_params_events_old(x) {
   */  
 }
 
+import {_delayed} from "../../extend/delayed-pool.js";
+// там у нас моднее функция, на тиках сделанная
 
+/*
 function _delayed( f,delay=0 ) {
   var t;
 
@@ -314,3 +320,4 @@ function _delayed( f,delay=0 ) {
 
   return res;
 }
+*/

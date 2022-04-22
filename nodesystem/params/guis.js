@@ -68,6 +68,7 @@ export default function setup(x) {
 
   x.addSlider = function (name, value, min, max, step, fn) {
     //x.setParamOption( name, "min", min );
+    //console.log("addSlider name=",name,"max=",max)
     return x.addGui( { type: "slider", name: name, value: value, min: min, max: max, step: step, fn: fn } );
   }
   x.addCombo = function(name, value, values, fn) {

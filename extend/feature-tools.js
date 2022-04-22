@@ -281,6 +281,7 @@ export function add_create_env( target_env, registry_env ) {
 // F-APPEND-RECALL - если фичу расширяют после ее применения на окружении, то расширение надо применить и тогда
 
 var reported_feautures = {};
+var missing_and_found_feautures = {};
 
 export function add_appends_to_table(env) {
   env.appends = {}
@@ -311,6 +312,8 @@ export function add_appends_to_table(env) {
   }
 
   env.apply = (name,target_env,...args) => {
+    name = normalize_feature_name(name);
+
     // F-ONCE
     // keeps record of applied features in that target_env
     // (I think that is normal to change that env for that purpose).    
@@ -336,20 +339,32 @@ export function add_appends_to_table(env) {
       */
 
       let error_report_tmr;
+      
       if (!reported_feautures[name]) { // будем ток 1 раз ныть
         reported_feautures[name] = true;
+        missing_and_found_feautures[name] = true;
         let ms = 5000;
+
         error_report_tmr = setTimeout( () => {
-          console.error(`viewzavr features: feature '${name}' is not defined (no code and no appended features) even after ${ms}ms timeout. object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
+          if (missing_and_found_feautures[name]) {
+              console.error(`viewzavr features: feature '${name}' is not defined (no code and no appended features) even after ${ms}ms timeout. object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
+
+              if (env.list[name])
+                console.error("dual error. feature is prezent in env.list",missing_and_found_feautures[name])
+          }              
           // todo поставить тут проверку что еще может что-то загружается.. а то таймаут это не о чем
         },ms)
+
+        //console.log(`viewzavr features: feature ${name} is scheduled for timeout"`,error_report_tmr)
       }
       // ну и что что фичи нет - потом может появится..
       //return;
-      var unbind1 = env.on(`feature-registered-${normalize_feature_name(name)}`,(name,newf) => {
-        //console.log(`viewzavr features: feature '${name}' is post-applied!`)
+      var unbind1 = env.on(`feature-registered-${normalize_feature_name(name)}`,(name2,newf) => {
+        //console.log(`viewzavr features: feature '${name}'(${name2}) is post-applied!`,error_report_tmr)
         unbind1();
-        clearTimeout( error_report_tmr );
+        if (error_report_tmr) { clearTimeout( error_report_tmr ); error_report_tmr=null; }
+        // ладно уж почистим и таймер
+        missing_and_found_feautures[name] = false;
         //newf( target_env,...args );
         invoke_feature_function( newf, target_env, ...args );
       })
