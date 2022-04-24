@@ -369,7 +369,13 @@ export default function setup( m ) {
   требования: 
     * при восстановлении сохранить порядок детей
     * вернуть промису которая разрезолвится когда работа будет готова
-*/  
+
+  новое: раздельный порядок восстановления: F-DEFINED
+    * сначала все load и register_feature
+    * а затем все остальное
+
+  todo оптимизировать - на тему чтобы load несколько параллельно загружались
+*/ 
   m.createChildrenByDump = function( dump, obj, manualParamsMode )
   {
     var c = dump.children || {};
@@ -377,22 +383,35 @@ export default function setup( m ) {
 
     var result_p = new Promise( (resolv, reject) => {
 
-      restore(0);
+      restore( 0,0 );
 
-      function restore( i ) {
-        if (i == ckeys.length)
-          return resolv( obj );
+      function restore( i, priority ) {
+        if (i == ckeys.length) {
+          if (priority == 0)
+            return restore( 0,1 ); // переходим на второй этап
+          else
+            return resolv( obj );
+        }
         name = ckeys[i];
+
+        var child_dump = c[name];
+
+        // если 
+        
+        let feats = child_dump.features || {};
+        let item_priority = (feats.load || feats.feature || feats.register_feature) ? 0 : 1
+        if (priority != item_priority)
+          return restore( i+1, priority );
 
         var cobj = obj.ns.getChildByName( name );
         if (!c[name].manual && !cobj && !c[name].forcecreate) {
           // ситуация когда объект должен был быть создан автоматически - но его нет!
           console.error("load_from_dump: no child of name found! name=",name,"obj=",obj);
           //promises_arr.push( Promise.reject() );
-          return restore( i+1 );
+          return restore( i+1, priority );
         }
 
-        var child_dump = c[name];
+        
         if (dump.keepExistingChildren)
             child_dump.keepExistingChildren = dump.keepExistingChildren;
 
@@ -400,12 +419,13 @@ export default function setup( m ) {
 
         var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode );
         r.then( () => {
-           restore( i+1 );
+           restore( i+1, priority );
         });
         
         // the only way to catch errors is here, allSettled will ignore that error
         r.catch( (err) => {
           console.error("createChildrenByDump: error! parent=",obj.getPath(),"child_dump=",child_dump,"error=",err );
+          // и че.. по идее надо все-равно вызывать следующих... или вызовется?
         });        
 
       }; // функция restore
