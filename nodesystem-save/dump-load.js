@@ -363,76 +363,56 @@ export default function setup( m ) {
   }
   
   // это вынесено в отдельную функцию потому что мы ее захотим овверрайдить для загрузки пакетов
+
+/*
+  восстанавливает детей объекту из дампа
+  требования: 
+    * при восстановлении сохранить порядок детей
+    * вернуть промису которая разрезолвится когда работа будет готова
+*/  
   m.createChildrenByDump = function( dump, obj, manualParamsMode )
   {
     var c = dump.children || {};
     var ckeys = Object.keys( c );
-    
-    ///////////////////////////////////////////////////////////    
-    // console.log("examining incoming children",c);
-    // добавляем тех что есть во входящем списке но нет у нас
-    // а мы добавим в общем списке..
-  
-    // todo отсортировать в порядке order..
-    var promises_arr = [];
-    //var actual_children_table
-    ckeys.forEach( function(name) {
-      var cobj = obj.ns.getChildByName( name );
-      if (!c[name].manual && !cobj && !c[name].forcecreate) {
-        // ситуация когда объект должен был быть создан автоматически - но его нет!
-        console.error("load_from_dump: no child of name found! name=",name,"obj=",obj);
-        promises_arr.push( Promise.reject() );
-        return;
-      }
-
-      /// история из keepExistingChildren по сохранению объектов-детей, которые уже созданы другими фичами
-      /// данного окружения. мысль - распространяем keepExistingChildren на все восстанавливаемое поддерево.
-      var child_dump = c[name];
-      if (dump.keepExistingChildren)
-          child_dump.keepExistingChildren = dump.keepExistingChildren;
-
-      if (dump.keepExistingChildren) cobj = null; // R-NEW-CHILDREN
-
-      var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode );
-      promises_arr.push( r );
-      
-      // the only way to catch errors is here, allSettled will ignore that error
-      r.catch( (err) => {
-        console.error("createChildrenByDump: error! parent=",obj.getPath(),"child_dump=",child_dump,"error=",err );
-      });
-    });
-
-    //return Promise.allSettled( promises_arr );
-
-    // теперь у нас ситуация что есть входящий список детей, и их экземпляры
-    // и есть текущий список детей внутри объекта
-    // и надо чтобы порядок текущего списка соответствовал входящему списку
 
     var result_p = new Promise( (resolv, reject) => {
-      Promise.allSettled( promises_arr ).then( (arr_of_objects_res) => {
 
-       let order = {};
-       let index = 0;
-       for (let c of ckeys) {
-          // имя в дампе может отличаться от реального назначенного имени
-          order[ arr_of_objects_res[index].value?.ns?.name || "__not__found__" ] = index++;
-       }
-       // тех что уже были в объекте - считаем на первом месте
-       var dp = -1;
-       var sorted = obj.ns.getChildren().sort( (a,b) => {
-          if ((order[a.ns.name] || dp) < (order[ b.ns.name ] || dp)) return -1;
-          if ((order[a.ns.name] || dp) > (order[ b.ns.name ] || dp)) return +1;
-          return 0;
-       })
-       
-       obj.ns.setChildren( sorted );
+      restore(0);
 
-       resolv( obj );
-    });
+      function restore( i ) {
+        if (i == ckeys.length)
+          return resolv( obj );
+        name = ckeys[i];
+
+        var cobj = obj.ns.getChildByName( name );
+        if (!c[name].manual && !cobj && !c[name].forcecreate) {
+          // ситуация когда объект должен был быть создан автоматически - но его нет!
+          console.error("load_from_dump: no child of name found! name=",name,"obj=",obj);
+          //promises_arr.push( Promise.reject() );
+          return restore( i+1 );
+        }
+
+        var child_dump = c[name];
+        if (dump.keepExistingChildren)
+            child_dump.keepExistingChildren = dump.keepExistingChildren;
+
+        if (dump.keepExistingChildren) cobj = null; // R-NEW-CHILDREN
+
+        var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode );
+        r.then( () => {
+           restore( i+1 );
+        });
+        
+        // the only way to catch errors is here, allSettled will ignore that error
+        r.catch( (err) => {
+          console.error("createChildrenByDump: error! parent=",obj.getPath(),"child_dump=",child_dump,"error=",err );
+        });        
+
+      }; // функция restore
+
     });
     
     return result_p;
-
   }
   
   m.dumpObj = function( obj ) {

@@ -328,6 +328,8 @@ export function add_appends_to_table(env) {
     let f = env.list[name];
     let appends = env.appends[name];
     if (!f && !appends) {
+      console.error(`viewzavr: feature '${name}' is not defined (no code and no appended features). object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
+
       // субфишка - если это тип или категория - то не ругаться
       // но тут вьюзавра еще нету..
       // значит другая идея - при регистрации типа или категории - добавлять их в список фич. ну.
