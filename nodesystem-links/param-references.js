@@ -108,13 +108,24 @@ export default function setup(vz) {
     // фича - сохранить чтобы можно было потом сообщить
     //x.closeParamRef( name );
     x.references_to_params ||= {};
-    x.references_to_params[ name ] = { desired_parent: desired_parent, 
+    
+    let refrec  ={ desired_parent: desired_parent, 
         name: name,
+        obj_param_name: name+"_object",
         unsub: ()=>{} 
     };
+    x.references_to_params[ name ] = refrec;
 
-    //let objrec = x.addObjRef( name+"_object" );
-    //objrec.setVisible(false);
+    /* в общем можно как бы заюзать и затем всегда уметь искать
+    let objrec = x.addObjRef( obj_param_name );
+    objrec.setVisible(false);
+    x.onvalue(name,(n) => {
+       let arr = n.split("->");
+       x.setParam(obj_param_name,arr[0]);
+       refrec.obj_path = arr[0];
+       refrec.param_path = arr[1];
+    };
+    */
 
     //let unsub1 = x.on(`param_${name}_changed`,() => x.updateParamRef(name));
     //x.references_to_params[ name ].unsub1 = unsub1;

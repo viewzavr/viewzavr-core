@@ -12,6 +12,7 @@ export default function setup( vz ) {
     EMPTY => obj
   */
   vz.find_by_path = function(obj,path) {
+    //console.log("find-by-path",path)
     if (path == "") return obj;
 
     if (!path) return null;
