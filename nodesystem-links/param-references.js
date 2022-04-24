@@ -37,6 +37,63 @@ export default function setup(vz) {
 
   // todo - нужен какой-то более удобный критерий отбора объектов..
 
+/* todo - может быть на будущее. хотя лучше конечно парам-ref держать мб как пару (ссылка-на-объект, имя)
+  x.getParamRefObj = (name) => {
+    if (!x.references_to_params) return;
+    let rec = x.references_to_params[name];
+    if (!rec) return;
+    return rec.target_obj;
+  }
+  x.getParamRefName = (name) => {
+    if (!x.references_to_params) return;
+    let rec = x.references_to_params[name];
+    if (!rec) return;
+    return rec.target_param;    
+  }
+  x.updateParamRef = (name) => {
+    if (!x.references_to_params) return;
+    let rec = x.references_to_params[name];
+    if (!rec) return;
+
+    let target = x.params[name];
+    if (!target) {
+      x.closeParamRef(name);
+      return;
+    }
+
+    rec.unsub();
+
+    var arr = target.split("->");
+    var tobj = env.findByPath( arr[0] );
+    x.references_to_params[name].target_obj = tobj;
+    x.references_to_params[name].target_param = arr[1];
+
+    if (tobj) {
+      let u1 = tobj.on("remove", () => x.updateParamRef(name));
+      let u1 = tobj.on("parent_change", () => x.updateParamRef(name));
+      // todo: name change..
+      rec.unsub = () => { u1(); u2(); };
+    }
+    else
+      rec.unsub = () => {};
+  }
+
+  x.closeParamRef = (name) => {
+    if (!x.references_to_params) return;
+    let rec = x.references_to_params[name];
+    if (!rec) return;    
+    rec.unsub();
+    rec.unsub = () => {};
+    rec.target_obj = undefined;
+    rec.target_param = undefined;    
+  }
+
+  x.on("remove",() => {
+    for (let n of x.getParamRefs())
+      x.closeParamRef(n);
+  });
+*/  
+
   // было бы гораздо удобнее, если бы obj.addParamRef создавал бы какое-то свое
   // окружение с которым можно было бы поговорить через доп-методы
   // а не только через непойми что
@@ -49,8 +106,18 @@ export default function setup(vz) {
     setrec();
 
     // фича - сохранить чтобы можно было потом сообщить
+    //x.closeParamRef( name );
     x.references_to_params ||= {};
-    x.references_to_params[ name ] = { desired_parent: desired_parent, name: name };
+    x.references_to_params[ name ] = { desired_parent: desired_parent, 
+        name: name,
+        unsub: ()=>{} 
+    };
+
+    //let objrec = x.addObjRef( name+"_object" );
+    //objrec.setVisible(false);
+
+    //let unsub1 = x.on(`param_${name}_changed`,() => x.updateParamRef(name));
+    //x.references_to_params[ name ].unsub1 = unsub1;
 
     x.addCmd(`rescan-${name}`,() => {
       //var vv = gatherParams( crit_fn || default_crit_fn, desired_parent );
@@ -66,7 +133,7 @@ export default function setup(vz) {
       rec.getValues = function() {
         let crit_fn1 = x.getParamOption( name, "crit_fn") || crit_fn || default_crit_fn;
         return gatherParams( crit_fn1, desired_parent );
-       }
+      }
       rec.notFound = function( param_path, values ) { 
         // в параметре значение, которого нет в комбо-бокс значениях
         // это случай вероятно, когда param_path абсолютный
