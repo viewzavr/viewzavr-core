@@ -1,5 +1,8 @@
 // тестовая реализация delayed на очередях
 
+// todo: идея - сделать так, чтобы если окружение удалено, то таймер бы его не вызывался
+// это избавило бы нас от проверок лишних в обработчиках
+
 export function setup( vz,me ) {
   vz.register_feature_set( me ); // получается вот этот вызов это есть сухожилия. соединение местного с системой. регаем фичи = добавляем в таблицу системы записи.
 }
@@ -51,14 +54,14 @@ function clearTimeoutQ( rec ) {
 
 
 export function delayed( env ) {
-  env.delayed = _delayed;
-  env.delayed_first = _delayed_first;
+  env.delayed = (f,delay=0) => _delayed(f,delay,env);
+  env.delayed_first = (f,delay=0) => _delayed_first(f,delay,env);;
 }
 
 /////////////////////////////////////////////////////////////////////   
 
 
-export function _delayed( f,delay=0 ) {
+export function _delayed( f,delay=0, env ) {
   var t;
   var remembered_args;
 
@@ -69,8 +72,8 @@ export function _delayed( f,delay=0 ) {
     t = setTimeoutQ( () => {
 
       // t=null; фундаментально - рестарт разрешаем только после того как все закончено..
-      
-      f(...remembered_args);
+      if (!(env && env.removed))
+          f(...remembered_args);
 
       t=null;
       
@@ -82,7 +85,7 @@ export function _delayed( f,delay=0 ) {
 }
 
 // вариант когда запоминается первая версия аргументов
-function _delayed_first( f,delay=0 ) {
+function _delayed_first( f,delay=0,env ) {
   var t;
 
   var res = function(...args) {
@@ -91,7 +94,8 @@ function _delayed_first( f,delay=0 ) {
 
       // t=null; фундаментально - рестарт разрешаем только после того как все закончено..
       
-      f(...args);
+      if (!(env && env.removed))
+        f(...args);
 
       t=null;
 

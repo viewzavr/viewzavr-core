@@ -164,7 +164,7 @@ function setup_params_events(x) {
         fn2();
     }
 
-    var fn2_delayed = _delayed( call_if_all_exist );
+    var fn2_delayed = _delayed( call_if_all_exist,0,x );
 
     var acc = [];
     for (let name of names) {
@@ -206,7 +206,7 @@ function setup_params_events(x) {
         fn2();
     }
 
-    var fn2_delayed = _delayed( call_if_any_exist );    
+    var fn2_delayed = _delayed( call_if_any_exist,0,x );    
 
     var acc = [];
     for (let name of names) {
@@ -244,7 +244,7 @@ function setup_params_events(x) {
        fn( ...vals );
     }
 
-    var fn2_delayed = _delayed( fn2 );    
+    var fn2_delayed = _delayed( fn2,0,x );    
 
     var acc = [];
     for (let name of names) {

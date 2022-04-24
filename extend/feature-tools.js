@@ -253,12 +253,12 @@ export function add_features_use( env, registry_env ) {
     //env.setParam("$features_applied",Object.keys( env.$features_applied ))
   }
 
-
   env.is_feature_applied = (name) => {
     name = name.replaceAll("_","-");
     env.$features_applied ||= {};
     return env.$features_applied[name];
   }
+  // идея - is_features_applied т.е. name массив и выдает true если все
 
   // todo:
   // idea: if aready is_feature, call cb too
