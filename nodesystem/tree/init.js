@@ -23,6 +23,7 @@ export default function setup(m) {
     if (opts.parent && opts.name) {
       // добавляем только если parent_tree совпадает с текущим деревом, либо если parent_tree не указано а текущее дерево это ns
       // if (opts.parent_tree == tree_name || (!opts.parent_tree && tree_name === "ns"))
+
         opts.parent.ns.appendChild(obj, opts.name, true);
     } else
     if (opts.name)

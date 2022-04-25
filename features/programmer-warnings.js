@@ -30,7 +30,7 @@ export default function setup( vz ) {
     var eorigon = nanoevents.on.bind(nanoevents);
     nanoevents.on = function(event,cb) {
       var res = eorigon( event,cb );
-      if (nanoevents.events[event].length > 1000)
+      if (nanoevents.events[event].length > 5000)
         console.warn("VIEWZAVR-WARNING: events: a lot of event handlers. Forget to unsubscribe?",event,cb,nanoevents);
       return res;
     }

@@ -71,7 +71,10 @@ export default function setup( m ) {
     if (dump.$name) {
       obj.$env_extra_names ||= {};
       obj.$env_extra_names[ dump.$name ] = true;
-    };  
+    };
+
+
+    /// походу надо параметры до фич таки.. но тогда непонятно что есть restorefromdump...
 
     let p1 = m.restoreFeatures( dump, obj, manualParamsMode );
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
