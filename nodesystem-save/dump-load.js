@@ -27,6 +27,18 @@ export default function setup( m ) {
   
   m.createSyncFromDump = function( dump, _existingObj, parent, desiredName, manualParamsMode )
   {
+    // выяснилось что у нас могут на промисах шпарить создание детей вовсю, когда объект уже решили удалить
+    if (parent && parent.removed) {
+      return Promise.resolve("parent_removed");
+    }
+    /*
+    if (parent) {
+      let root = parent.findRoot();
+      if (root.getPath().split("/").length > 2)
+         debugger;
+    }
+    */
+
     var obj = _existingObj;
     if (!obj || (dump.type && obj.historicalType != dump.type && dump.manual)) {
       if (!obj || obj.ns.parent) {  // пусть это работает пока не для корня дерева - там непонятно мне пока
@@ -61,17 +73,22 @@ export default function setup( m ) {
       obj.$env_extra_names[ dump.$name ] = true;
     };  
 
-    m.restoreFeatures( dump, obj, manualParamsMode );
+    let p1 = m.restoreFeatures( dump, obj, manualParamsMode );
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
     // и стать функторами
 
     
     return new Promise( function (resolve, reject) {
-        obj.restoreFromDump( dump,manualParamsMode ).then( (res) => {
-          resolve( obj );
-        }).catch( (err) => {
-          reject( err );
-        })
+
+        p1.then( () => {
+
+          obj.restoreFromDump( dump,manualParamsMode ).then( (res) => {
+            resolve( obj );
+          }).catch( (err) => {
+            reject( err );
+          })
+
+        }); // фичи восстановились
     })
   }
   
@@ -189,49 +206,59 @@ export default function setup( m ) {
      dump.keepExistingChildren = true; // без этой штуки оно начинает стирать своих собственных детей
 
      //fr.keepExistingChildren = true; // странно это все...
-     let feature_obj = m.createSyncFromDumpNow( dump, null, null, dump.$name );
-     //arr.push( feature_obj );
-     //feature_obj.lexialParent = obj;
-     //feature_obj.master_env = obj;
-     //obj.feature_
-     // todo надо бы их в дерево посадить... тем более там по именам потом захочется ходить..
-     let forget_that = obj.on("remove",() => {
-        forget_that = () => {};
-        feature_obj.remove();
-     });
 
-     // $feature_name затем используется... выяснить какую семантику я в него вложил..
-     feature_obj.$feature_name = dump.$name || "some_feature"; /// ......
+     let prom = m.createSyncFromDump( dump, null, null, dump.$name );
 
-     obj.$feature_list_envs ||= [];
-     obj.$feature_list_envs.push( feature_obj );
-     obj.$feature_list_envs_table ||= {};
+     return new Promise( (resolve,reject) => {
 
-     let kname = feature_obj.$feature_name;
-     while (obj.$feature_list_envs_table[kname]) {
-        // @todo это место пипец конечно.. надо под-окружения уникальные создавать или типа того..
-        //console.warn("$feature_list_envs_table DUPLICATE DETECTED, $feature_name=",kname)
-        kname = kname + "_x";
-        //console.warn("renamed to",kname);
-     }
-     obj.$feature_list_envs_table[kname] = feature_obj;
-     // надо бы запомнить, как мы ее запомнили..
-     feature_obj.$feature_name = kname;
+       prom.then( (feature_obj) => {
 
-     // если фичу просто так удалять будут - надо освободить родителя
-     feature_obj.on("remove",() => {
-      forget_that()
+         //arr.push( feature_obj );
+         //feature_obj.lexialParent = obj;
+         //feature_obj.master_env = obj;
+         //obj.feature_
+         // todo надо бы их в дерево посадить... тем более там по именам потом захочется ходить..
+         let forget_that = obj.on("remove",() => {
+            forget_that = () => {};
+            feature_obj.remove();
+         });
 
-      if (!obj.removed) {
-         // почистить таблицу еще надо
-         // по сути мы тут children-таблицу заново пишем.. эх
-         delete obj.$feature_list_envs_table[kname];
-         let myindex = obj.$feature_list_envs.indexOf( feature_obj );
-         if (myindex >= 0) obj.$feature_list_envs.splice( myindex,1 );
-      }
-     });
+         // $feature_name затем используется... выяснить какую семантику я в него вложил..
+         feature_obj.$feature_name = dump.$name || "some_feature"; /// ......
+
+         obj.$feature_list_envs ||= [];
+         obj.$feature_list_envs.push( feature_obj );
+         obj.$feature_list_envs_table ||= {};
+
+         let kname = feature_obj.$feature_name;
+         while (obj.$feature_list_envs_table[kname]) {
+            // @todo это место пипец конечно.. надо под-окружения уникальные создавать или типа того..
+            //console.warn("$feature_list_envs_table DUPLICATE DETECTED, $feature_name=",kname)
+            kname = kname + "_x";
+            //console.warn("renamed to",kname);
+         }
+         obj.$feature_list_envs_table[kname] = feature_obj;
+         // надо бы запомнить, как мы ее запомнили..
+         feature_obj.$feature_name = kname;
+
+         // если фичу просто так удалять будут - надо освободить родителя
+         feature_obj.on("remove",() => {
+          forget_that()
+
+          if (!obj.removed) {
+             // почистить таблицу еще надо
+             // по сути мы тут children-таблицу заново пишем.. эх
+             delete obj.$feature_list_envs_table[kname];
+             let myindex = obj.$feature_list_envs.indexOf( feature_obj );
+             if (myindex >= 0) obj.$feature_list_envs.splice( myindex,1 );
+          }
+         });
+
+         resolve( feature_obj );
+       });  
      
-     return feature_obj;
+     //return feature_obj;
+     });
   }
 
   m.restoreFeatures = function ( dump, obj) {
@@ -251,12 +278,15 @@ export default function setup( m ) {
 
     // есть идея - применять фичи после {{ }}- фич
     // это позволит навесить всякие on-обработчики до появления каких-либо событий внутри
+    let feat_arr = [];
+
     for (let fn of Object.keys(dump.features || {})) 
     {
       // тут считается что feature-code совпадает с feature-name
       // в целом же наверняка это можно расширить до того что код нескольких фич может совпадать.
       // но это надо тогда будет учесть и feature-tools (там отсекается повторное применение фич с одинаковым кодом)
-      obj.feature( fn, dump.features[fn].params );
+      let r = obj.feature( fn, dump.features[fn].params );
+      feat_arr.push( Promise.resolve( r ));
     }     
 
 
@@ -267,7 +297,8 @@ export default function setup( m ) {
       //var arr = [];
       for (let fr of (dump.features_list || [])) 
       {
-         m.importAsParametrizedFeature( fr, obj );
+         let r2 = m.importAsParametrizedFeature( fr, obj );
+         feat_arr.push( Promise.resolve( r2 ) );
       }
       obj.features_list_is_restored.add( dump.features_list ) ;
       //obj.$feature_list_envs = (obj.$feature_list_envs || []).concat( arr );
@@ -275,6 +306,7 @@ export default function setup( m ) {
       //obj.setParam("feature_list_envs",arr);
     }
 
+    return Promise.all( feat_arr );
   }
 
   m.restoreLinks = function( dump, obj ) {
@@ -319,20 +351,22 @@ export default function setup( m ) {
   m.restoreObjFromDump = function( dump, obj, manualParamsMode ) {
     m.restoreParams( dump, obj,manualParamsMode );
     m.restoreLinks( dump, obj,manualParamsMode );
-    m.restoreFeatures( dump, obj,manualParamsMode );
+    let feature_promise = m.restoreFeatures( dump, obj,manualParamsMode );
     // тут идет дублирование restoreFeatures с createSyncFromDump, но ничего, мы переживем.
 
     if (dump.manual) manualParamsMode = true; // такой вот прием.. а то "ручные объекты" потом не сохранить получается..
 
-    // выделяем восстановление детей в отдельный метод в контексте obj
-    // чтобы фичи объекта могли успеть его поменять (конкретно это надо было для repeater)
-    obj.restoreChildrenFromDump ||= (dump, ismanual) => {
-      if (!dump.keepExistingChildren)
-          m.removeChildrenByDump( dump, obj, ismanual );
-      return m.createChildrenByDump( dump, obj, ismanual );
-    }
+    return new Promise( (resolve,reject) => {
+       feature_promise.then( () => {
+          let rc = obj.restoreChildrenFromDump( dump, manualParamsMode );
+          rc.then( () => {
+             resolve( obj );
+          });
+       })
+    })
 
-    return obj.restoreChildrenFromDump( dump, manualParamsMode );
+    //let rc = obj.restoreChildrenFromDump( dump, manualParamsMode );
+    //return Promise.all( feature_promise,rc );
   }
   
   m.removeChildrenByDump = function( dump, obj, manualParamsMode )
@@ -525,6 +559,14 @@ m.chain("create_obj",function( obj, opts ) {
           return obj.params[name];
         }
   }
+
+  // выделяем восстановление детей в отдельный метод в контексте obj
+  // чтобы фичи объекта могли успеть его поменять (конкретно это надо было для repeater)
+  obj.restoreChildrenFromDump = (dump, ismanual) => {
+      if (!dump.keepExistingChildren)
+          m.removeChildrenByDump( dump, obj, ismanual );
+      return m.createChildrenByDump( dump, obj, ismanual );
+  }  
 
   
   if (opts.manual) obj.manuallyInserted = true;

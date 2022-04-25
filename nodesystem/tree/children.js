@@ -20,7 +20,11 @@ export default function setup( obj, nf ) {
     var cnf = nf( cobj );
     if (cnf.parent)  cnf.parent.ns.forgetChild( cobj );
 
-    if (!obj.hasChild( cobj)) obj.children.push( cobj );
+    if (obj.removed) {
+      console.error("WARNING: adding to removed obj");
+    }
+
+    if (!obj.hasChild( cobj )) obj.children.push( cobj );
     
     if (!name) {
       console.error("WARNING: appendChild: no name specified");

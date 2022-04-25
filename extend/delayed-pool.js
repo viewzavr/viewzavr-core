@@ -74,6 +74,9 @@ export function _delayed( f,delay=0, env ) {
       // t=null; фундаментально - рестарт разрешаем только после того как все закончено..
       if (!(env && env.removed))
           f(...remembered_args);
+        else {
+          //console.log("delayed: cb skipped due env removed", env.getPath())
+        }
 
       t=null;
       

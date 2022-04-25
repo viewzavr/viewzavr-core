@@ -15,7 +15,7 @@ export default function setup(m) {
     obj.chain( "remove", function () {
       obj.removed = true;
       return this.orig();
-    });  
+    });
     return this.orig( obj, options );
   });
 

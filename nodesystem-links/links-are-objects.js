@@ -35,6 +35,7 @@ export default function setup( vz ) {
     
     // вызывается когда исходный параметр изменяется
     function qqq() {
+      //console.log("qqq invoked", obj.getPath())
       if (!obj.getParam("enabled")) return;
       if (!currentRefTo) return;
       
@@ -122,6 +123,10 @@ export default function setup( vz ) {
         //obj.passed_value_timestamp = performance.now();
 
         obj.setParam("last_passed_value",val);
+       }
+       else
+       {
+         //console.log("link: value doesnt change, skipping pass", obj.getPath())
        }
        // ну и что что не передала - сработала же..
        obj.passed_value_timestamp = performance.now();
@@ -271,6 +276,7 @@ export default function setup( vz ) {
       if (obj.hosted) start_from_obj = obj.host;
 
       var sobj = start_from_obj.findByPath( objname );
+      var sobj2 = start_from_obj.findByPath( objname );
       
       if (!sobj) {
         if (enable_retry) {

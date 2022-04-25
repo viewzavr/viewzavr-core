@@ -75,7 +75,7 @@ export function find_track(obj) {
 
       setTimeout( () => {
         obj.findByPathTrack( path, cb,retry_left-1 );
-      },500);
+      },50);
     }
 	
 	}
