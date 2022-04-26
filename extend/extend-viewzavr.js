@@ -143,13 +143,22 @@ function vzf_manual_features( obj ) {
     }
 
     if (has_new) {
-      obj.feature( names,...args );
+      let promarr = [];
+      let p = obj.feature( names,...args );
+      promarr.push( p );
       var existing_arr = FT.feature_names_to_arr( (obj.params.manual_features || "") );
       let unique = [...new Set(arr.concat(existing_arr))];
       obj.setParam("manual_features", unique, true);
       // todo optimize
+      return promarr;
     }
   }
+
+  obj.apply_manual_features = () => {
+    if (obj.params.manual_features)
+      return obj.manual_feature( obj.params.manual_features );
+  }
+  //см также dump-load restoreFeatures
 }
 
 ///////////////////////
