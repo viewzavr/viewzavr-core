@@ -244,9 +244,16 @@ export default function setup( m ) {
          // надо бы запомнить, как мы ее запомнили..
          feature_obj.$feature_name = kname;
 
+         // протокол F-NEW-MODIFIERS-FTREE
+         let detach_code = feature_obj.emit("attach",obj)
+
          // если фичу просто так удалять будут - надо освободить родителя
          feature_obj.on("remove",() => {
           forget_that()
+
+          // протокол F-NEW-MODIFIERS-FTREE
+          feature_obj.emit("detach",obj);
+          // detach_code();
 
           if (!obj.removed) {
              // почистить таблицу еще надо
