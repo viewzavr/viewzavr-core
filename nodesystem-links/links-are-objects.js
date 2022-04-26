@@ -32,6 +32,16 @@ export default function setup( vz ) {
     obj.currentRefTo = () => currentRefTo;
 
     // tied_to_parent
+
+/*
+    obj.feature( "delayed" );
+    let warn_undef = obj.delayed( () => {
+       console.log("warning: link doesnt see source param", 
+           currentRefFrom ? currentRefFrom.getPath() : "-", currentParamNameFrom, "linked to",
+           currentRefTo ? currentRefTo.getPath() : "-", currentParamNameTo
+           );
+    }, 1000/10 )
+*/    
     
     // вызывается когда исходный параметр изменяется
     function qqq() {
@@ -80,7 +90,17 @@ export default function setup( vz ) {
             if (!val_received) 
               return;
         }
+        else
+        {
+          if (!val_received) {
+            //warn_undef();
+
+            //console.warn("link: passing undefined value",currentRefFrom.getPath(),"->",currentParamNameFrom );
+               //console.warn("link: passing undefined value",obj.getPath() );
+          }
+        }
       }
+      //else warn_undef.stop();
       
       /*
       if (tracode && obj.getParam("transform-enabled")) {
