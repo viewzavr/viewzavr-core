@@ -79,11 +79,16 @@ export default function setup( m ) {
     let p1 = m.restoreFeatures( dump, obj, manualParamsMode );
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
     // и стать функторами
+          if (obj.removed)
+            debugger;    
 
     
     return new Promise( function (resolve, reject) {
 
         p1.then( () => {
+
+          if (obj.removed)
+            debugger;
 
           obj.restoreFromDump( dump,manualParamsMode ).then( (res) => {
             resolve( obj );

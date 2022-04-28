@@ -50,8 +50,15 @@ function setup_tree(obj, tree_name) {
     // а без этого дубликата children меняются и forEach пропускает некоторых выходит
     // по уму можно сделать не дубликат а более лучший обход, через while или типа того, ну да ладно..
 
+    //console.log("i am ",obj.getPath(),"id",obj.$vz_unique_id);
+    //console.log("i have children count",obj[tree_name].getChildren().length)
+
+    // возможная оптимизация
+    //obj[tree_name].updateChildrenTable = () => {};
+    //obj[tree_name].forgetChild = () => {};
+
     obj[tree_name].getChildren().slice(0).forEach((c) => {
-      // console.log("removing child ",c);
+      //console.log("removing child ",c.getPath());
       //if (c.ns.name == "object_g_2_2xw709pds") debugger;
       c.remove();
     });

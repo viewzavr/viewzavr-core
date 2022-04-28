@@ -121,7 +121,7 @@ export default function setup(x) {
       // может тут событий повызывать?
       //return gui.fn.apply( gui.fn, args );
       // вроде так интереснее вызывать..
-      x[name].apply( x, args );
+      return x[name].apply( x, args );
     }
     else
     {

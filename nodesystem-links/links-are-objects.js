@@ -216,6 +216,7 @@ export default function setup( vz ) {
       if (!sobj) {
         if (enable_retry) {
           console.warn("Link: source obj not found! Will retry!",arr,'me=',obj.getPath() );
+          console.warn("my parent id is",obj.ns.parent.$vz_unique_id)
           //sobj = obj.ns.parent.findByPath( objname );
           linkScannerAdd( obj );
         }
@@ -320,6 +321,8 @@ export default function setup( vz ) {
 
       return true;
     }
+
+    obj.feature("delayed");
     
     obj.setupLinks = function( may_retry_from = true, may_retry_to = true ) {
       if (obj.removed) return; // ничего такого не надо делать если эту ссылку уже удалили
@@ -327,11 +330,12 @@ export default function setup( vz ) {
       if (setupFromLink(false, may_retry_from, false)) // 1st false => do not set param value, 3rd true => do not signal
           setupToLink(true, may_retry_to, true);       // 1st true => set param value if all ok, 3rd true => signal if ok
     }
+    obj.setupLinksDelayed = obj.delayed( obj.setupLinks, 3 );
 
     //var references_obj = obj.getParam("tied_to_parent") ? obj.ns.parent : obj;
     var references_obj = obj.ns.parent;
 
-    obj.feature("delayed");
+    
     var setupFromLink_DELAYED = obj.delayed( () => setupFromLink(true) );
     var setupToLink_DELAYED = obj.delayed( () => setupToLink(true) );
 
@@ -347,8 +351,13 @@ export default function setup( vz ) {
         let tobj = obj.ns.parent;
         // тонкий момент. даже если мы tied-to-parent то может оказаться что ссылка на самом деле
         // действует на хост а не на парента..
+        if (obj.hosted) 
+          tobj = obj.host;
+        else
         if ((obj.params.to || "")[0] == "." && obj.ns.parent.hosted)
             tobj = tobj.host;
+        
+        
         addLinkTracking( tobj, obj, false );
       }  
     } );
@@ -510,6 +519,20 @@ function addLinkTracking( obj, link, isFrom ) {
   obj.links_to_me_direction.push( isFrom );
 
   if (firstTime)
+  {
+    obj.on("remove",() => {
+      (obj.links_to_me || []).forEach( function(l) {
+        l.setupLinksDelayed( true, l.ns.parent && !l.ns.parent.removed ? true : false ); // forget this object
+        // we achieved that if object if deleted and 
+        // if some link has arrow from this object
+        //   then link will retry to find object with same name (which may appear soon, as in js-code object)
+        // if some link has arrow to this object
+        //   then link will retry only in case the link has parent (which means link is not child of current, deleted object).
+      });
+    });
+  }
+
+/*
   obj.chain("remove",function() {
     this.orig();
     // @optimized - выяснилось что мы удаляем выражения, и вот часть удалили, а другие ссылки еще ссылаются на эту часть
@@ -529,6 +552,8 @@ function addLinkTracking( obj, link, isFrom ) {
     }, 0);
 
   });
+*/  
+  
 }
 
 function forgetLinkTracking( obj, link ) {

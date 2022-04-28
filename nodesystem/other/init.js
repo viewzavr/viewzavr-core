@@ -13,6 +13,8 @@ export default function setup(m) {
 
   m.chain( "create_obj", function (obj,options) {
     obj.chain( "remove", function () {
+      if (obj.ns.getChildren().length > 0)
+        debugger;
       obj.removed = true;
       return this.orig();
     });
