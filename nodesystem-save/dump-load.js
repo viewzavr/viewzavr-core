@@ -87,8 +87,14 @@ export default function setup( m ) {
 
         p1.then( () => {
 
-          if (obj.removed)
-            debugger;
+          if (obj.removed) {
+            // уже удалили пока мы ево делали
+            //debugger;
+            console.error("createSyncFromDump: object is removed, between create && restoreFromDump stages.", obj.getPath())
+            resolve( obj );
+            return;
+            
+          }
 
           obj.restoreFromDump( dump,manualParamsMode ).then( (res) => {
             resolve( obj );

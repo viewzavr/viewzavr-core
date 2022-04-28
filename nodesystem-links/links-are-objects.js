@@ -216,7 +216,9 @@ export default function setup( vz ) {
       if (!sobj) {
         if (enable_retry) {
           console.warn("Link: source obj not found! Will retry!",arr,'me=',obj.getPath() );
-          console.warn("my parent id is",obj.ns.parent.$vz_unique_id)
+          if (obj.removed)
+            debugger;
+          //console.warn("my parent id is",obj.ns.parent.$vz_unique_id)
           //sobj = obj.ns.parent.findByPath( objname );
           linkScannerAdd( obj );
         }
