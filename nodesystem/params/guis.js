@@ -7,7 +7,9 @@ export default function setup(x) {
   
   // need this to remove circluar ref (when gui record holds ref to owner obj)
   x.chain("remove",function() {
-    x.guis = {};
+    //console.log("in clear guis code",x.getPath())
+    x.guis = {}; // поставим в конец... чтобы команды успели проходить..
+    // не помогло
     this.orig();
   });
 

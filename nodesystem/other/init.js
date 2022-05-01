@@ -82,6 +82,7 @@ export default function setup(m) {
   m.chain( "create_obj", function (obj,options) {
     var res = this.orig( obj, options );
     obj.chain( "remove", function () {
+      //console.log("emitting remove",obj.getPath())
       obj.emit("remove");
       return this.orig();
     });  
