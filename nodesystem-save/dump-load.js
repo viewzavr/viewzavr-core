@@ -186,6 +186,17 @@ export default function setup( m ) {
        }
 
       obj.setParam( name, v, manualParamsMode ); // ставим true - в том смысле что это установка из
+
+      // F-LINKS-OVERWRITE
+      // удалить ссылки пишушие в этот параметр... типа мы тут со значением пришли...
+      // и с учетом что у нас все снизу вверх теперь раскрывается - это сработает
+      // и плюс уже учтено keepExistingParams
+      if (obj.hasLinksToParam( name )) {
+          let larr = obj.linksToParam( name );
+          for (let l of larr)
+            l.remove();
+      }
+      
     });
 
     ///// особый случай - параметры значение которых это список окружений
@@ -360,7 +371,7 @@ export default function setup( m ) {
           if (obj.hasLinksToParam( arr[1] ) || obj.hasParam( arr[1] )) {
               //console.log("orig link is kept - keepExistingParams")
               continue;
-          }    
+          }
         }
         // разделяем ситуацию куда же нам направить местную ссылку - на себя (на фичу) или на главное окружение
 
