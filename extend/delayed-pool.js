@@ -42,6 +42,7 @@ function process_recs() {
 
 function setTimeoutQ( func, delay, funchint ) {
   let rec = { tm: delay, f: func, funchint: funchint};
+  rec.stop = () => { rec.f = null };
   qnext.push( rec );
   return rec;
 }
@@ -55,7 +56,10 @@ function clearTimeoutQ( rec ) {
 
 export function delayed( env ) {
   env.delayed = (f,delay=0) => _delayed(f,delay,env);
-  env.delayed_first = (f,delay=0) => _delayed_first(f,delay,env);;
+  env.delayed_first = (f,delay=0) => _delayed_first(f,delay,env);
+  env.timeout = (f,delay=0) => setTimeoutQ( () => {
+    if (!(env && env.removed)) f();
+   },delay );
 }
 
 /////////////////////////////////////////////////////////////////////   
