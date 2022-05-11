@@ -1,3 +1,5 @@
+// старое
+
 /*
   Implements 'features' for viewzavr and its objects. Adds methods:
 

@@ -1,3 +1,5 @@
+// старое
+
 // (c) viewzavr project. MIT license.
 // purpose: add viewzavrs extras
 

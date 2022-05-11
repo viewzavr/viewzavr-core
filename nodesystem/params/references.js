@@ -8,6 +8,7 @@
 // короче этот файл про хранение ссылок в целом
 
 // идея - может не crit-fn а а) функция поставки объектов в целом? б) набор фич для поиска?
+// update - наверное функция поставки объектов. а фичи или какие там другие критерии - вопрос отдельный
 
 import ref_as_obj_setup from "./ref-as-obj.js";
 
@@ -34,10 +35,14 @@ export default function setup(vz, x) {
           return this.orig( name, value );
       }
 
-      var obj = vz.find_by_path( x,value ); // todo fix use start tree, see ref-as-obj
+      var f = x.getParamOption(name,"tree_func");
+      var tree_to_find_in = f ? f() : x;
+
+      var obj = vz.find_by_path( tree_to_find_in,value ); 
 
       if (obj) {
         ref_event_unbinds[ name ] = obj.on("parent_change",() => { // это включает в себя и remove
+          // а зачем это вообще?
           x.setParam( name, ref_values[name] );
         });
       } else ref_event_unbinds[ name ] = null;

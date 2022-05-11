@@ -19,7 +19,6 @@ export default function setup( obj ) {
               return;
           }
 
-
           var f = obj.getParamOption(name,"tree_func");
           var tree_to_find_in = f ? f() : obj;
 
