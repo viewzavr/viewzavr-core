@@ -68,6 +68,10 @@ export default function setup( vz ) {
     if (path[0] == "@") // find by id @name or @name/sub/path
       return vz.find_by_id_scopes( obj,path.slice(1) )
       // todo: @name:subenv ?
+      // короче получается здесь что @ это пошло поехало по имени искать
+      // и по идее последующий анализ не нужен который ниже..
+      // короче надо разобраться в этом алгоритме. а то тут жесткий косяк и несоответсвие с find-objects-by-crit
+      // т.к. там @ используется для обозначения начала ссылки
 
     if (!Array.isArray(path)) path = path.split("/");
 
