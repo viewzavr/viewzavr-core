@@ -26,11 +26,14 @@ export default function setup(x) {
     return old;
   }
 
-  x.setParam = function(name,value) {
+  let vz_param_state_counters = {};
+
+  x.setParam = function(name,value, ...rest) {
+    
     //if (name == "width" && value == "10px") debugger;
 
     //var old = x.getParam()
-    var old = x.setParamWithoutEvents( name, value );
+    var old = x.setParamWithoutEvents( name, value, ...rest );
     
 
 /*  we still need to track that param exist.. F-PARAM-VALUE-ALWAYS
@@ -42,6 +45,18 @@ export default function setup(x) {
     // iiiiimport. хорошо бы 
     if (old != value || typeof(old) != typeof(value)) {
       x.signalTracked( name );
+    }
+    else {
+      // случай когда передаем массивы
+      if (value?.$vz_param_state_counter) {
+        //console.log("value?.$vz_param_state_counter present, ",value?.$vz_param_state_counter," comparing with",vz_param_state_counters)
+        if (value.$vz_param_state_counter != vz_param_state_counters[name])
+        {
+          vz_param_state_counters[name] = value.$vz_param_state_counter;
+          //console.log('not eqal = issuing signal')
+          x.signalTracked( name ); 
+        }
+      }  
     }
     return x;
   }

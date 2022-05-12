@@ -56,7 +56,7 @@ export default function setup(m) {
 
 
     // запоминаем что выставлено руками
-    P.chain(obj,"setParam", function(name,value,ismanual) {
+    P.chain(obj,"setParamWithoutEvents", function(name,value,ismanual) {
       let res = this.orig( name, value );
       
       // странная вообще идея - дампить каждый раз..

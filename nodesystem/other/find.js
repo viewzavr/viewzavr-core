@@ -19,6 +19,8 @@ export default function setup( vz ) {
     if (!obj) return null;
 
     if (path.getPath) return path; // this is object - return as is, R-SETREF-OBJ
+
+    //if (path[0] == "@") path = path.slice(1);
     
     if (path[0] == "/") {
       var root = obj.findRoot();

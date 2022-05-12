@@ -119,6 +119,16 @@ export default function setup( vz ) {
       */  
 
       // feature: set only if val changes; in other case, we will lose manual effect..
+      // обновление: чухня все это, надо хреначить. ну мануал эффект можно сохранить выставляя флаг
+
+      currentRefTo.setParam( currentParamNameTo,val, 
+        obj.params.manual_mode || currentRefTo.getParamManualFlag(currentParamNameTo) ); // F-LINKS-MANUAL
+
+      //currentRefTo.setParamWithoutEvents( currentParamNameTo,val, 
+      //  obj.params.manual_mode || currentRefTo.getParamManualFlag(currentParamNameTo) ); // F-LINKS-MANUAL
+      //currentRefTo.signalParam( currentParamNameTo );
+
+      /*
       var curpv = currentRefTo.getParam( currentParamNameTo );
       // вторая проверка проверяет ситуацию такую в js: '' == 0 оказывается 
       if (curpv != val || typeof(curpv) != typeof(val)) {
@@ -148,6 +158,8 @@ export default function setup( vz ) {
        {
          //console.log("link: value doesnt change, skipping pass", obj.getPath())
        }
+       */
+
        // ну и что что не передала - сработала же..
        obj.passed_value_timestamp = performance.now();
        // @todo move out
