@@ -97,6 +97,10 @@ export default function setup( m ) {
           }
 
           obj.restoreFromDump( dump,manualParamsMode ).then( (res) => {
+            // @exp - тпу когда фичи все из описания применены, и параметры, и дети
+            if (!_existingObj) {
+              obj.emit("cocreate");
+            }; // idea и еще emit("synced");
             resolve( obj );
           }).catch( (err) => {
             reject( err );
