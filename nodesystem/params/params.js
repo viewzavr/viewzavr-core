@@ -131,11 +131,13 @@ function setup_params_events(x) {
 
   x.onvalue = function(name,fn) {
     var res = x.trackParam(name,(val) => {
-      if (typeof(val) != "undefined") 
+      //if (typeof(val) != "undefined") 
+      if (val != null) 
         callfn(val);
     });
     let val = x.params[name];
-    if (typeof(val) != "undefined") 
+    //if (typeof(val) != "undefined") 
+    if (val != null) 
         callfn(val);
     function callfn( val ) {
        //try {
@@ -171,9 +173,10 @@ function setup_params_events(x) {
       
       var all_params_exist=true;
       for (let name of names) {
-         if (typeof(x.params[name]) == "undefined" ) {
+         //if (typeof(x.params[name]) == "undefined" ) {
+          if (x.params[name] == null) 
            all_params_exist = false;
-         }
+         
       }
       if (all_params_exist) 
         fn2();
@@ -213,7 +216,8 @@ function setup_params_events(x) {
     function call_if_any_exist() {
       var some_params_exist=false;
       for (let name of names) {
-         if (typeof(x.params[name]) !== "undefined" ) {
+         //if (typeof(x.params[name]) !== "undefined" ) {
+          if (x.params[name] != null) {
            some_params_exist = true;
          }
       }
