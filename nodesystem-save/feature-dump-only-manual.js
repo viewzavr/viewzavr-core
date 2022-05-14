@@ -44,7 +44,8 @@ export default function setup(m) {
     // оказывается флажок ismanual это лишь триггер вызывать выставление опции..
     // ну т.е. это удобняшка такая выходит...
     P.chain(obj,"setParamWithoutEvents", function(name,value,ismanual) {
-      obj.setParamManualFlag( name,ismanual );
+      if (!ismanual || (ismanual && value != obj.params[name])) // manual выставляем ток если новое значенье
+         obj.setParamManualFlag( name,ismanual );
       return this.orig( name, value, ismanual );
     });
 
