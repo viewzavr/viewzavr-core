@@ -33,73 +33,28 @@ export default function setup(m) {
     });*/
 
     obj.getParamManualFlag = function(name) {
-      return obj.params_manual_dump && obj.params_manual_dump[name];
+      return obj.getParamOption(name,"manual");
     }
 
     obj.setParamManualFlag = function(name,ismanual) {
-      if (ismanual) {
-        if (!obj.getParamManualFlag(name)) {
-          obj.params_manual_dump ||= {};
-          let dump = dumporig( name );
-          obj.params_manual_dump[name] = {value: dump};
-          //obj.setParamOption( name, "manual", true );
-        }
-      }
-      else
-      {
-        if (obj.getParamManualFlag(name)) {
-          delete obj.params_manual_dump[name];
-        }
-        //obj.setParamOption( name, "manual", false );
-      }
+      return obj.setParamOption(name,"manual",ismanual);
     }
-
 
     // запоминаем что выставлено руками
+    // оказывается флажок ismanual это лишь триггер вызывать выставление опции..
+    // ну т.е. это удобняшка такая выходит...
     P.chain(obj,"setParamWithoutEvents", function(name,value,ismanual) {
-      let res = this.orig( name, value );
-      
-      // странная вообще идея - дампить каждый раз..
-      if (ismanual) {
-        obj.params_manual_dump ||= {};
-        let dump = dumporig( name );
-        obj.params_manual_dump[name] = {value: dump};
-        //obj.setParamOption( name, "manual", true );
-      }
-      else
-      {
-        if (obj.params_manual_dump && obj.params_manual_dump[name]) {
-          delete obj.params_manual_dump[name];
-        }
-        //obj.setParamOption( name, "manual", false );
-      }
-      return res;
+      obj.setParamManualFlag( name,ismanual );
+      return this.orig( name, value, ismanual );
     });
-
-/*  вроде как пока потребность отпала (надо было для window-hash но там можно и так ismanual проверить)
-    // надо ж узнавать уметь.. хотя может это стоит выставить в список param options...
-    obj.isParamManual = function(name) {
-      if (obj.params_manual_dump && obj.params_manual_dump[name])
-        return true;
-      return false;
-    }
-*/    
 
     // created this method(tpu) to implement R-SETREF-OBJ
     P.chain(obj,"dumpParam", function(name) {
       // настраивали руками - окей; а если роботы делали - зачем нам это?
-      if (obj.params_manual_dump && obj.params_manual_dump[name]) {
-        return obj.params_manual_dump[name].value;
-      }
+      if (obj.getParamManualFlag( name ))
+        return this.orig(name);
       return undefined;
     });
-
-/*
-    var isforcedump = function( obj ) {
-      //return obj === obj.findRoot() || obj === vzPlayer
-      return obj.forcedump ? true : false;
-    }
-*/    
 
     // фича "не надо дампить объект, который не создавали руками"
     P.chain(obj,"dump", function(force) {
