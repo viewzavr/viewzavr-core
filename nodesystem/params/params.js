@@ -47,16 +47,18 @@ export default function setup(x) {
       x.signalTracked( name );
     }
     else {
+      /* нахрен это, накололся
       // случай когда передаем массивы
       if (value?.$vz_param_state_counter) {
-        //console.log("value?.$vz_param_state_counter present, ",value?.$vz_param_state_counter," comparing with",vz_param_state_counters)
+        console.log("value?.$vz_param_state_counter present, ",value?.$vz_param_state_counter," comparing with",vz_param_state_counters)
         if (value.$vz_param_state_counter != vz_param_state_counters[name])
         {
           vz_param_state_counters[name] = value.$vz_param_state_counter;
-          //console.log('not eqal = issuing signal')
+          console.log('not eqal = copy counter')
           x.signalTracked( name ); 
         }
-      }  
+      } 
+      */ 
     }
     return x;
   }
