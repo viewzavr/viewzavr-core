@@ -102,7 +102,7 @@ export default function setup( vz ) {
         // надо добавить путешествие дальше, ибо мб a:b:c
         for (let qq=2; qq<parts.length; qq++) {
           if (!maybe_feature) break;
-          maybe_feature = maybe_feature.$feature_list_envs_table[ parts[qq] ];
+          maybe_feature = maybe_feature.$feature_list_envs_table ? maybe_feature.$feature_list_envs_table[ parts[qq] ] : false;
         }
 
         if (maybe_feature) {
