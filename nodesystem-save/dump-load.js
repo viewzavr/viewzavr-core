@@ -80,7 +80,7 @@ export default function setup( m ) {
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
     // и стать функторами
           if (obj.removed)
-            debugger;    
+            debugger;
 
     
     return new Promise( function (resolve, reject) {
@@ -406,7 +406,16 @@ export default function setup( m ) {
     let feature_promise = m.restoreFeatures( dump, obj,manualParamsMode );
     // тут идет дублирование restoreFeatures с createSyncFromDump, но ничего, мы переживем.
 
-    if (dump.manual) manualParamsMode = true; // такой вот прием.. а то "ручные объекты" потом не сохранить получается..
+    if (dump.manual) {
+      manualParamsMode = true; // такой вот прием.. а то "ручные объекты" потом не сохранить получается..
+    };  
+    if (manualParamsMode) { // детей сделали - тыркнем объект что вот, восстановились
+       // а причем важно это сделать тут так как - там среди детей могет создаться монеторер
+       // этого события
+       //console.log("emitting manual-restore for",obj.getPath())
+       //obj.emit("manual-restore");
+       obj.setParam("manual_restore",true);
+    }    
 
     return new Promise( (resolve,reject) => {
        feature_promise.then( () => {
@@ -504,6 +513,7 @@ export default function setup( m ) {
         if (dump.keepExistingChildren) cobj = null; // R-NEW-CHILDREN
 
         var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode );
+        // todo вернуть оптимизацию
         r.then( () => {
            restore( i+1, priority );
         });
