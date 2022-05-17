@@ -52,6 +52,7 @@ export default function setup( vz ) {
       if (!currentRefFrom) return;
 
       if (currentParamNameFrom == "." || currentParamNameFrom == "~") {
+
         currentRefTo.setParam( currentParamNameTo,currentRefFrom, obj.params.manual_mode );
         return;
       }
@@ -69,7 +70,7 @@ export default function setup( vz ) {
               val_received = true;
           }
         }
-        // ссылка на команду
+        // ссылка на команду - вернем функцию
         else if (currentRefFrom.hasCmd( currentParamNameFrom )) {
            val = (...args) => {
               currentRefFrom.callCmd( currentParamNameFrom, ...args );
@@ -241,7 +242,10 @@ export default function setup( vz ) {
         return;
       }
 
-      if (paramname == "~") {
+      // F-POSITIONAL-ENVS и F-POSITIONAL-ENVS-OUTPUT
+      if (paramname == "~" || paramname == "." || paramname == "output") {
+        if (sobj.is_feature_applied("is_positional_env")) 
+          paramname = 0;
       }
 
       // ну а если его нет... это же нормальное явление...
@@ -264,7 +268,7 @@ export default function setup( vz ) {
       }
   
       currentRefFrom = sobj;
-      currentParamNameFrom = paramname;      
+      currentParamNameFrom = paramname;
       addLinkTracking( currentRefFrom,obj, true );
       
       if (enable_qqq) qqq();
@@ -377,6 +381,8 @@ export default function setup( vz ) {
     } );
 
     obj.trackParam("manual_mode",qqq); // F-LINKS-MANUAL
+    obj.feature("param_alias");
+    obj.addParamAlias("manual_mode","manual");
 
     // обнуление таймера повторного поиска ссылок
     obj.onvalues_any(["from","to"],() => linkScannerReset( obj ));
