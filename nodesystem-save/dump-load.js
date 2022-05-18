@@ -1,3 +1,5 @@
+import * as FT from "../extend/feature-tools.js";
+
 // экспорт состояния дерева объектов nodesystem в json-простой объект
 // а также создание дерева по этому состоянию
 
@@ -332,14 +334,17 @@ export default function setup( m ) {
     // но вообще - надо по уму что-то другое делать с manual-features-ами. возможно это 
     // вручную набранные модификаторы (скорее всего это они)
     
-    if (dump.params)
-    for (let fn of (dump.params.manual_features || [])) 
-    {
-      // тут считается что feature-code совпадает с feature-name
-      // в целом же наверняка это можно расширить до того что код нескольких фич может совпадать.
-      // но это надо тогда будет учесть и feature-tools (там отсекается повторное применение фич с одинаковым кодом)
-      let r = obj.feature( fn );
-      feat_arr.push( Promise.resolve( r ));
+    if (dump.params?.manual_features) {
+      let mf = FT.feature_names_to_arr( dump.params.manual_features );
+      //if (!Array.isArray(mf)) mf = [mf];
+      for (let fn of mf)
+      {
+        // тут считается что feature-code совпадает с feature-name
+        // в целом же наверняка это можно расширить до того что код нескольких фич может совпадать.
+        // но это надо тогда будет учесть и feature-tools (там отсекается повторное применение фич с одинаковым кодом)
+        let r = obj.feature( fn );
+        feat_arr.push( Promise.resolve( r ));
+      }
     }
 
     // а теперь фиче-листы... F-FEAT-PARAMS
@@ -414,7 +419,7 @@ export default function setup( m ) {
        // этого события
        //console.log("emitting manual-restore for",obj.getPath())
        //obj.emit("manual-restore");
-       obj.setParam("manual_restore",true);
+       obj.setParam("manual_restore_performed",true);
     }    
 
     return new Promise( (resolve,reject) => {
@@ -586,6 +591,7 @@ export default function setup( m ) {
 
 m.chain("create_obj",function( obj, opts ) {
 
+  // @compolang @todo @design - почему вот это нельзя было бы в параметры то перетащить?
   obj.ismanual = function() {
     return obj.manuallyInserted ? true : false;
   }

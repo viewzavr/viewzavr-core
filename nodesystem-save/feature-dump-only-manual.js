@@ -59,8 +59,9 @@ export default function setup(m) {
 
     // фича "не надо дампить объект, который не создавали руками"
     P.chain(obj,"dump", function(force) {
-      if (obj.ismanual() || obj === obj.findRoot() || force) 
+      if (obj.ismanual() || obj === obj.findRoot() || force || obj.params.force_dump) 
         return this.orig();
+      // флаг force_dump для того что если объект таки надо сохранять по каким-то причинам (insert_default_children)
 
       // но - может оказаться что объект автоматический, а в глубинах его сидит объект с настроенными вручную параметрами
       // и это надо тоже сохранить

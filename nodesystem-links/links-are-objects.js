@@ -243,7 +243,7 @@ export default function setup( vz ) {
       }
 
       // F-POSITIONAL-ENVS и F-POSITIONAL-ENVS-OUTPUT
-      if (paramname == "~" || paramname == "." || paramname == "output") {
+      if (paramname == "~" || paramname == ".") { // типа мы ссылки сделали || paramname == "output") {
         if (sobj.is_feature_applied("is_positional_env")) 
           paramname = 0;
       }

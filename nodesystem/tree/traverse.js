@@ -33,15 +33,16 @@ export default function setup( origobj, nf ) {
   }
 
   // поиск - обход всех детей с вызовом fn
-  obj.traverse = function( fn ) {
-    fn( origobj );
+  obj.traverse = function( fn, acc ) {
+    fn( origobj, acc );
     var cc = obj.getChildNames();
     for (var i=0; i<cc.length; i++) {
       var name = cc[i];
       var cobj = obj.getChildByName( name );
       // это не надо оно само себя вызовет var res = fn( cobj );
-      nf(cobj).traverse( fn );
+      nf(cobj).traverse( fn, acc );
     }
+    return acc;
   }
   
   obj.findChild = function(name) {

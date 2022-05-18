@@ -254,7 +254,7 @@ export function add_features_use( env, registry_env ) {
   }
 
   env.is_feature_applied = (name) => {
-    name = name.replaceAll("_","-");
+    name = name.replaceAll("_","-"); // дорогое удовольствие наверное @todo @optimize
     env.$features_applied ||= {};
     return env.$features_applied[name];
   }
