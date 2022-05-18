@@ -274,6 +274,14 @@ export default function setup( m ) {
 
          // протокол F-NEW-MODIFIERS-FTREE
          let detach_code = feature_obj.emit("attach",obj)
+         // времянка некая..  
+         /*
+         let feature_obj_got_attached_signal = false;
+         if (!(feature_obj.hasParam("input") || feature_obj.hasLinksToParam("input"))) {
+             feature_obj.emit("attach",obj)
+             feature_obj_got_attached_signal = true;
+         }
+         */
 
          // если фичу просто так удалять будут - надо освободить родителя
          feature_obj.on("remove",() => {
@@ -281,6 +289,8 @@ export default function setup( m ) {
 
           // протокол F-NEW-MODIFIERS-FTREE
           feature_obj.emit("detach",obj);
+          //if (feature_obj_got_attached_signal)
+          //    feature_obj.emit("detach",obj);
           // detach_code();
 
           if (!obj.removed) {
