@@ -179,6 +179,7 @@ export default function setup( m ) {
 
       // F-LEXICAL-PARENT
       // здесь происходит назначение "лексического родителя" в dump-описания окружений, хранимых в параметрах
+      let bemanual = manualParamsMode;
       if (v.needLexicalParent) {
          //v.lexicalParent = obj;
          if (Array.isArray(v)) // там список окружений - всем назначим..
@@ -188,10 +189,12 @@ export default function setup( m ) {
             // вида newrecord -> lexicalparent, array..
             v = v.map(a => ({...a}));
             for (let q of v) q.lexicalParent = obj;
+            //v.this_is_env_list_description = true;  
+            bemanual=false;
          }
        }
 
-      obj.setParam( name, v, manualParamsMode ); // ставим true - в том смысле что это установка из
+      obj.setParam( name, v, bemanual ); // ставим true - в том смысле что это установка из
 
       // F-LINKS-OVERWRITE
       // удалить ссылки пишушие в этот параметр... типа мы тут со значением пришли...
@@ -557,13 +560,14 @@ export default function setup( m ) {
         Object.keys( obj.params ).forEach( function(name) {
           var v = obj.dumpParam( name );
 
+          if (v == null) return;
+
           if (typeof(v) === "string" && v.length > 10000) {
             console.error("dumpObj: because value too long, dump will not save param ",name,"of obj",obj.getPath());
             return;
           }
 
-          if (typeof(v) !== "undefined" && v !== null)
-            res.params[name] = v;
+          res.params[name] = v;
         });
     }
 
