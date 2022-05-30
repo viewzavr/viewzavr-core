@@ -252,6 +252,9 @@ export default function setup( m ) {
          //feature_obj.master_env = obj;
          //obj.feature_
          // todo надо бы их в дерево посадить... тем более там по именам потом захочется ходить..
+
+         // вот здесь получается что мы вырубаем x-on "remove"... todo
+         // мбыть сделать on_prepend = добавить в начало очереди...
          let forget_that = obj.on("remove",() => {
             forget_that = () => {};
             feature_obj.remove();

@@ -64,14 +64,14 @@ function add_retry( obj, paramname, value ) {
     if (obj.removed) return;
     if (!obj.ref_retry_counters[paramname]) return; // отпала необходимость
 
-    console.warn("ref-as-obj: retry setting obj-ref, obj=",obj.getPath(), {paramname,value} );
+    //console.warn("ref-as-obj: retry setting obj-ref, obj=",obj.getPath(), {paramname,value} );
 
     obj.ref_retry_counters[paramname] = obj.ref_retry_counters[paramname]+1;
     
     if (obj.ref_retry_counters[paramname] < 100)
       obj.setParam( paramname, value );
     else
-      console.error("ref-as-obj: stopped because of retry counter limit.")
+      console.error("ref-as-obj: stopped because of retry counter limit.","obj=",obj.getPath(), {paramname,value})
   }, 15 );
 
   //setTimeout( , 150 );

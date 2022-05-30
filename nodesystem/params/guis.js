@@ -103,7 +103,9 @@ export default function setup(x) {
     }
     else
       x[name] ||= fn; // todo расхреначить это
-    //x.setParam( name, (...args) => callCmd(name,...args));
+
+    // таки это лучше так как - иначе ссылки не узнают про то что команда добавилась..
+    // x.setParam( name, (...args) => callCmd(name,...args));
 
     var res = x.addGui( { type: "cmd", name: name, fn: fn });
 
