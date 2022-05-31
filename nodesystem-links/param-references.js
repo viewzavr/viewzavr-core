@@ -98,7 +98,8 @@ export default function setup(vz) {
   // окружение с которым можно было бы поговорить через доп-методы
   // а не только через непойми что
   x.addParamRef = function( name, value, crit_fn, fn, desired_parent0 ) {
-    var desired_parent = desired_parent0 || x;
+    let desired_parent = desired_parent0 || x;
+    
     //desired_parent ||= x;
     //var values = gatherParams( crit_fn || default_crit_fn );
     var values = [];
@@ -138,12 +139,17 @@ export default function setup(vz) {
     });
     x.addLabel(`status-${name}`);
 
+    x.trackParamOption("crit_fn",setrec);
+    x.trackParamOption("search_root",setrec);
+
     function setrec() {
       // ну так то это неправильно - фиксировать через какое гуи мы тут пойдем
       rec = x.addGui( { type: "editablecombo", name: name, value: value, values: values, crit_fn: crit_fn, fn: fn } );
       rec.getValues = function() {
         let crit_fn1 = x.getParamOption( name, "crit_fn") || crit_fn || default_crit_fn;
-        return gatherParams( crit_fn1, desired_parent );
+        let search_root = x.getParamOption( name, "search_root") || x.findRoot();
+        //console.log("using root",search_root)
+        return gatherParams( crit_fn1, desired_parent, search_root );
       }
       rec.notFound = function( param_path, values ) { 
         // в параметре значение, которого нет в комбо-бокс значениях
@@ -181,15 +187,14 @@ export default function setup(vz) {
   }
   // здесь crit_fn по объекту должна выдать перечень имен его допустимых параметров
   
-  function gatherParams( crit_fn, relative_to_obj ) {
+  function gatherParams( crit_fn, relative_to_obj, search_root ) {
     var acc = [];
-    var r = x.findRoot(); // это получается в рамках текущего куста. а соседние кусты? (подсцены, вид, плеер)?
+    var r = search_root || x.findRoot(); // это получается в рамках текущего куста. а соседние кусты? (подсцены, вид, плеер)?
 //    debugger;
     // var acc_full = []; // решено продублировать и полные пути - чтобы не ломать старые приложения...
     // ну либо надо научить combovalues принимать то что дают..
     // дублирование это шляпа - там много шлака оказывается
-    // надо сделать чтобы на импорте это все произошло    
-    
+    // надо сделать чтобы на импорте это все произошло
 
     traverse_if( r, function(obj) {
       var param_names = crit_fn( obj );
@@ -220,50 +225,7 @@ export default function setup(vz) {
   return this.orig( x,opts );
   
   });
-  
-/*  
-  x.chain("setParam",function (name, value) {
-    if (x.references && x.references[name]) {
-      // ага это ссылка
-      var xpath = vz.get_path( x );
 
-      var old = x.getParam( name );
-      if (old) {
-        var oldobj = vz.find_by_path( x, old );
-        if (oldobj && oldobj.references) {
-          delete oldobj.references_to_me[ xpath ];
-        }
-      }
-      
-      var obj = vz.find_by_path( x,value );
-
-      if (obj) {
-        if (!obj.references_to_me) obj.references_to_me = {};
-        obj.references_to_me[ xpath ] = name;
-      }
-    }
-    this.orig( name, value );
-  });
-  
-  x.setReference = function( name ) {
-    if (!x.references) x.references = {};
-    x.references[name] = true;
-  }
-
-    // забыть все ссылки на нас надо
-  x.chain("remove",function() {
-    Object.keys( x.references_to_me || {} ).forEach( function(k) {
-      var ko = vz.find_by_path( vz.root, k );
-      if (ko) {
-        var pn = x.references_to_me[k];
-        ko.setReference( pn, undefined );
-      }
-    });
-    this.orig();
-  });
-*/
-
-//  return x;
 }
 
 
