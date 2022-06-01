@@ -45,12 +45,13 @@ export default function setup( vz ) {
 
     obj.feature("delayed");
     let warn_value_undefined = obj.delayed( () => {
-        console.warn("link: reading value undefined",
+        console.warn("Link: reading value undefined\n",
              currentRefFrom.getPath(),"->",currentParamNameFrom,
-             "=====>",
+             "\n=====>\n",
              currentRefTo.getPath(),"->",currentParamNameTo,
+             "\nlink object:",obj
               );
-    },3);
+    },20);
     
     // вызывается когда исходный параметр изменяется
     function qqq() {
@@ -99,8 +100,9 @@ export default function setup( vz ) {
         // теперь undefined скрываем только если ссылка добрая/мягкая/необязательная
         if (obj.params.soft_mode) {
             // обновление: скрываем только если и нет такого параметра. а если уж он там есть, а вернул ерунду - ну и ладно, передаем
-            if (!val_received) 
+            if (!val_received)
               return;
+            // новое обновление - передаем всегда..
         }
         else
         {
@@ -239,7 +241,7 @@ export default function setup( vz ) {
       
       if (!sobj) {
         if (enable_retry) {
-          console.warn("Link: source obj not found! Will retry!",arr,'me=',obj.getPath() );
+          // console.warn("Link: source obj not found! Will retry!",arr,'me=',obj.getPath() );
           if (obj.removed)
             debugger;
           //console.warn("my parent id is",obj.ns.parent.$vz_unique_id)
@@ -510,8 +512,8 @@ vz.chain("create_obj",function( obj, opts ) {
     q.setParam( "soft_mode", opts.soft_mode || opts.soft , opts.manual );
     return q;
   }
-  obj.linkParam = function( paramname, link_source ) {
-     return obj.createLinkTo( { param: paramname, from: link_source })
+  obj.linkParam = function( paramname, link_source,soft_mode ) {
+     return obj.createLinkTo( { param: paramname, from: link_source, soft_mode:soft_mode })
   }
   
   obj.hasLinks = function() {
