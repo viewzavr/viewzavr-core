@@ -42,6 +42,15 @@ export default function setup( vz ) {
            );
     }, 1000/10 )
 */    
+
+    obj.feature("delayed");
+    let warn_value_undefined = obj.delayed( () => {
+        console.warn("link: reading value undefined",
+             currentRefFrom.getPath(),"->",currentParamNameFrom,
+             "=====>",
+             currentRefTo.getPath(),"->",currentParamNameTo,
+              );
+    },3);
     
     // вызывается когда исходный параметр изменяется
     function qqq() {
@@ -82,7 +91,9 @@ export default function setup( vz ) {
           val = currentRefFrom.getParam( currentParamNameFrom  );
           val_received = currentRefFrom.hasParam( currentParamNameFrom);
         }
-      }  
+      }
+
+      warn_value_undefined.stop();
 
       if (typeof(val) == "undefined" || val == null) {
         // теперь undefined скрываем только если ссылка добрая/мягкая/необязательная
@@ -94,9 +105,9 @@ export default function setup( vz ) {
         else
         {
           if (!val_received) {
-            //warn_undef();
-
-            //console.warn("link: passing undefined value",currentRefFrom.getPath(),"->",currentParamNameFrom );
+            warn_value_undefined();
+            // warn_undef();
+            
                //console.warn("link: passing undefined value",obj.getPath() );
           }
         }
