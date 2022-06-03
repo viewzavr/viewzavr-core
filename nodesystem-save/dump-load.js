@@ -180,7 +180,7 @@ export default function setup( m ) {
       // F-LEXICAL-PARENT
       // здесь происходит назначение "лексического родителя" в dump-описания окружений, хранимых в параметрах
       let bemanual = manualParamsMode;
-      if (v.needLexicalParent) {
+      if (v?.needLexicalParent) {
          //v.lexicalParent = obj;
          if (Array.isArray(v)) // там список окружений - всем назначим..
          {

@@ -9,7 +9,7 @@ export function setup( vz,me ) {
 
 window.requestAnimationFrame( tick );
 
-var qnext = [];
+export var qnext = [];
 
 function tick() {
   window.requestAnimationFrame( tick );
@@ -20,17 +20,20 @@ function tick() {
   // но на других мониторах по другому)
   for (let i=0; i<2; i++)
     process_recs();
+
+  // console.log("qnext.length",qnext.length) 
 }
 
 function process_recs() {
   if (qnext.length > 0) {
       //console.log("AF.stat",qnext.length);
       //console.log( qnext.map( it => it.funchint ))
-  }    
+  }
 
   var q = qnext;
   qnext = [];
 
+  
   for (let rec of q) {
     rec.tm --;
     if (rec.tm < 0) {
