@@ -44,8 +44,8 @@ export default function setup( vz ) {
 */    
 
     obj.feature("delayed");
-    let warn_value_undefined = obj.delayed( () => {
-        console.warn("Link: reading value undefined\n",
+    let warn_value_not_found = obj.delayed( () => {
+        console.warn("Link: src object exist but value not found\n",
              currentRefFrom.getPath(),"->",currentParamNameFrom,
              "\n=====>\n",
              currentRefTo.getPath(),"->",currentParamNameTo,
@@ -94,7 +94,7 @@ export default function setup( vz ) {
         }
       }
 
-      warn_value_undefined.stop();
+      warn_value_not_found.stop();
 
       if (typeof(val) == "undefined" || val == null) {
         // теперь undefined скрываем только если ссылка добрая/мягкая/необязательная
@@ -107,7 +107,7 @@ export default function setup( vz ) {
         else
         {
           if (!val_received) {
-            warn_value_undefined();
+            warn_value_not_found();
             // warn_undef();
             
                //console.warn("link: passing undefined value",obj.getPath() );
@@ -126,7 +126,8 @@ export default function setup( vz ) {
       }
       */
       
-      //console.log("link ",obj.getPath(),"setting value from",obj.params.from,"to",obj.params.to,val);
+      // console.log("link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to,obj);
+
       /*
       if (obj.params.to === "/view-cmp-Lidar_crop_p3_4->origin")
         debugger;
