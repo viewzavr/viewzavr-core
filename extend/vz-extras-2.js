@@ -37,7 +37,11 @@ export function param_mirror(obj) {
         obj.addGui( {...gr,name:toname, fn:undefined, value: undefined } );
         var olink = obj.linkParam( toname, source );
         // obj.setParamOption( toname, o.paramOptions( arr[1] ) ); // ну и тут события всякие приедут.. ну ладно..
-        obj.param_options[ toname ] = o.paramOptions( arr[1] ); // хак.. ну починим когда апи устаканится..
+
+        // это криминал. надо если что-то то давайте вручную копировать..
+        // потому что получается что manual флаг здесь теперь сидит..
+        // obj.param_options[ toname ] = o.paramOptions( arr[1] ); // хак.. ну починим когда апи устаканится..
+
         // feature: if source object removed, forget link to its param
         o.on("remove", () => olink.remove() );
         o.linkParam( arr[1], obj.getPath() + "->"+toname );

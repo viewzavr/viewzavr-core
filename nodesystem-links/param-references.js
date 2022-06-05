@@ -97,6 +97,9 @@ export default function setup(vz) {
   // было бы гораздо удобнее, если бы obj.addParamRef создавал бы какое-то свое
   // окружение с которым можно было бы поговорить через доп-методы
   // а не только через непойми что
+
+  // и плюс - выбор параметра из красивого диалога с русскими надписями и графикой idea
+  // https://www.w3schools.com/howto/howto_js_popup.asp
   x.addParamRef = function( name, value, crit_fn, fn, desired_parent0 ) {
     let desired_parent = desired_parent0 || x;
     
@@ -144,13 +147,17 @@ export default function setup(vz) {
 
     function setrec() {
       // ну так то это неправильно - фиксировать через какое гуи мы тут пойдем
-      rec = x.addGui( { type: "editablecombo", name: name, value: value, values: values, crit_fn: crit_fn, fn: fn } );
-      rec.getValues = function() {
+      //rec = x.addGui( { type: "editablecombo", name: name, value: value, values: values, crit_fn: crit_fn, fn: fn } );
+      rec = x.addGui( { type: "combovalue", name: name, value: value, values: getvalues, crit_fn: crit_fn, fn: fn } );
+      rec.getValues = getvalues;
+      function getvalues() {
         let crit_fn1 = x.getParamOption( name, "crit_fn") || crit_fn || default_crit_fn;
         let search_root = x.getParamOption( name, "search_root") || x.findRoot();
         //console.log("using root",search_root)
         return gatherParams( crit_fn1, desired_parent, search_root );
       }
+      x.setParamOption( name,"values",getvalues );
+
       rec.notFound = function( param_path, values ) { 
         // в параметре значение, которого нет в комбо-бокс значениях
         // это случай вероятно, когда param_path абсолютный

@@ -126,7 +126,7 @@ export default function setup( vz ) {
       }
       */
       
-      // console.log("link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to,obj);
+      //console.log("link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to,obj);
 
       /*
       if (obj.params.to === "/view-cmp-Lidar_crop_p3_4->origin")
