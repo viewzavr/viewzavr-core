@@ -192,6 +192,10 @@ export default function setup( vz ) {
     obj.on("remove",() => unsubFromParamTracking());
 
     function setupFromLink(enable_qqq,enable_retry=true,enable_signal=true) {
+
+      if (obj.params.debug)
+        debugger;
+              
       unsubFromParamTracking(); 
 
       //console.error("Link: setupFromLink called",obj);
@@ -294,6 +298,9 @@ export default function setup( vz ) {
     }
     
     function setupToLink(enable_qqq,enable_retry=true,enable_signal=true) {
+
+      if (obj.params.debug)
+        debugger;
 
       var v = obj.getParam("to");      
       

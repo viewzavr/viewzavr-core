@@ -88,7 +88,7 @@ export default function setup( vz ) {
 
     var c1 = obj.ns.getChildByName( path[0] ); // это работает потому что теперь path это массив
     if (c1) {
-      return vz.find_by_path( c1, path.slice(1) );
+      return vz.find_by_path( c1, path.slice(1), scope_obj );
     }
 
     // случай доступа во вложенную фичу, F-SUBFEAT-PATH
@@ -106,7 +106,7 @@ export default function setup( vz ) {
         }
 
         if (maybe_feature) {
-           return vz.find_by_path( maybe_feature, path.slice(1) );
+           return vz.find_by_path( maybe_feature, path.slice(1), scope_obj );
         }
       }
     }
