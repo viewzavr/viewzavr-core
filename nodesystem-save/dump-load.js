@@ -592,7 +592,7 @@ export default function setup( m ) {
         var cobj = obj.ns.getChildByName( name );
         if (!c[name].manual && !cobj && !c[name].forcecreate) {
           // ситуация когда объект должен был быть создан автоматически - но его нет!
-          console.error("load_from_dump: no child of name found! name=",name,"obj=",obj);
+          console.error("load_from_dump: no child of name found! name=",name,"obj=",obj,"dump=",dump);
           //promises_arr.push( Promise.reject() );
           return restore( i+1, priority );
         }

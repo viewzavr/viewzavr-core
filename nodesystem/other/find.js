@@ -174,10 +174,12 @@ export default function setup( vz ) {
 
     // прошлись по дереву детей - не нашли. идем к соседям и далее рекурсивно
 
+    // вроде как тож можно убрать
     if (allow_up) {
       if (startobj.lexicalParent) // // F-LEXICAL-PARENT
           return vz.find_by_id_scopes( startobj.lexicalParent, name, startobj, true );      
 
+      // а это вроде как не надо т.к. у нас субфичи.. получают доступ к скопу родителя некоторые..  
       //if (startobj.hosted) // F-FEAT-PARAMS
       //  return vz.find_by_id_scopes( startobj.host, name, startobj, true );
         /*
