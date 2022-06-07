@@ -24,7 +24,7 @@ export default function setup( obj ) {
 
           // TODO похоже у нас тут дублирующся find_by_path причем с разными tree_func
 
-          var target_obj  = obj.vz.find_by_path( tree_to_find_in,value ); 
+          var target_obj  = obj.vz.find_by_path( tree_to_find_in,value, tree_to_find_in ); 
 
           if (!target_obj) {
             add_retry( obj, name, value );

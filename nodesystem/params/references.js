@@ -38,7 +38,7 @@ export default function setup(vz, x) {
       var f = x.getParamOption(name,"tree_func");
       var tree_to_find_in = f ? f() : x;
 
-      var obj = vz.find_by_path( tree_to_find_in,value ); 
+      var obj = vz.find_by_path( tree_to_find_in,value,tree_to_find_in ); 
 
       if (obj) {
         ref_event_unbinds[ name ] = obj.on("parent_change",() => { // это включает в себя и remove

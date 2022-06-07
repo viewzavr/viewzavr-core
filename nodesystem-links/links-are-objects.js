@@ -246,8 +246,8 @@ export default function setup( vz ) {
           if (obj.removed)
             debugger;
           //console.warn("my parent id is",obj.ns.parent.$vz_unique_id)
-          //sobj = obj.ns.parent.findByPath( objname );
-          linkScannerAdd( obj );
+          sobj = start_from_obj.findByPath( objname, obj );
+          linkScannerAdd( obj, "obj 'from' not found" );
         }
         return;
       }
@@ -328,13 +328,13 @@ export default function setup( vz ) {
       // новая альтернативная история
       if (obj.hosted) start_from_obj = obj.host;
 
-      var sobj = start_from_obj.findByPath( objname );
-      var sobj2 = start_from_obj.findByPath( objname );
+      var sobj = start_from_obj.findByPath( objname, obj );
       
       if (!sobj) {
         if (enable_retry) {
-          console.log("Link: target obj not found! Will retry!",arr );
-          linkScannerAdd( obj );
+          console.log("Link: target obj not found! Will retry!",arr, obj.getPath(),obj );
+          var sobj2 = start_from_obj.findByPath( objname, obj );
+          linkScannerAdd( obj, "obj 'to' not found" );
         }
         return;
       }
@@ -641,7 +641,7 @@ var linkScannerReset = function(link) {
   link.linkScannerCounter = 0;
 }
 
-var linkScannerAdd = function ( link ) {
+var linkScannerAdd = function ( link, reason ) {
 
   if (!link.rescan_it_delayed)
     link.rescan_it_delayed = link.delayed( () => link.setupLinks(),3 );
@@ -655,7 +655,7 @@ var linkScannerAdd = function ( link ) {
     link.rescan_it_delayed();
   }
   else {
-    console.error("links: failed to setup link",link.params.from,"======>",link.params.to,link)
+    console.error("links: failed to setup link, reason:",reason,"from:",link.params.from,"======> to:",link.params.to,link)
   }
   
 }

@@ -30,12 +30,12 @@ export default function setup( vz ) {
       }
       else
       {
-        return vz.find_by_path( root, path );
+        return vz.find_by_path( root, path, scope_obj );
       }
     }
     
     if (path[0] == "." && path[1] == "." && path[2] == "/") {    // example: ../camera
-      return vz.find_by_path( obj.ns.parent || obj.host.ns.parent, path.substring(3) );
+      return vz.find_by_path( obj.ns.parent || obj.host.ns.parent, path.substring(3), scope_obj );
     }
     if (path == "..") {    // example: ..
       // F-FEAT-PARAMS
@@ -126,9 +126,21 @@ export default function setup( vz ) {
 
     if (scopeobj)
     {
-      let scope = scopeobj.$scopes[ scopeobj.$scopes.length-1 ];
+      let scope = scopeobj.$scopes.top();
       if (scope && scope[name])
          return scope[ name ];
+
+      // теперь поищем в этой цепочке.. 
+      if (scope) {
+        scope = scope.$lexicalParentScope;
+        while (true) {
+          if (!scope) break;
+          if (scope[name])
+            return scope[ name ];
+          scope = scope.$lexicalParentScope;
+        }
+      }
+
     }
 
     // поищем в ребенке узла
