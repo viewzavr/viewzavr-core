@@ -152,6 +152,7 @@ function vzf_manual_features( obj ) {
       // todo optimize
       return promarr;
     }
+    //return Promise.resolve( obj );
   }
 
   obj.apply_manual_features = () => {

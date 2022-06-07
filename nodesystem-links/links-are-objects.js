@@ -238,7 +238,7 @@ export default function setup( vz ) {
       // новая альтернативная история
       if (obj.hosted) start_from_obj = obj.host;
 
-      var sobj = start_from_obj.findByPath( objname );
+      var sobj = start_from_obj.findByPath( objname, obj );
       
       if (!sobj) {
         if (enable_retry) {
@@ -649,8 +649,14 @@ var linkScannerAdd = function ( link ) {
     // с текущей реализацией delayed это сделать реально
 
   link.linkScannerCounter = (link.linkScannerCounter || 0) + 1;
-  if (link.linkScannerCounter < 100)
+  if (link.linkScannerCounter < 100) {
+    
+    link.rescan_it_delayed.stop();
     link.rescan_it_delayed();
+  }
+  else {
+    console.error("links: failed to setup link",link.params.from,"======>",link.params.to,link)
+  }
   
 }
 

@@ -11,7 +11,7 @@ export default function setup( vz ) {
     ../item => child named `item` of parent of obj
     EMPTY => obj
   */
-  vz.find_by_path = function(obj,path) {
+  vz.find_by_path = function(obj,path, scope_obj) {
     //console.log("find-by-path",path)
     if (path == "") return obj;
 
@@ -66,7 +66,7 @@ export default function setup( vz ) {
       path = path.substring(2);
 
     if (path[0] == "@") // find by id @name or @name/sub/path
-      return vz.find_by_id_scopes( obj,path.slice(1) )
+      return vz.find_by_id_scopes( [obj,scope_obj],path.slice(1) )
       // todo: @name:subenv ?
       // короче получается здесь что @ это пошло поехало по имени искать
       // и по идее последующий анализ не нужен который ниже..
@@ -115,9 +115,24 @@ export default function setup( vz ) {
   }
 
   // алгоритм поиска объекта по имени
-  vz.find_by_id_scopes = function (startobj,name,skipobj,allow_up=true,tree_name="ns" ) {
-    
+  vz.find_by_id_scopes = function (startkit,name,skipobj,allow_up=true,tree_name="ns" ) {
+
+    let startobj=startkit, scopeobj;
+    if (Array.isArray( startkit ))
+    {
+      startobj = startkit[0];
+      scopeobj = startkit[1];
+    }  
+
+    if (scopeobj)
+    {
+      let scope = scopeobj.$scopes[ scopeobj.$scopes.length-1 ];
+      if (scope && scope[name])
+         return scope[ name ];
+    }
+
     // поищем в ребенке узла
+    /*
     var c1 = startobj[tree_name].getChildByName( name );
     if (c1) return c1;
 
@@ -127,19 +142,23 @@ export default function setup( vz ) {
       let res = vz.find_by_id_scopes( o, name, null, false );
       if (res) return res;
     }
+    */
 
-    // походим по субфичам
+    // походим по субфичам todo это зло убрать - там тоже в скопах должно рулиться
+    /*
     if (startobj.$feature_list_envs_table) {
       let c2 = startobj.$feature_list_envs_table[ name ];
       if (c2) return c2;
       // хотя вопросов это много вызывает, очень много...
       // и да, мы пока тут не заходим внутрь этих субфич, т.е. это работает ток на первый их слой..
     }
-
+    */
+/*
     // воткнем сюда проверку на доп-имена
     // F-FEAT-ROOT-NAME
     if (startobj.$env_extra_names && startobj.$env_extra_names[ name ])
        return startobj; // это мы
+*/       
 
     // прошлись по дереву детей - не нашли. идем к соседям и далее рекурсивно
 
@@ -147,15 +166,15 @@ export default function setup( vz ) {
       if (startobj.lexicalParent) // // F-LEXICAL-PARENT
           return vz.find_by_id_scopes( startobj.lexicalParent, name, startobj, true );      
 
-      if (startobj.hosted) // F-FEAT-PARAMS
-        return vz.find_by_id_scopes( startobj.host, name, startobj, true );
+      //if (startobj.hosted) // F-FEAT-PARAMS
+      //  return vz.find_by_id_scopes( startobj.host, name, startobj, true );
         /*
           return vz.find_by_id_scopes( startobj.master_env, name, startobj, true,"feature_tree" ) 
                  || vz.find_by_id_scopes( startobj.master_env, name, startobj, true );
         */         
       
-      if (startobj.ns.parent)
-          return vz.find_by_id_scopes( startobj.ns.parent, name, startobj, true );
+      //if (startobj.ns.parent)
+      //    return vz.find_by_id_scopes( startobj.ns.parent, name, startobj, true );
     }
   }
 
@@ -281,8 +300,8 @@ export default function setup( vz ) {
       return vz.get_path_rel( obj,basisobj);
     }    
     
-    obj.findByPath = function(path) {
-      return vz.find_by_path( obj, path );
+    obj.findByPath = function(path, scope_obj) {
+      return vz.find_by_path( obj, path, scope_obj );
     }
     
     this.orig( obj, options );
