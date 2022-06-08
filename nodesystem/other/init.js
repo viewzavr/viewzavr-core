@@ -47,7 +47,9 @@ export default function setup(m) {
   
   ////////// фича "у всякого объекта есть имя"
   m.chain( "create_obj", function(obj,opts) {
-    if (!opts.name) opts.name = opts.type || "item";
+    if (!opts.name) {
+         opts.name = opts.type || "item";
+    }
     return this.orig( obj, opts );
   });
   

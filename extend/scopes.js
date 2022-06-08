@@ -61,7 +61,7 @@ function vz_add_scopes( vz ) {
          debugger;
       let newscope = {
           $comment: comment,
-          add: ( name, env ) => {
+          $add: ( name, env ) => {
             // функция добавляет объект в скопу. она умная, удалит запись когда объект удалится
             newscope[name]=env;
             env.on('remove',() => delete newscope[name]);

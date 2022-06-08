@@ -45,12 +45,14 @@ export default function setup( vz ) {
 
     obj.feature("delayed");
     let warn_value_not_found = obj.delayed( () => {
-        console.warn("Link: src object exist but value not found\n",
+        console.warn("Link: src object exist but no parameter of that name\n",
              currentRefFrom.getPath(),"->",currentParamNameFrom,
              "\n=====>\n",
              currentRefTo.getPath(),"->",currentParamNameTo,
-             "\nlink object:",obj
+             "\nlink object:",obj,"\nsrc object:",currentRefFrom
               );
+       if (obj.$locinfo)
+           console.log( obj.$locinfo );
     },20);
     
     // вызывается когда исходный параметр изменяется
@@ -663,6 +665,8 @@ var linkScannerAdd = function ( link, reason ) {
   }
   else {
     console.error("links: failed to setup link, reason:",reason,"from:",link.params.from,"======> to:",link.params.to,link)
+    if (link.$locinfo)
+       console.log( link.$locinfo );
   }
   
 }

@@ -102,11 +102,16 @@ export default function setup( m ) {
 
         if ($scopeFor[ name_for_scope ]) {
            console.error("scopes: duplicated name!",name_for_scope,'me=',obj,'existing=',$scopeFor[ name_for_scope ])
+           if (dump.locinfo)
+             console.log( dump.locinfo );
         }
         else
-           $scopeFor.add( name_for_scope, obj );
+           $scopeFor.$add( name_for_scope, obj );
      };
     }
+
+    if (dump.locinfo)
+      obj.$locinfo = dump.locinfo;
 
 /*
     if (dump.$scopeParent) {
@@ -471,7 +476,10 @@ export default function setup( m ) {
          if ($scopeFor)
              lobj.$scopes.addScopeRef( $scopeFor );
           else debugger; 
-         
+
+        if (lrec.locinfo) 
+          lobj.$locinfo = lrec.locinfo;
+          //lobj.setParam('locinfo',lrec.locinfo);
       }
       else
       {
@@ -484,6 +492,9 @@ export default function setup( m ) {
         m.setParam("soft_mode",lrec.soft_mode);
         m.setParam("to",lrec.to);
         m.setParam("from",lrec.from);
+
+        if (lrec.locinfo) 
+          lobj.$locinfo = lrec.locinfo;
         // крайне важно давать имена тут ссылкам (типа arg_...) потому что иначе они смешиваются со ссылками
         // задаваемыми через children и начинают с ними конфликтовать по именам (перезаписывают их)
       }
