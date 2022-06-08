@@ -56,6 +56,13 @@ export default function setup(vz, x) {
   x.setReference = function( name ) {
     if (!x.references) x.references = {};
     x.references[name] = true;
+
+    // важный момент инфа что это ссылка может прийти сильно позже
+    // (так вышло с компалангой почему-то) - надоть отреагировать и тогда
+    let curvalue = x.params[name];
+    if (typeof(curvalue) == 'string')
+       x.setParamWithoutEvents( name, curvalue, x.getParamManualFlag(name) );
+    
   }
   
   x.isReference = function(name) {

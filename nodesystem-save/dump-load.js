@@ -101,10 +101,10 @@ export default function setup( m ) {
            console.error("scopes: name_for_scope is blank",name_for_scope,obj)
 
         if ($scopeFor[ name_for_scope ]) {
-           console.error("scopes: duplicated name!",name_for_scope,obj)
+           console.error("scopes: duplicated name!",name_for_scope,'me=',obj,'existing=',$scopeFor[ name_for_scope ])
         }
         else
-           $scopeFor[ name_for_scope ] = obj;
+           $scopeFor.add( name_for_scope, obj );
      };
     }
 
@@ -637,6 +637,16 @@ export default function setup( m ) {
 
           if (typeof(v) === "string" && v.length > 10000) {
             console.error("dumpObj: because value too long, dump will not save param ",name,"of obj",obj.getPath());
+            return;
+          }
+
+          // фича по отлову ситуаций
+          // ну мб можно было бы тут и строчку сохранять, не знаю
+          // но потом тогда надо из дампа ее восстанавливать
+          // что тоже в принципе вариант (сохранять { ref: 'obj', path: ....})
+          // кстати это удобно было бы. ну мб. smallidea.
+          if (v.setParam) {
+            console.error("dumpObj: vz object in param value! name=", name, "obj path=",obj.getPath(), obj)
             return;
           }
 
