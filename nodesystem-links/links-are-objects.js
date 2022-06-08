@@ -341,7 +341,7 @@ export default function setup( vz ) {
       
       if (!sobj) {
         if (enable_retry) {
-          console.log("Link: target obj not found! Will retry!",arr, obj.getPath(),obj );
+          //console.log("Link: target obj not found! Will retry!",arr, obj.getPath(),obj );
           var sobj2 = start_from_obj.findByPath( objname, obj );
           linkScannerAdd( obj, "obj 'to' not found" );
         }
