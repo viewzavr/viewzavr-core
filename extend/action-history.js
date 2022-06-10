@@ -48,4 +48,15 @@ export function setup( vz )
     console.log( vz.history.getall().slice() );
   }
 
+  // поставим эксперимент на тему не вписывать в env функции
+  // оно конечно неаддитивно но зато такты экономим ибо
+  // редкая операция такто.. а на каждый энв ее запихивать..
+  // но можно было бы и фичей оформить.. эх..
+  // env.feature('console_log_diag'); env.console_log_diag(); ?
+  vz.console_log_diag = function(env) {
+        if (env.$locinfo)
+            console.log( env.$locinfo );
+        env.vz.history.log();
+  };
+
 }

@@ -329,8 +329,7 @@ export function add_appends_to_table(env) {
     let appends = env.appends[name];
     if (!f && !appends) {
       console.error(`viewzavr: feature '${name}' is not defined (no code and no appended features). object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
-      if (target_env.$locinfo)
-          console.log(target_env.$locinfo);
+      target_env.vz.console_log_diag( target_env );
 
       // субфишка - если это тип или категория - то не ругаться
       // но тут вьюзавра еще нету..
@@ -352,8 +351,7 @@ export function add_appends_to_table(env) {
         error_report_tmr = setTimeout( () => {
           if (missing_and_found_feautures[name]) {
               console.error(`viewzavr features: feature '${name}' is not defined (no code and no appended features) even after ${ms}ms timeout. object desired for feature is `,target_env.getPath ? target_env.getPath() : target_env );
-              if (target_env.$locinfo)
-                        console.log(target_env.$locinfo);              
+              target_env.vz.console_log_diag( target_env );
 
               if (env.list[name])
                 console.error("dual error. feature is prezent in env.list",missing_and_found_feautures[name])
