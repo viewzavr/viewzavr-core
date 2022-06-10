@@ -11,6 +11,8 @@ window.requestAnimationFrame( tick );
 
 export var qnext = [];
 
+export var callbacks = [];
+
 function tick() {
   window.requestAnimationFrame( tick );
   // надо вначале зарядить а то потом по ошибкам повалимся и все цикл остановится
@@ -22,6 +24,7 @@ function tick() {
     process_recs();
 
   // console.log("qnext.length",qnext.length) 
+  callbacks.forEach( c => c() );
 }
 
 function process_recs() {
@@ -32,7 +35,6 @@ function process_recs() {
 
   var q = qnext;
   qnext = [];
-
   
   for (let rec of q) {
     rec.tm --;

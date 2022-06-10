@@ -128,12 +128,18 @@ export default function setup( vz ) {
       }
       */
       
-      //console.log("link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to,obj);
-
-      /*
-      if (obj.params.to === "/view-cmp-Lidar_crop_p3_4->origin")
-        debugger;
-      */  
+      // console.log("link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to,obj);
+      // obj.vz.history.add( ["link set value",obj.params.from,])
+      obj.vz.history.add( 
+        //["link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to, obj.getPath() ]
+        { "info": "link",
+            "value" : val,
+            "from" : obj.params.from,
+            "to" : obj.params.to,
+            "link path": obj.getPath(),
+            "source" : obj.$locinfo
+         }
+      );
 
       // feature: set only if val changes; in other case, we will lose manual effect..
       // обновление: чухня все это, надо хреначить. ну мануал эффект можно сохранить выставляя флаг

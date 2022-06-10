@@ -3,6 +3,7 @@ import * as F1 from "./vz-extras-2.js";
 import * as F2 from "./criteria-finder.js";
 import * as D1 from "./delayed-pool.js";
 import * as S1 from "./scopes.js";
+import * as AH from "./action-history.js";
 
 export default function setup( vz ) {
   E( vz );
@@ -12,4 +13,6 @@ export default function setup( vz ) {
   D1.setup( vz, D1 );
  
   S1.setup( vz, S1 );
+  
+  AH.setup( vz, AH );
 }
