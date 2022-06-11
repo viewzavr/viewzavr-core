@@ -370,7 +370,7 @@ export function add_appends_to_table(env) {
         // ладно уж почистим и таймер
         missing_and_found_feautures[name] = false;
         //newf( target_env,...args );
-        invoke_feature_function( newf, target_env, ...args );
+        invoke_feature_function( newf, target_env, env, ...args );
       })
       target_env.on("remove",() => unbind1() );
       // todo то же самое с appends
@@ -381,7 +381,7 @@ export function add_appends_to_table(env) {
     if (f) {
       if (f.func) f = f.func;
       //result = f( target_env,...args );
-      result = invoke_feature_function( f, target_env, ...args );
+      result = invoke_feature_function( f, target_env,env, ...args );
     }
     //console.log("running desired appends for",name)
     if (appends) 
@@ -398,7 +398,7 @@ export function add_appends_to_table(env) {
    }
 
    // F-FEAT-PARAMS
-   function invoke_feature_function(f,target_env,...args) {
+   function invoke_feature_function(f,target_env, feature_env, ...args) {
       return f( target_env, ...args );
 
 /*

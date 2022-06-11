@@ -108,9 +108,9 @@ export default function setup(x) {
       x[name] ||= fn; // todo расхреначить это
 
     // таки это лучше так как - иначе ссылки не узнают про то что команда добавилась..
-    // x.setParam( name, (...args) => callCmd(name,...args));
+    x.setParam( name, (...args) => x.callCmd(name,...args));
 
-    var res = x.addGui( { type: "cmd", name: name, fn: fn });
+    var res = x.addGui( { type: "cmd", name: name });
 
     // F-PENDING-CMDS
     if (x.pendingCmds && x.pendingCmds[name]) {
@@ -189,6 +189,13 @@ export default function setup(x) {
     return x.addGui( { type: "array", name: name, value: value, fn: fn, columns_count: text_formating_options });    
     //return x.addGui( { type: "text", name: name, value: value, fn: fn });
   };
+
+  x.addVector = function( name, value, text_formating_options, fn ) {
+    //x.setParam( name,value );
+    //x.setParamOption( name,"internal",true );
+    return x.addGui( { type: "vector", name: name, value: value, fn: fn, columns_count: text_formating_options });    
+    //return x.addGui( { type: "text", name: name, value: value, fn: fn });
+  };  
 
   return x;
 }

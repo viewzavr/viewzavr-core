@@ -51,8 +51,8 @@ export default function setup( vz ) {
              currentRefTo.getPath(),"->",currentParamNameTo,
              "\nlink object:",obj,"\nsrc object:",currentRefFrom
               );
-       if (obj.$locinfo)
-           console.log( obj.$locinfo );
+       obj.vz.console_log_diag( obj );
+
     },20);
     
     // вызывается когда исходный параметр изменяется
