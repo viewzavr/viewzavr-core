@@ -28,10 +28,10 @@ function tick() {
 }
 
 function process_recs() {
-  if (qnext.length > 0) {
+  //if (qnext.length > 0) {
       //console.log("AF.stat",qnext.length);
       //console.log( qnext.map( it => it.funchint ))
-  }
+  //}
 
   var q = qnext;
   qnext = [];

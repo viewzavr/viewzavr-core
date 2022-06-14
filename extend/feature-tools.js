@@ -76,6 +76,8 @@
 */
 
 
+//import {createNanoEvents} from "../utils/nano-events.js";
+import {createNanoEvents} from "../nodesystem/events/init.js";
 
 //////////////////////////////////////////////////////////
 
@@ -286,6 +288,9 @@ var missing_and_found_feautures = {};
 export function add_appends_to_table(env) {
   env.appends = {}
   env.append = (name,name2) => {
+    //console.error('add_appends_to_table is deprecated')
+    //debugger;
+
     env.appends[name] ||= [];
     if (env.appends[name].indexOf(name2) < 0) {
         env.appends[name].push( name2 ); // todo optimize
@@ -388,11 +393,15 @@ export function add_appends_to_table(env) {
       env.run_appends( name, target_env, ...args );
 
     // F-APPEND-RECALL - добавить вызов новых аппендов
+    // короче практика показала что это жутко дорогая вещь какая-то
+    // а именно много событий ждем.. если это удалить все побыстрее мбыть optimize
+
     let unbind_fa = env.on(`feature-appended-${name}`,(name2) => {
       // console.log("INTERESTING PLACE - feature appended",name,"with",name2)
       env.run_appends( name, target_env, ...args );
     }); 
     target_env.on("remove",() => unbind_fa() );
+    
 
     return result;
    }
@@ -509,6 +518,7 @@ export function add_events( env ) {
 }
 
 /////////
+/*
 export var createNanoEvents = () => ({
   events: {},
   emit(event, ...args) {
@@ -523,3 +533,23 @@ export var createNanoEvents = () => ({
     ;(this.events[event] = (this.events[event] || []).filter(i => i !== cb))
   }
 })
+*/
+
+/*
+export var createNanoEvents = () => ({
+  events: {},
+  emit(event, ...args) {
+    ;(this.events[event] || []).forEach(i => i(...args))
+  },
+  on(event, cb) {
+    this.events[event] ||= new Set();
+    this.events[event].add(cb);
+    return () => this.events[event].delete(cb)
+  },
+  off(event, cb) {
+    this.events[event] ||= new Set();
+    this.events[event].delete(cb)
+  }
+})
+*/
+

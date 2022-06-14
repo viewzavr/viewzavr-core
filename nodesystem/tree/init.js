@@ -53,15 +53,19 @@ function setup_tree(obj, tree_name) {
     //console.log("i am ",obj.getPath(),"id",obj.$vz_unique_id);
     //console.log("i have children count",obj[tree_name].getChildren().length)
 
-    // возможная оптимизация
-    //obj[tree_name].updateChildrenTable = () => {};
+    // оптимизация
+    obj[tree_name].updateChildrenTable = () => {};
+    let cc =obj[tree_name].children.slice(0);
+    obj[tree_name].children=[];
+    obj[tree_name].childrenTable={};
     //obj[tree_name].forgetChild = () => {};
 
-    obj[tree_name].getChildren().slice(0).forEach((c) => {
+    cc.forEach((c) => {
       //console.log("removing child ",c.getPath());
       //if (c.ns.name == "object_g_2_2xw709pds") debugger;
       c.remove();
     });
+    
     //delete obj.ns;
     return this.orig();
   });

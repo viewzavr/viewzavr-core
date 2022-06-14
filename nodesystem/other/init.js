@@ -85,6 +85,7 @@ export default function setup(m) {
     var res = this.orig( obj, options );
     obj.chain( "remove", function () {
       //console.log("emitting remove",obj.getPath(),obj)
+      obj.removing=true;
       obj.emit("remove");
       return this.orig();
     });  

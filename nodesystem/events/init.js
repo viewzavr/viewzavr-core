@@ -1,5 +1,6 @@
 // https://github.com/ai/nanoevents
-export var createNanoEvents = () => ({
+
+export var createNanoEvents0 = () => ({
   events: {},
   emit(event, ...args) {
     ;(this.events[event] || []).forEach(i => i(...args))
@@ -11,6 +12,42 @@ export var createNanoEvents = () => ({
   },
   off(event, cb) {
     ;(this.events[event] = (this.events[event] || []).filter(i => i !== cb))
+  }
+})
+
+// ну вроде так повеселее
+// с set заморочка что если его менять во время forEach то оно опять будет на себя выходить
+// менять значит удалить cb и добавить новую аналогичную
+// но set вроде как однозначно веселее чем filter при удалении
+
+// см также https://github.com/ai/nanoevents/pull/63
+export var createNanoEvents = () => ({
+  events: {}, arr_repr: {},
+  emit(event, ...args) {
+    let rec = this.events[event];
+    if (rec) {
+       let arr = this.arr_repr[event];
+       if (!arr) {
+          arr = [...rec];
+          this.arr_repr[event] = arr;
+       }
+       arr.forEach(i => i(...args));
+       //let arr = [...rec];
+       //arr.forEach(i => i(...args));
+       //for (let i of rec)
+       //          i(...args);
+    }
+  },
+  on(event, cb) {
+    this.events[event] ||= new Set();
+    this.events[event].add(cb);
+    this.arr_repr[event]=null;
+    return () => { this.events[event].delete(cb); this.arr_repr[event]=null; }
+  },
+  off(event, cb) {
+    this.events[event] ||= new Set();
+    this.events[event].delete(cb)
+    this.arr_repr[event]=null;
   }
 })
 
@@ -37,6 +74,7 @@ export function addEventsTo( x ) {
     unbind = x.on( event, f );
     return unbind;
   }
+
 }
 
 export function setup_item(x) {
