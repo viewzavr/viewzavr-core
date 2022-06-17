@@ -28,6 +28,8 @@ export default function setup( vz ) {
     var currentParamNameTo;
     var tracode;
 
+    var qqq_is_performing = false;
+
     obj.currentRefFrom = () => currentRefFrom;
     obj.currentRefTo = () => currentRefTo;
 
@@ -144,8 +146,20 @@ export default function setup( vz ) {
       // feature: set only if val changes; in other case, we will lose manual effect..
       // обновление: чухня все это, надо хреначить. ну мануал эффект можно сохранить выставляя флаг
 
+      if (qqq_is_performing) {
+        console.error("links: already processing, possible link loop");
+        obj.vz.console_log_diag( obj );
+        debugger;
+      };
+
+      qqq_is_performing = true;
+
+      try {
       currentRefTo.setParam( currentParamNameTo,val, 
         obj.params.manual_mode || currentRefTo.getParamManualFlag(currentParamNameTo) ); // F-LINKS-MANUAL
+      } finally {
+        qqq_is_performing  = false;
+      }
 
       //currentRefTo.setParamWithoutEvents( currentParamNameTo,val, 
       //  obj.params.manual_mode || currentRefTo.getParamManualFlag(currentParamNameTo) ); // F-LINKS-MANUAL
