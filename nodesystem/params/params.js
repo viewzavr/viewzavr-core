@@ -44,7 +44,14 @@ export default function setup(x) {
 
     // iiiiimport. хорошо бы 
     if (old != value || typeof(old) != typeof(value)) {
-      x.signalTracked( name );
+      
+      if (Number.isNaN(old) && Number.isNaN(value))
+      {
+          // отдельный случай - эти штуки всегда неравны...
+      }
+      else
+      
+        x.signalTracked( name );
     }
     else {
       /* нахрен это, накололся
