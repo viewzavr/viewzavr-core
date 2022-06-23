@@ -130,7 +130,9 @@ export default function setup( vz ) {
       }
       */
       
-      // console.log("link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to,obj);
+      if (obj.params.log)
+          console.log("link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to,obj);
+
       // obj.vz.history.add( ["link set value",obj.params.from,])
       obj.vz.history.add( 
         //["link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to, obj.getPath() ]

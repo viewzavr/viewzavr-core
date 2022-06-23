@@ -268,6 +268,12 @@ export default function setup( m ) {
       if (obj.hasLinksToParam( name )) {
           let larr = obj.linksToParam( name );
           for (let l of larr)
+            if (l.params.manual_mode)
+            {
+                // ладно такую ссылку оставим
+                // ибо она часть механики похоже какой-то
+            }
+            else
             l.remove();
       }
       
