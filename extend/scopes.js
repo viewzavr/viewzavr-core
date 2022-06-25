@@ -66,8 +66,11 @@ function vz_add_scopes( vz ) {
             // функция добавляет объект в скопу. она умная, удалит запись когда объект удалится
             newscope[name]=env;
             // но теперь это касается не только окружений а и любых значений
-            if (env.on)
-                env.on('remove',() => delete newscope[name]);
+            if (env.on) 
+                env.on('remove',() => {
+                  //console.log("deleting scope name",name,"due to env remove",env.$vz_unique_id)
+                  delete newscope[name]
+                });
           }
         };
       return newscope;

@@ -276,7 +276,10 @@ export default function setup( vz ) {
             debugger;
           //console.warn("my parent id is",obj.ns.parent.$vz_unique_id)
           sobj = start_from_obj.findByPath( objname, obj );
-          linkScannerAdd( obj, "obj 'from' not found" );
+          linkScannerAdd( obj, "obj 'from' not found",() => {
+            debugger;
+            sobj = start_from_obj.findByPath( objname, obj );
+          } );
         }
         return;
       }
@@ -673,7 +676,7 @@ var linkScannerReset = function(link) {
   link.linkScannerCounter = 0;
 }
 
-var linkScannerAdd = function ( link, reason ) {
+var linkScannerAdd = function ( link, reason,cb_on_error=()=>{} ) {
 
   if (!link.rescan_it_delayed)
     link.rescan_it_delayed = link.delayed( () => link.setupLinks(),3 );
@@ -690,6 +693,7 @@ var linkScannerAdd = function ( link, reason ) {
     console.error("links: failed to setup link, reason:",reason,"from:",link.params.from,"======> to:",link.params.to,link)
     if (link.$locinfo)
        console.log( link.$locinfo );
+    cb_on_error(); 
   }
   
 }

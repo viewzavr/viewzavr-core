@@ -318,6 +318,13 @@ export default function setup( m ) {
 
        prom.then( (feature_obj) => {
 
+         // как выяснилось и вот так бывает
+         if (obj.removed)
+         {
+           feature_obj.remove();
+           return;
+         }
+
          //arr.push( feature_obj );
          //feature_obj.lexialParent = obj;
          //feature_obj.master_env = obj;
@@ -326,8 +333,12 @@ export default function setup( m ) {
 
          // вот здесь получается что мы вырубаем x-on "remove"... todo
          // мбыть сделать on_prepend = добавить в начало очереди...
+
+         //console.log("adding ",dump.$name,"and starting monitor remove of host",obj.$vz_unique_id)
+
          let forget_that = obj.on("remove",() => {
             forget_that = () => {};
+            //console.log("calling feature_obj.remove",feature_obj.$vz_unique_id,"because obj is removing",obj.$vz_unique_id)
             feature_obj.remove();
          });
 
