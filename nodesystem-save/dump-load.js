@@ -338,7 +338,7 @@ export default function setup( m ) {
 
          let forget_that = obj.on("remove",() => {
             forget_that = () => {};
-            //console.log("calling feature_obj.remove",feature_obj.$vz_unique_id,"because obj is removing",obj.$vz_unique_id)
+          //console.log("calling feature_obj.remove",feature_obj.$vz_unique_id,"because obj is removing",obj.$vz_unique_id)
             feature_obj.remove();
          });
 
