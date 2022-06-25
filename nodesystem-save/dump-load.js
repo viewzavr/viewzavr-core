@@ -472,6 +472,13 @@ export default function setup( m ) {
         }
         // разделяем ситуацию куда же нам направить местную ссылку - на себя (на фичу) или на главное окружение
 
+        // затрем параметр целевой... тиак надо... но что-то с этим все ломается
+/*
+        if (arr[0] == ".") {
+           obj.host.setParam( arr[1], undefined );
+        }
+*/        
+
         let lobj = obj.createLinkTo( {param: arr[1], 
                            from: lrec.from,
                            name: "arg_link_to", 
@@ -564,6 +571,65 @@ export default function setup( m ) {
     }
 
   }
+
+/*
+  создать список объектов по дампу
+  требования: 
+    * при восстановлении сохранить порядок
+    * вернуть промису которая разрезолвится когда работа будет готова
+
+  раздельный порядок восстановления: F-DEFINED
+    * сначала все load и register_feature
+    * а затем все остальное
+*/
+
+  // F-ENV-ARGS
+  m.createObjectsList = function (env_list, obj, manualParamsMode, $scopeFor)
+  {
+    var result_p = new Promise( (resolv, reject) => {
+
+      restore( 0,0 );
+
+      function restore( i, priority ) {
+        if (i == env_list.length) {
+          if (priority == 0)
+            return restore( 0,1 ); // переходим на второй этап
+          else
+            return resolv( obj );
+        }
+
+        let child_dump = env_list[i];
+        let name = child_dump.$name;
+
+        // без этого оно там кидеается все удалять..
+        child_dump.keepExistingChildren = true;
+
+        // если 
+        
+        let feats = child_dump.features || {};
+        let item_priority = (feats.load || feats.when || feats.feature || feats.register_feature) ? 0 : 1
+        if (priority != item_priority)
+          return restore( i+1, priority );
+
+        let cobj = null;
+        var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode, $scopeFor );
+        // todo вернуть оптимизацию
+        r.then( () => {
+           restore( i+1, priority );
+        });
+        
+        // the only way to catch errors is here, allSettled will ignore that error
+        r.catch( (err) => {
+          console.error("createChildrenByDump: error! parent=",obj.getPath(),"child_dump=",child_dump,"error=",err );
+          // и че.. по идее надо все-равно вызывать следующих... или вызовется?
+        });        
+
+      }; // функция restore
+
+    });
+    
+    return result_p;    
+  }
   
   // это вынесено в отдельную функцию потому что мы ее захотим овверрайдить для загрузки пакетов
 
@@ -579,8 +645,59 @@ export default function setup( m ) {
 
   todo оптимизировать - на тему чтобы load несколько параллельно загружались
 */ 
+  // F-ENV-ARGS
+  m.copyEnvArgsToScope = function( args, env_args, scope ) {
+// позиционное копирование
+      for (let i=0; i<env_args.length; i++) {
+        /*
+         let argname = env_args[i];
+         scope.$add( argname, args[i] );
+         */
+         let argname = env_args[i];
+         let argvalue = args[i];
+
+         // придется прикинуться окруженьем
+         let param_env = m.createObj();
+         param_env.feature("is_positional_env");
+         param_env.setParam( 0, argvalue );
+
+         scope.$add( argname, param_env );
+      }
+  }
+
+  // F-ENV-ARGS
+  m.callEnvFunction = function( env_list, parent_object, manualParamsMode, scope, ...args)
+  {
+      if (env_list.env_args) {
+        let newscope = parent_object.$scopes.createAbandonedScope("$vz_children_function");
+        newscope.$lexicalParentScope = scope;
+        
+
+          //let newscope = scope_env.$scopes.createScope("$vz_children_function");
+          //let newscope = scope.createScope("$vz_children_function");
+        m.copyEnvArgsToScope( args, env_list.env_args.attrs, newscope);
+        return m.createObjectsList( env_list, parent_object, manualParamsMode, newscope );
+      }
+
+      return m.createObjectsList( env_list, parent_object, manualParamsMode, scope );
+  }
+
+
   m.createChildrenByDump = function( dump, obj, manualParamsMode,$scopeFor )
   {
+    // // F-ENV-ARGS
+    obj.$vz_children_function = (...args) => {
+      let c = Object.values( dump.children );
+      c.env_args = dump.children_env_args;
+
+      m.callEnvFunction( c, obj, manualParamsMode, $scopeFor, ...args )
+    };
+
+    // F-ENV-ARGS
+    if (dump.children_env_args || obj.$vz_children_autocreate_enabled == false) { 
+      return Promise.resolve(obj);
+    }
+
     var c = dump.children || {};
     var ckeys = Object.keys( c );
 
@@ -602,7 +719,7 @@ export default function setup( m ) {
         // если 
         
         let feats = child_dump.features || {};
-        let item_priority = (feats.load || feats.feature || feats.register_feature) ? 0 : 1
+        let item_priority = (feats.load || feats.when || feats.feature || feats.register_feature) ? 0 : 1
         if (priority != item_priority)
           return restore( i+1, priority );
 

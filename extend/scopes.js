@@ -47,6 +47,7 @@ export function setup( vz )
   vz_add_scopes( vz );
 }
 
+// также вручную добавляются $lexicalParentScope
 function vz_add_scopes( vz ) {
   vz.chain( "create_obj", function (obj,options) {
 
@@ -64,7 +65,9 @@ function vz_add_scopes( vz ) {
           $add: ( name, env ) => {
             // функция добавляет объект в скопу. она умная, удалит запись когда объект удалится
             newscope[name]=env;
-            env.on('remove',() => delete newscope[name]);
+            // но теперь это касается не только окружений а и любых значений
+            if (env.on)
+                env.on('remove',() => delete newscope[name]);
           }
         };
       return newscope;
