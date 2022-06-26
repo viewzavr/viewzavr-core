@@ -247,7 +247,12 @@ export default function setup( m ) {
             // новое - сделаем тупо, потом можно оптимизировать например создавая спец-структуру
             // вида newrecord -> lexicalparent, array..
             
+            let ea = v.env_args; // F-ENV-ARGS
+
             v = v.map(a => ({...a})); // типо копируем.. ну ок...
+
+            if (ea) // F-ENV-ARGS
+                v.env_args = ea;
 
             // updated
             // for (let q of v) q.lexicalParent = obj;
@@ -681,16 +686,36 @@ export default function setup( m ) {
   {
       if (env_list.env_args) {
         let newscope = parent_object.$scopes.createAbandonedScope("$vz_children_function");
-        newscope.$lexicalParentScope = scope;
-        
-
+        newscope.$lexicalParentScope = env_list[0].$scopeFor || scope;
+        //newscope.$lexicalParentScope = env_list[0].$scopeFor || parent_object.$scopes.top();
           //let newscope = scope_env.$scopes.createScope("$vz_children_function");
           //let newscope = scope.createScope("$vz_children_function");
         m.copyEnvArgsToScope( args, env_list.env_args.attrs, newscope);
+
+        // короче история такая что там scope прошит в каждую элемент env_list
+        // в параметрах (т.е. alfa={ some; envs} )
+        // и поэтому ее надо каждую перешибить
+        if (env_list[0].$scopeFor)
+        for (let e of env_list)
+          e.$scopeFor = newscope;
+
         return m.createObjectsList( env_list, parent_object, manualParamsMode, newscope );
       }
 
       return m.createObjectsList( env_list, parent_object, manualParamsMode, scope );
+  }
+
+  // по значению - либо вызовет как функцию либо посмотрит как
+  // на набор окружений возможно вызываемый с аргументами
+  m.callParamFunction = function( param_value, parent_object, manualParamsMode, scope, ...args) {
+    if (typeof(param_value) == "string") {
+      let f = eval( param_value );
+      param_value = f( ...args )
+    }
+    else if (param_value.bind) {
+      param_value = param_value( ...args );
+    }
+    return m.callEnvFunction( param_value, parent_object, manualParamsMode, scope, ...args);
   }
 
 
