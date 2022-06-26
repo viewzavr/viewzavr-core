@@ -672,12 +672,15 @@ export default function setup( m ) {
          let argname = env_args[i];
          let argvalue = args[i];
 
+         /*
          // придется прикинуться окруженьем
          let param_env = m.createObj();
          param_env.feature("is_positional_env");
          param_env.setParam( 0, argvalue );
-
          scope.$add( argname, param_env );
+         */
+
+         scope.$add( argname, argvalue );
       }
   }
 
