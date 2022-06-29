@@ -64,7 +64,7 @@ function vz_add_scopes( vz ) {
           $comment: comment,
           $add: ( name, env ) => {
 
-            if (!env.on) { // мы пока не умеем ссылаться на не-объекты и поэтому сделаем объект для значений
+            if (!env?.on) { // мы пока не умеем ссылаться на не-объекты и поэтому сделаем объект для значений
               let param_env = vz.createObj();
               param_env.feature("is_positional_env");
               param_env.setParam( 0, env );
@@ -74,7 +74,7 @@ function vz_add_scopes( vz ) {
             // функция добавляет объект в скопу. она умная, удалит запись когда объект удалится
             newscope[name]=env;
             // но теперь это касается не только окружений а и любых значений
-            if (env.on) 
+            if (env?.on) 
                 env.on('remove',() => {
                   //console.log("deleting scope name",name,"due to env remove",env.$vz_unique_id)
                   delete newscope[name]
