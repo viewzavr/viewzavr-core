@@ -685,6 +685,9 @@ export default function setup( m ) {
   }
 
   // F-ENV-ARGS
+  // это как createObjectsList только с формированием окружения-scope
+  // todo на будущее технически это и может быть env (нашим объектом, процессом)
+  // без scope-ов
   m.callEnvFunction = function( env_list, parent_object, manualParamsMode, scope, ...args)
   {
       if (env_list.env_args) {
@@ -710,6 +713,8 @@ export default function setup( m ) {
 
   // по значению - либо вызовет как функцию либо посмотрит как
   // на набор окружений возможно вызываемый с аргументами
+  // update - это чухня. надо делать так чтобы был возврат результата годный для insert-children
+  // и прочих createObjectsList
   m.callParamFunction = function( param_value, parent_object, manualParamsMode, scope, ...args) {
     if (typeof(param_value) == "string") {
       let f = eval( param_value );
@@ -721,6 +726,34 @@ export default function setup( m ) {
     return m.callEnvFunction( param_value, parent_object, manualParamsMode, scope, ...args);
   }
 
+  // преобразует значение в dump-массив, пригодный для передачи в insert_children
+  // если records это функция то вызывает ее с аргументами
+  // если records это { |args|... } то связывает args с аргументами (пока все позиционное)
+  m.prepareEnvRecords = function( records, ...args) {
+    if (typeof(records) == "string") { // код на js
+      let f = eval( records );
+      records = f( ...args );
+    }
+    else if (records.bind) { // ф-я
+      records = records( ...args );
+    }
+    else if (records.env_args) {
+        let newscope = m.createAbandonedScope("prepareEnvRecords");
+        if (records && records.length > 0)
+            newscope.$lexicalParentScope = records[0].$scopeFor;
+
+        m.copyEnvArgsToScope( args, records.env_args.attrs, newscope);
+
+        // короче история такая что там scope прошит в каждую элемент env_list
+        // в параметрах (т.е. alfa={ some; envs} )
+        // и поэтому ее надо каждую перешибить
+        if (records[0].$scopeFor)
+          for (let e of records)
+            e.$scopeFor = newscope;
+    }    
+
+    return records;
+  };
 
   m.createChildrenByDump = function( dump, obj, manualParamsMode,$scopeFor )
   {

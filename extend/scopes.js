@@ -49,16 +49,9 @@ export function setup( vz )
 
 // также вручную добавляются $lexicalParentScope
 function vz_add_scopes( vz ) {
-  vz.chain( "create_obj", function (obj,options) {
 
-    obj.$scopes = [];
-    obj.$scopes.createScope = (comment) => {
-      let newscope = obj.$scopes.createAbandonedScope( comment );
-      obj.$scopes.push( newscope );
-      return newscope;
-    };
-    obj.$scopes.createAbandonedScope = (comment) => {
-      if (!comment)
+  vz.createAbandonedScope = ( comment ) => {
+  if (!comment)
          debugger;
       let newscope = {
           $comment: comment,
@@ -81,8 +74,22 @@ function vz_add_scopes( vz ) {
                 });
           }
         };
+      return newscope;  
+  };
+
+// vz_add_scopes это получается модификатор объекта.. а не самостоятельная сущность...
+// и ее смысл.. ну населить в объект $scopes переменную Хотя она особо и не нужна
+// но мы там часто юзаем scopes.top() и все такое..
+// но так-то вроде она и не нужна, это правда
+  vz.chain( "create_obj", function (obj,options) {
+    obj.$scopes = [];
+    obj.$scopes.createScope = (comment) => {
+      let newscope = obj.$scopes.createAbandonedScope( comment );
+      obj.$scopes.push( newscope );
       return newscope;
     };
+    obj.$scopes.createAbandonedScope = vz.createAbandonedScope;
+
     obj.$scopes.addScopeRef = (ref) => { 
       if (!ref) {
          console.error("addScopeRef with empty scope!",ref,obj)
