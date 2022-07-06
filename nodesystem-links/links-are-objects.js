@@ -87,8 +87,10 @@ export default function setup( vz ) {
         // ссылка на команду - вернем функцию
         else if (currentRefFrom.hasCmd( currentParamNameFrom )) {
            val = (...args) => {
-              currentRefFrom.callCmd( currentParamNameFrom, ...args );
+              return currentRefFrom.callCmd( currentParamNameFrom, ...args );
            }
+           // т.е. тот кто читает параметр который cmd тот получает на выходе функцию вызова этой cmd
+           // хм.. а чего не напрямую?
            val_received = true;
         }   
         // доступ к параметру   
