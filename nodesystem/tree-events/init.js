@@ -23,8 +23,8 @@ export default function setup(m) {
 
     var orig = obj[tree_name].appendChild;
 
-    obj[tree_name].appendChild = function(cobj, name, rename) {
-      var res = orig(cobj, name, rename);
+    obj[tree_name].appendChild = function(cobj, name, rename, pos) {
+      var res = orig(cobj, name, rename, pos);
       //obj[tree_name].signalOnTree("appendChildInTree"); // дорого
       obj.signal("appendChild", cobj);
       obj.signal("childrenChanged", cobj);

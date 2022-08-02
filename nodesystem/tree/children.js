@@ -16,7 +16,7 @@ export default function setup( obj, nf ) {
   obj.childrenTable = {};
   var gcounter = 0;
   
-  obj.appendChild = function( cobj,name,enableRename ) {
+  obj.appendChild = function( cobj,name,enableRename, position ) {
     var cnf = nf( cobj );
     if (cnf.parent)  cnf.parent.ns.forgetChild( cobj );
 
@@ -24,10 +24,19 @@ export default function setup( obj, nf ) {
       console.error("WARNING: adding to removed obj");
     }
 
-    if (!obj.hasChild( cobj )) obj.children.push( cobj );
+    if (!obj.hasChild( cobj )) {
+      if (position)
+      {
+        obj.children.splice( position, 0, cobj );
+      }
+      else
+        obj.children.push( cobj );
+    }  
     
     if (!name) {
       console.error("WARNING: appendChild: no name specified");
+      //name = "item_ac_"+(gcounter++);
+      // тут не надо этим заниматься - там отдельный слой на эту тему есть который даж конфликты разруливает
     }
     
     if (name) {
@@ -50,6 +59,11 @@ export default function setup( obj, nf ) {
     return (i >= 0);
   }
 
+  /*
+  obj.indexOfChild = function( cobj ) {
+    return obj.children.indexOf( cobj );
+  }*/
+
   obj.forgetChild = function( cobj ) {
     
     var i = obj.children.indexOf( cobj );
@@ -65,6 +79,7 @@ export default function setup( obj, nf ) {
   }
 
   obj.getChildren = function() { return obj.children; }
+
   obj.setChildren = (arr) => {
     obj.children = arr;
     obj.updateChildrenTable();

@@ -294,6 +294,10 @@ export default function setup( vz ) {
       if (paramname == "~" || paramname == ".") { // типа мы ссылки сделали || paramname == "output") {
         if (sobj.is_feature_applied("is_positional_env")) 
           paramname = 0;
+        /* пока ладно
+        else (sobj.is_feature_applied("data"))
+          paramname = 0; 
+        */
       }
 
       // ну а если его нет... это же нормальное явление...

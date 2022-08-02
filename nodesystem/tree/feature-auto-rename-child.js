@@ -8,7 +8,7 @@ export default function setup( obj, nf ) {
   
   var orig = obj.appendChild;
 
-  obj.appendChild = function( cobj,name,enableRename ) {
+  obj.appendChild = function( cobj,name,enableRename, position ) {
     if (name) {
       // todo: check name here, and maybe rename?
       var existing = obj.getChildByName( name );
@@ -26,7 +26,7 @@ export default function setup( obj, nf ) {
         }
       }
     }
-    return orig( cobj, name, enableRename );
+    return orig( cobj, name, enableRename, position );
   }
     
 
