@@ -267,8 +267,27 @@ export default function setup( m ) {
       obj.setParam( name, v, bemanual ); // ставим true - в том смысле что это установка из
 
       // F-SCOPE-PARAMS
-      //$scopeFor.$add( name, v );
-      $scopeFor.$add( name, obj.get_cell(name) );
+      /* перенесено в фичу var
+      if (obj.is_feature_applied("data"))
+      {
+
+        if (Number.isInteger(parseFloat(name)) || name == "args_count")
+        {
+        }
+        else {
+          if ($scopeFor[ name ]) {
+               console.error("scopes: data param duplicated name!",name,'me=',obj,'cell ',name,'existing=',$scopeFor[ name ])
+               if (dump.locinfo)
+                 console.log( dump.locinfo );
+            }
+            else
+            {
+               $scopeFor.$add( name, obj.get_cell(name) );
+               console.log("data: added name to scope",name,$scopeFor)
+            }   
+        };
+      };
+      */
 
       // F-LINKS-OVERWRITE
       // удалить ссылки пишушие в этот параметр... типа мы тут со значением пришли...
@@ -479,7 +498,7 @@ export default function setup( m ) {
       
       var lrec = dump.links[lname];
       var arr = lrec.to.split("->");
-      if (arr[0] == "." || arr[0] == "~") {
+      if (arr[0] == "." || arr[0] == "~") { // ссылка на поля объекта
         //console.log("cre-link-to",lrec, obj.getPath()) 
         if (dump.keepExistingParams) {
           // особый режим сохранения уже существующих параметров

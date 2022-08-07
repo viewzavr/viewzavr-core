@@ -65,9 +65,14 @@ export default function setup( vz ) {
       
       if (!currentRefFrom) return;
 
+      // ссылки вида name->. это ссылка на сам объект
       if (currentParamNameFrom == "." || currentParamNameFrom == "~") {
+        // в том числе и F-LINK-ACCESS-ENV-CONSTS
 
-        currentRefTo.setParam( currentParamNameTo,currentRefFrom, obj.params.manual_mode );
+        if (currentRefFrom.is_cell)
+           currentRefTo.setParam( currentParamNameTo,currentRefFrom.get(), obj.params.manual_mode );
+        else    
+           currentRefTo.setParam( currentParamNameTo,currentRefFrom, obj.params.manual_mode );
         return;
       }
 
@@ -76,6 +81,12 @@ export default function setup( vz ) {
 
       if (currentRefFrom) {
 
+        if (currentRefFrom.is_cell)
+        {
+          val = currentRefFrom;
+          val_received = true;
+        }
+        else
         // доступ к полю F-OBJ-ACCESS-FROM-DECLARATIVE 
         if (currentParamNameFrom[0] == ".") {
           let field = currentParamNameFrom.slice( 1 );
@@ -291,15 +302,18 @@ export default function setup( vz ) {
       }
 
       let is_object = sobj.trackParam ? true : false;
+      let is_cell = sobj.is_cell ? true : false;
 
       // F-LINK-ACCESS-ENV-CONSTS
       if (!is_object)
       {
          // нихрена это не объект а вещь из окружения..
-         paramname = ".";
+         // но вопрос а зачем присваивать такое paramname если оно по умолчанию вроде как и так такое
+         // paramname = ".";
       }
 
       // F-POSITIONAL-ENVS и F-POSITIONAL-ENVS-OUTPUT
+      // F-LINK-ACCESS-ENV-CONSTS
       if (is_object && (paramname == "~" || paramname == ".")) { // типа мы ссылки сделали || paramname == "output") {
         if (sobj.is_feature_applied("is_positional_env")) 
           paramname = 0;
@@ -309,8 +323,13 @@ export default function setup( vz ) {
         */
       }
       
+      // F-LINK-ACCESS-ENV-CONSTS
       if (sobj && is_object) {
           unsubFromParamTracking = sobj.trackParam( paramname, qqq );
+      }
+
+      if (sobj && is_cell) {
+         unsubFromParamTracking = sobj.on( "changed", qqq );
       }
   
       currentRefFrom = sobj;
