@@ -290,8 +290,17 @@ export default function setup( vz ) {
         return;
       }
 
+      let is_object = sobj.trackParam ? true : false;
+
+      // F-LINK-ACCESS-ENV-CONSTS
+      if (!is_object)
+      {
+         // нихрена это не объект а вещь из окружения..
+         paramname = ".";
+      }
+
       // F-POSITIONAL-ENVS и F-POSITIONAL-ENVS-OUTPUT
-      if (paramname == "~" || paramname == ".") { // типа мы ссылки сделали || paramname == "output") {
+      if (is_object && (paramname == "~" || paramname == ".")) { // типа мы ссылки сделали || paramname == "output") {
         if (sobj.is_feature_applied("is_positional_env")) 
           paramname = 0;
         /* пока ладно
@@ -299,29 +308,16 @@ export default function setup( vz ) {
           paramname = 0; 
         */
       }
-
-      // ну а если его нет... это же нормальное явление...
-      // может сделать soft-признак.. типа x=@.->ширина? и этот ? это запись для soft..
-      // но у нас и ситуация - типа ничего страшного, если сейчас параметра нет, может
-      // быть появится потом... ну и получается что тогда мы не можем проверить, может быть
-      // мы ошиблись написанием.. ех... 
-      /*
-      if (!sobj.hasParam( paramname )) {
-          linkScannerAdd( obj );
-      }
-      */
-      /*
-      if (!sobj.hasParam( paramname )) 
-         console.warn( "Link: source object has no param at time of linking", paramname, sobj.getPath());
-      */
       
-      if (sobj) {
+      if (sobj && is_object) {
           unsubFromParamTracking = sobj.trackParam( paramname, qqq );
       }
   
       currentRefFrom = sobj;
       currentParamNameFrom = paramname;
-      addLinkTracking( currentRefFrom,obj, true );
+
+      if (is_object)
+          addLinkTracking( currentRefFrom,obj, true );
       
       if (enable_qqq) qqq();
       

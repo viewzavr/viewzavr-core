@@ -266,6 +266,10 @@ export default function setup( m ) {
 
       obj.setParam( name, v, bemanual ); // ставим true - в том смысле что это установка из
 
+      // F-SCOPE-PARAMS
+      //$scopeFor.$add( name, v );
+      $scopeFor.$add( name, obj.get_cell(name) );
+
       // F-LINKS-OVERWRITE
       // удалить ссылки пишушие в этот параметр... типа мы тут со значением пришли...
       // и с учетом что у нас все снизу вверх теперь раскрывается - это сработает
