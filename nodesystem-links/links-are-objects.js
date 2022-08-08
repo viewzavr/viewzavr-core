@@ -83,8 +83,15 @@ export default function setup( vz ) {
 
         if (currentRefFrom.is_cell)
         {
-          val = currentRefFrom;
-          val_received = true;
+          if (currentParamNameFrom == "cell")
+          {
+            val = currentRefFrom;
+            val_received = true;
+          }
+          else
+          {
+            console.error("only ->. and ->cell attr is available for cells");
+          }  
         }
         else
         // доступ к полю F-OBJ-ACCESS-FROM-DECLARATIVE 

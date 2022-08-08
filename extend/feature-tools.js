@@ -82,7 +82,8 @@ import {createNanoEvents} from "../nodesystem/events/init.js";
 //////////////////////////////////////////////////////////
 
 export function normalize_feature_name(name) {
-  name = name.replaceAll("_","-");
+  if (name.replaceAll)
+    name = name.replaceAll("_","-");
   return name;
 }
 
@@ -160,7 +161,8 @@ export function feature_names_to_arr( names ) {
   */
   // тут у нас идет потеря аргументов фич.. если фичи активировались как
   // obj.feature( { feature1: {params...}, feature2: {params...}})
-  return names;
+  if (Array.isArray(names)) return names;
+  return [names];
 }
 
 
@@ -236,7 +238,8 @@ export function add_features_use( env, registry_env ) {
   env.extend = env.feature; // пока идет конкурс имен
 
   env.set_feature_applied = (name,value=true) => {
-    name = name.replaceAll("_","-");
+    name = normalize_feature_name( name );
+    //name = name.replaceAll("_","-");
     env.$features_applied ||= {};    
     if (value)
       env.$features_applied[name] = value;
@@ -245,10 +248,12 @@ export function add_features_use( env, registry_env ) {
 
     // ТПУ
     // todo испускать события ток если первый раз это состояние
-    if (value)
-      env.emit(`feature-applied-${name}`);
-    else
-      env.emit(`feature-unapplied-${name}`);
+    if (name.split) {
+      if (value)
+        env.emit(`feature-applied-${name}`);
+      else
+        env.emit(`feature-unapplied-${name}`);
+    };  
 
     // todo идея таки писать в параметры - всем проще станет..
     //if (!env.setParam) debugger;
@@ -256,7 +261,9 @@ export function add_features_use( env, registry_env ) {
   }
 
   env.is_feature_applied = (name) => {
-    name = name.replaceAll("_","-"); // дорогое удовольствие наверное @todo @optimize
+    name = normalize_feature_name( name );
+    // дорогое удовольствие наверное @todo @optimize
+    //name = name.replaceAll("_","-"); 
     env.$features_applied ||= {};
     return env.$features_applied[name];
   }
@@ -329,6 +336,13 @@ export function add_appends_to_table(env) {
     if (target_env.is_feature_applied(name))
       return;
     target_env.set_feature_applied(name);
+
+    // F-FEAT-FUNC
+    if (name.bind) // в качестве фичи передали функцию - наш новый путь 2022-08
+    {
+       result = invoke_feature_function( name, target_env,env, ...args ); 
+       return result;
+    }
 
     let f = env.list[name];
     let appends = env.appends[name];
