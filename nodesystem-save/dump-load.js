@@ -724,9 +724,11 @@ export default function setup( m ) {
         // короче история такая что там scope прошит в каждую элемент env_list
         // в параметрах (т.е. alfa={ some; envs} )
         // и поэтому ее надо каждую перешибить
+        //debugger;
         if (env_list[0].$scopeFor)
         for (let e of env_list)
           e.$scopeFor = newscope;
+        // типа якобы - нам не надо копировать т.к. есть и просто параметр newscope у createObjectsList
 
         return m.createObjectsList( env_list, parent_object, manualParamsMode, newscope );
       }

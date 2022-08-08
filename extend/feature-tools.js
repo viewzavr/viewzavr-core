@@ -343,6 +343,12 @@ export function add_appends_to_table(env) {
        result = invoke_feature_function( name, target_env,env, ...args ); 
        return result;
     }
+    // F-FEAT-FEAT-OBJ
+    if (name.is_feature_applied && name.is_feature_applied("feature")) {
+      let f = name.params.output;
+      result = invoke_feature_function( f, target_env,env, ...args ); 
+      return result; 
+    }
 
     let f = env.list[name];
     let appends = env.appends[name];
