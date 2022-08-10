@@ -571,13 +571,13 @@ vz.chain("create_obj",function( obj, opts ) {
       }
         //q.setParam( "to", obj.getPath() + "->" + paramname, opts.manual );
         //q.setParamWithoutEvents( "to", obj.getPath() + "->" + paramname, opts.manual ); // will emit events on 'from'?
-    q.setParam( "from", sourcestring );
+    q.setParam( "from", sourcestring, opts.manual );
     q.setParam( "tied_to_parent",true, opts.manual );
     q.setParam( "soft_mode", opts.soft_mode || opts.soft , opts.manual );
     return q;
   }
-  obj.linkParam = function( paramname, link_source,soft_mode ) {
-     return obj.createLinkTo( { param: paramname, from: link_source, soft_mode:soft_mode })
+  obj.linkParam = function( paramname, link_source,soft_mode, manual ) {
+     return obj.createLinkTo( { param: paramname, from: link_source, soft_mode:soft_mode, manual: manual })
   }
   
   obj.hasLinks = function() {
@@ -718,10 +718,17 @@ var linkScannerAdd = function ( link, reason,cb_on_error=()=>{} ) {
     link.rescan_it_delayed();
   }
   else {
-    console.error("links: failed to setup link, reason:",reason,"from:",link.params.from,"======> to:",link.params.to,link)
-    if (link.$locinfo)
-       console.log( link.$locinfo );
-    cb_on_error(); 
+    if (link.params.soft_mode)
+    {
+
+    }
+    else
+    {
+      console.error("links: failed to setup link, reason:",reason,"from:",link.params.from,"======> to:",link.params.to,link)
+      if (link.$locinfo)
+        console.log( link.$locinfo );
+      cb_on_error(); 
+    };  
   }
   
 }
