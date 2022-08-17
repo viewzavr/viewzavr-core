@@ -53,10 +53,11 @@ export function setup( vz )
   // редкая операция такто.. а на каждый энв ее запихивать..
   // но можно было бы и фичей оформить.. эх..
   // env.feature('console_log_diag'); env.console_log_diag(); ?
-  vz.console_log_diag = function(env) {
+  vz.console_log_diag = function(env,show_history=false) {
         if (env.$locinfo)
             console.log( env.$locinfo );
-        env.vz.history.log();
+        if (show_history)  
+            env.vz.history.log();
   };
 
 }

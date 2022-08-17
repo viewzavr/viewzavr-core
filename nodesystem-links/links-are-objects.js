@@ -297,8 +297,8 @@ export default function setup( vz ) {
           //console.warn("my parent id is",obj.ns.parent.$vz_unique_id)
           sobj = start_from_obj.findByPath( objname, obj );
           linkScannerAdd( obj, "obj 'from' not found",() => {
-            debugger;
-            sobj = start_from_obj.findByPath( objname, obj );
+            //debugger;
+            //sobj = start_from_obj.findByPath( objname, obj );
           } );
         }
         return;
