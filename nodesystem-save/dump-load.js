@@ -338,13 +338,52 @@ export default function setup( m ) {
      dump.feature_of_env = obj;
      dump.keepExistingChildren = true; // без этой штуки оно начинает стирать своих собственных детей
 
+     // не надо восстанливать ()-окружения
+     // F-LINKS-OVERWRITE
+     /*
+     if (dump.features.computer) {
+       let links = Object.values( dump.links );
+       let link = links[0];
+       if (links.length > 1)
+        debugger;
+       
+       let output_param_name = link.to.split("->")[1];
+       if (obj.hasParam(output_param_name) || obj.hasLinksToParam( output_param_name ))
+       {
+         // вот нам значит уже и не надо этот объект.
+         console.warn("shadowed computing env skipping", output_param_name, dump, obj )
+         return null;
+       }
+     }
+     */
+
      //fr.keepExistingChildren = true; // странно это все...
 
      let prom = m.createSyncFromDump( dump, null, null, dump.$name,false, $scopeFor );
 
+
      return new Promise( (resolve,reject) => {
 
        prom.then( (feature_obj) => {
+
+        // если это у нас ()-вычислителный объект, и удаляют ссылку результата
+        // то и этот объект надо удалить.
+        if (dump.features.computer) {
+          //debugger;
+          let output_link = feature_obj.ns.getChildByName("arg_link_to");
+          if (output_link)
+          {
+              output_link.on("remove", () => feature_obj.remove() );
+          }
+          else {
+            // короче если там нет уже ссылки - значит ее потерли
+            // и значим нам наше вычисление тож надо потереть
+            // ппц.
+            feature_obj.remove();
+            return;
+            //debugger;
+          }
+        }
 
          // как выяснилось и вот так бывает
          if (obj.removed)
@@ -500,6 +539,11 @@ export default function setup( m ) {
       var arr = lrec.to.split("->");
       if (arr[0] == "." || arr[0] == "~") { // ссылка на поля объекта
         //console.log("cre-link-to",lrec, obj.getPath()) 
+        //console.log("cre-link-to",arr[1], lrec,obj.getPath()) 
+
+        //if (arr[1] == "input_kv")
+        //  debugger;
+
         if (dump.keepExistingParams) {
           // особый режим сохранения уже существующих параметров
           // проблема что hasLinksToParam заработает только при активации ссылки, которая у нас отложенная...
@@ -509,6 +553,26 @@ export default function setup( m ) {
               continue;
           }
         }
+        else
+        {
+              // F-LINKS-OVERWRITE
+              // удалить ссылки пишушие в этот параметр... типа мы тут со значением пришли...
+              // и с учетом что у нас все снизу вверх теперь раскрывается - это сработает
+              // и плюс уже учтено keepExistingParams
+              if (obj.hasLinksToParam( arr[1] )) {
+                  let larr = obj.linksToParam( arr[1] );
+                  for (let l of larr)
+                    if (l.params.manual_mode)
+                    {
+                        // ладно такую ссылку оставим
+                        // ибо она часть механики похоже какой-то
+                    }
+                    else {
+                      // console.warn("link removed",l.params.to)
+                      l.remove();
+                    }
+              };
+        };
         // разделяем ситуацию куда же нам направить местную ссылку - на себя (на фичу) или на главное окружение
 
         // затрем параметр целевой... тиак надо... но что-то с этим все ломается
@@ -532,6 +596,14 @@ export default function setup( m ) {
         if (lrec.locinfo) 
           lobj.$locinfo = lrec.locinfo;
           //lobj.setParam('locinfo',lrec.locinfo);
+
+/*
+        if (lrec.to == ".->crit")
+          lobj.on("remove",() => {
+            lobj;
+            debugger;
+          })  
+*/          
       }
       else
       {
