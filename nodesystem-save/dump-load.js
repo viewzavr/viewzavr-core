@@ -340,8 +340,8 @@ export default function setup( m ) {
 
      // не надо восстанливать ()-окружения
      // F-LINKS-OVERWRITE
-     /*
-     if (dump.features.computer) {
+     
+     if (dump.features.computer && dump.keepExistingParams) {
        let links = Object.values( dump.links );
        let link = links[0];
        if (links.length > 1)
@@ -351,16 +351,14 @@ export default function setup( m ) {
        if (obj.hasParam(output_param_name) || obj.hasLinksToParam( output_param_name ))
        {
          // вот нам значит уже и не надо этот объект.
-         console.warn("shadowed computing env skipping", output_param_name, dump, obj )
+         //console.warn("shadowed computing env skipping", output_param_name, dump, obj )
          return null;
        }
      }
-     */
 
      //fr.keepExistingChildren = true; // странно это все...
 
      let prom = m.createSyncFromDump( dump, null, null, dump.$name,false, $scopeFor );
-
 
      return new Promise( (resolve,reject) => {
 
@@ -379,6 +377,7 @@ export default function setup( m ) {
             // короче если там нет уже ссылки - значит ее потерли
             // и значим нам наше вычисление тож надо потереть
             // ппц.
+            debugger;
             feature_obj.remove();
             reject();
             return;
@@ -430,6 +429,7 @@ export default function setup( m ) {
          feature_obj.$feature_name = kname;
 
          // протокол F-NEW-MODIFIERS-FTREE
+         
          let detach_code = feature_obj.emit("attach",obj)
          // времянка некая..  
          /*
@@ -466,7 +466,33 @@ export default function setup( m ) {
      });
   }
 
+  m.restoreParamizedFeatures = function( dump, obj, $scopeFor, crit_fn ) {
+    let feat_arr_0 = []
+    // а теперь фиче-листы... F-FEAT-PARAMS
+    // restoreFeatures вызывается многократно, и если от однократных фич у нас есть защита то тут нет
+    obj.features_list_is_restored ||= new Set();
+    if (!obj.features_list_is_restored.has(dump.features_list)) {
+      //var arr = [];
+      for (let fr of (dump.features_list || [])) 
+      {
+         if (!crit_fn(fr)) continue;
+         fr.keepExistingParams = dump.keepExistingParams;
+         let r2 = m.importAsParametrizedFeature( fr, obj, $scopeFor );
+         //console.log( "case3 fn=",fr,r2,obj.getPath())
+         feat_arr_0.push( Promise.resolve( r2 ) );
+      }
+      obj.features_list_is_restored.add( dump.features_list ) ;
+      //obj.$feature_list_envs = (obj.$feature_list_envs || []).concat( arr );
+      // тут бы списочег...
+      //obj.setParam("feature_list_envs",arr);
+    }
+    return feat_arr_0;
+  }
+
   m.restoreFeatures = function ( dump, obj, manualparamsmode, $scopeFor) {
+
+    //let feat_arr_0 = m.restoreParamizedFeatures( dump, obj, $scopeFor, (d)=>d.features.computer);
+    let feat_arr_0 = m.restoreParamizedFeatures( dump, obj, $scopeFor, (d)=>true);
     
     // получается что здесь происходит повторный вызов obj.feature
     // (первый в конструкторе объекта за счет опций .features)
@@ -483,59 +509,55 @@ export default function setup( m ) {
 
     // есть идея - применять фичи после {{ }}- фич
     // это позволит навесить всякие on-обработчики до появления каких-либо событий внутри
-    let feat_arr = [];
 
-    for (let fn of Object.keys(dump.features || {})) 
-    {
-      // тут считается что feature-code совпадает с feature-name
-      // в целом же наверняка это можно расширить до того что код нескольких фич может совпадать.
-      // но это надо тогда будет учесть и feature-tools (там отсекается повторное применение фич с одинаковым кодом)
-      let r = obj.feature( fn, dump.features[fn].params );
-      //console.log( "case1 fn=",fn,r,obj.getPath())
-      feat_arr.push( Promise.resolve( r ));
-    }
+    let res = new Promise( (resolve,reject) => {
+    Promise.allSettled( feat_arr_0 ).then( () => {
 
-    // белковый представитель manual-features
-    // важно эти фичи восстанавливать на 1м проходе, т.к. далее идет присвоение manual_features
-    // и сообразно фичи начинают применяться без промисов, а на 2м проходе - они уже считаются примененными и промисов не собрать
-    // поэтому мы тут хаком - влазим и применяем не дожидаясь.
-    // но вообще - надо по уму что-то другое делать с manual-features-ами. возможно это 
-    // вручную набранные модификаторы (скорее всего это они)
-    
-    if (dump.params?.manual_features) {
-      let mf = FT.feature_names_to_arr( dump.params.manual_features );
-      //if (!Array.isArray(mf)) mf = [mf];
-      for (let fn of mf)
-      {
-        // тут считается что feature-code совпадает с feature-name
-        // в целом же наверняка это можно расширить до того что код нескольких фич может совпадать.
-        // но это надо тогда будет учесть и feature-tools (там отсекается повторное применение фич с одинаковым кодом)
-        let r = obj.feature( fn );
-        //console.log( "case2 fn=",fn,r,obj.getPath())
-        feat_arr.push( Promise.resolve( r ));
-      }
-    }
+        let feat_arr = [];
 
-    // а теперь фиче-листы... F-FEAT-PARAMS
-    // restoreFeatures вызывается многократно, и если от однократных фич у нас есть защита то тут нет
-    obj.features_list_is_restored ||= new Set();
-    if (!obj.features_list_is_restored.has(dump.features_list)) {
-      //var arr = [];
-      for (let fr of (dump.features_list || [])) 
-      {
+        for (let fn of Object.keys(dump.features || {})) 
+        {
+          // тут считается что feature-code совпадает с feature-name
+          // в целом же наверняка это можно расширить до того что код нескольких фич может совпадать.
+          // но это надо тогда будет учесть и feature-tools (там отсекается повторное применение фич с одинаковым кодом)
+          let r = obj.feature( fn, dump.features[fn].params );
+          //console.log( "case1 fn=",fn,r,obj.getPath())
+          feat_arr.push( Promise.resolve( r ));
+        }
+
+        // белковый представитель manual-features
+        // важно эти фичи восстанавливать на 1м проходе, т.к. далее идет присвоение manual_features
+        // и сообразно фичи начинают применяться без промисов, а на 2м проходе - они уже считаются примененными и промисов не собрать
+        // поэтому мы тут хаком - влазим и применяем не дожидаясь.
+        // но вообще - надо по уму что-то другое делать с manual-features-ами. возможно это 
+        // вручную набранные модификаторы (скорее всего это они)
         
-         let r2 = m.importAsParametrizedFeature( fr, obj, $scopeFor );
-         //console.log( "case3 fn=",fr,r2,obj.getPath())
-         feat_arr.push( Promise.resolve( r2 ) );
-      }
-      obj.features_list_is_restored.add( dump.features_list ) ;
-      //obj.$feature_list_envs = (obj.$feature_list_envs || []).concat( arr );
-      // тут бы списочег...
-      //obj.setParam("feature_list_envs",arr);
-    }
+        if (dump.params?.manual_features) {
+          let mf = FT.feature_names_to_arr( dump.params.manual_features );
+          //if (!Array.isArray(mf)) mf = [mf];
+          for (let fn of mf)
+          {
+            // тут считается что feature-code совпадает с feature-name
+            // в целом же наверняка это можно расширить до того что код нескольких фич может совпадать.
+            // но это надо тогда будет учесть и feature-tools (там отсекается повторное применение фич с одинаковым кодом)
+            let r = obj.feature( fn );
+            //console.log( "case2 fn=",fn,r,obj.getPath())
+            feat_arr.push( Promise.resolve( r ));
+          }
+        }
+
+        Promise.allSettled( feat_arr ).then( resolve );
+        /*Promise.allSettled( feat_arr ).then( () => {
+          let feat_arr_1 = m.restoreParamizedFeatures( dump, obj, $scopeFor, (d)=>!d.features.computer);
+          Promise.allSettled(feat_arr_1).then( resolve );
+        });
+        */
+
+    });
+    });
 
     //console.log( feat_arr, obj.getPath())
-    return Promise.allSettled( feat_arr );
+    return res;
   }
 
   m.restoreLinks = function( dump, obj, manualparamsmode, $scopeFor ) {
