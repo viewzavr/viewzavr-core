@@ -466,6 +466,34 @@ export default function setup( m ) {
      });
   }
 
+  /* todo
+  m.restoreParamizedFeatures = function( dump, obj, $scopeFor, crit_fn ) {
+    let feat_arr_0 = []
+    // а теперь фиче-листы... F-FEAT-PARAMS
+    // restoreFeatures вызывается многократно, и если от однократных фич у нас есть защита то тут нет
+    obj.features_list_is_restored ||= new Set();
+    
+      //var arr = [];
+      for (let fr of (dump.features_list || [])) 
+      {
+         if (obj.features_list_is_restored.has(fr)) continue;
+         obj.features_list_is_restored.add( fr ) ;
+
+         if (!crit_fn(fr)) continue;
+         fr.keepExistingParams = dump.keepExistingParams;
+         let r2 = m.importAsParametrizedFeature( fr, obj, $scopeFor );
+         //console.log( "case3 fn=",fr,r2,obj.getPath())
+         feat_arr_0.push( Promise.resolve( r2 ) );
+      }
+      
+      //obj.$feature_list_envs = (obj.$feature_list_envs || []).concat( arr );
+      // тут бы списочег...
+      //obj.setParam("feature_list_envs",arr);
+    
+    return feat_arr_0;
+  }  
+  */
+
   m.restoreParamizedFeatures = function( dump, obj, $scopeFor, crit_fn ) {
     let feat_arr_0 = []
     // а теперь фиче-листы... F-FEAT-PARAMS
