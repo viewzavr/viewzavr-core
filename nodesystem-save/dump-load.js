@@ -380,6 +380,7 @@ export default function setup( m ) {
             // и значим нам наше вычисление тож надо потереть
             // ппц.
             feature_obj.remove();
+            reject();
             return;
             //debugger;
           }
@@ -389,6 +390,7 @@ export default function setup( m ) {
          if (obj.removed)
          {
            feature_obj.remove();
+           reject();
            return;
          }
 
@@ -489,6 +491,7 @@ export default function setup( m ) {
       // в целом же наверняка это можно расширить до того что код нескольких фич может совпадать.
       // но это надо тогда будет учесть и feature-tools (там отсекается повторное применение фич с одинаковым кодом)
       let r = obj.feature( fn, dump.features[fn].params );
+      //console.log( "case1 fn=",fn,r,obj.getPath())
       feat_arr.push( Promise.resolve( r ));
     }
 
@@ -508,6 +511,7 @@ export default function setup( m ) {
         // в целом же наверняка это можно расширить до того что код нескольких фич может совпадать.
         // но это надо тогда будет учесть и feature-tools (там отсекается повторное применение фич с одинаковым кодом)
         let r = obj.feature( fn );
+        //console.log( "case2 fn=",fn,r,obj.getPath())
         feat_arr.push( Promise.resolve( r ));
       }
     }
@@ -521,6 +525,7 @@ export default function setup( m ) {
       {
         
          let r2 = m.importAsParametrizedFeature( fr, obj, $scopeFor );
+         //console.log( "case3 fn=",fr,r2,obj.getPath())
          feat_arr.push( Promise.resolve( r2 ) );
       }
       obj.features_list_is_restored.add( dump.features_list ) ;
@@ -529,7 +534,8 @@ export default function setup( m ) {
       //obj.setParam("feature_list_envs",arr);
     }
 
-    return Promise.all( feat_arr );
+    //console.log( feat_arr, obj.getPath())
+    return Promise.allSettled( feat_arr );
   }
 
   m.restoreLinks = function( dump, obj, manualparamsmode, $scopeFor ) {

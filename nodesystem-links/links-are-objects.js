@@ -131,6 +131,7 @@ export default function setup( vz ) {
         else
         {
           if (!val_received) {
+            console.log("warn val start", obj.getPath() )
             warn_value_not_found();
             // warn_undef();
             
