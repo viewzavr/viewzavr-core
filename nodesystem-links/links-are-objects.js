@@ -53,9 +53,24 @@ export default function setup( vz ) {
              currentRefTo.getPath(),"->",currentParamNameTo,
              "\nlink object:",obj,"\nsrc object:",currentRefFrom
               );
-       obj.vz.console_log_diag( obj );
+       obj.vz.console_log_diag( obj,true );
 
     },20);
+    //obj.on("remove",warn_value_not_found.stop)
+
+/*
+    let w0=warn_value_not_found;
+    let w1 = warn_value_not_found.stop;
+    warn_value_not_found = () => {
+      console.log("warn val start", obj.$vz_unique_id )
+      w0();
+    }
+  
+    warn_value_not_found.stop = () => {
+      console.log("warn val stop", obj.$vz_unique_id )
+      w1();
+    }
+*/    
     
     // вызывается когда исходный параметр изменяется
     function qqq() {
@@ -131,7 +146,6 @@ export default function setup( vz ) {
         else
         {
           if (!val_received) {
-            console.log("warn val start", obj.getPath() )
             warn_value_not_found();
             // warn_undef();
             

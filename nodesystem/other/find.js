@@ -11,7 +11,7 @@ export default function setup( vz ) {
     ../item => child named `item` of parent of obj
     EMPTY => obj
   */
-  vz.find_by_path = function(obj,path, scope_obj) {
+  vz.find_by_path_0 = function(obj,path, scope_obj) {
     //console.log("find-by-path",path)
     if (path == "") return obj;
 
@@ -113,6 +113,14 @@ export default function setup( vz ) {
 
     return null;
   }
+
+  // оказалось эта штука может находить объекты в процессе удаления.
+  // поправим это
+  vz.find_by_path = function(obj,path, scope_obj) {
+    let r = vz.find_by_path_0( obj, path, scope_obj );
+    if (r && (r.removed || r.removing)) return null;
+    return r;
+  };
 
   // алгоритм поиска объекта по имени
   vz.find_by_id_scopes = function (startkit,name,skipobj,allow_up=true,tree_name="ns" ) {
