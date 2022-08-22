@@ -106,6 +106,7 @@ export default function setup( vz ) {
           else
           {
             console.error("only ->. and ->cell attr is available for cells");
+            obj.vz.console_log_diag( obj,true );
           }  
         }
         else

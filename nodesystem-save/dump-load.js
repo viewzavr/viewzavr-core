@@ -113,6 +113,16 @@ export default function setup( m ) {
     if (dump.locinfo)
       obj.$locinfo = dump.locinfo;
 
+    //let keepExistingParamsOrig = dump.keepExistingParams;
+    // трешовая логика но пока лучше не придумал
+    // если мы в режиме создания нового объекта то - надо включать и логику сохранения параметров
+    // чтобы вновь поступающие фичи, параметры, ссылки, не затирали то что уже создано
+    /*
+    if (!_existingObj) {
+      dump.keepExistingParams = true;    
+    }
+    */
+
 /*
     if (dump.$scopeParent) {
       obj.$scopes.addScopeRef( dump.$scopeParent );
@@ -351,7 +361,7 @@ export default function setup( m ) {
        if (obj.hasParam(output_param_name) || obj.hasLinksToParam( output_param_name ))
        {
          // вот нам значит уже и не надо этот объект.
-         //console.warn("shadowed computing env skipping", output_param_name, dump, obj )
+         console.warn("shadowed computing env skipping", output_param_name, dump, obj )
          return null;
        }
      }
@@ -371,7 +381,10 @@ export default function setup( m ) {
           let output_link = feature_obj.ns.getChildByName("arg_link_to");
           if (output_link)
           {
-              output_link.on("remove", () => feature_obj.remove() );
+              output_link.on("remove", () => {
+                console.warn("shadowed computing env removed due output link", output_link.params.to, dump, obj )
+                feature_obj.remove()
+              } );
           }
           else {
             // короче если там нет уже ссылки - значит ее потерли
@@ -520,6 +533,13 @@ export default function setup( m ) {
   m.restoreFeatures = function ( dump, obj, manualparamsmode, $scopeFor) {
 
     //let feat_arr_0 = m.restoreParamizedFeatures( dump, obj, $scopeFor, (d)=>d.features.computer);
+    /*
+    // мега-трешовая логика но что делать.
+    // если мы не в ручном режиме.. то.. нужно включать режим когда мы 
+    let keepExistingParamsOrig = dump.keepExistingParams;
+    if (!manualparamsmode) 
+      dump.keepExistingParams = true;
+    */  
     let feat_arr_0 = m.restoreParamizedFeatures( dump, obj, $scopeFor, (d)=>true);
     
     // получается что здесь происходит повторный вызов obj.feature
