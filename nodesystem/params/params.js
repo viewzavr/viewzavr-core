@@ -262,31 +262,31 @@ function setup_params_events(x) {
 
       if (!Array.isArray(names)) names=[names];
 
-    // вызов
-    function fn2() {
-       var vals = [];
-       for (let name of names) 
-        vals.push( x.params[name] );
-       //    fn.call( undefined, ...vals ); // зис им перебиваем конеш
-       // может тут тоже требовать чтобы все было, до кучи уж
-       fn( ...vals );
-    }
+      // вызов
+      function fn2() {
+         var vals = [];
+         for (let name of names) 
+          vals.push( x.params[name] );
+         //    fn.call( undefined, ...vals ); // зис им перебиваем конеш
+         // может тут тоже требовать чтобы все было, до кучи уж
+         fn( ...vals );
+      }
 
-    var fn2_delayed = _delayed( fn2,0,x );    
+      var fn2_delayed = _delayed( fn2,0,x );    
 
-    var acc = [];
-    for (let name of names) {
-      var res = x.trackParam(name,fn2_delayed);
-      acc.push( res );
-    }
-    // всеобщая отписка
-    let resall = () => {
-      acc.forEach( (x) => x() );
-    }
+      var acc = [];
+      for (let name of names) {
+        var res = x.trackParam(name,fn2_delayed);
+        acc.push( res );
+      }
+      // всеобщая отписка
+      let resall = () => {
+        acc.forEach( (x) => x() );
+      }
 
-    fn2_delayed();
+      fn2_delayed();
 
-    return resall;
+      return resall;
 
     };
 

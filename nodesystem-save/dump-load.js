@@ -138,38 +138,24 @@ export default function setup( m ) {
 
     /// походу надо параметры до фич таки.. но тогда непонятно что есть restorefromdump...
 
-    let p1 = m.restoreFeatures( dump, obj, manualParamsMode, $scopeFor );
+    //let p1 = m.restoreFeatures( dump, obj, manualParamsMode, $scopeFor );
     // таким образом фичи имеют возможность заменить obj.restoreFromDump
     // и стать функторами
-          if (obj.removed)
-            debugger;
-
-    
-    return new Promise( function (resolve, reject) {
-
-        p1.then( () => {
-
-          if (obj.removed) {
-            // уже удалили пока мы ево делали
+          //if (obj.removed)
             //debugger;
-            console.error("createSyncFromDump: object is removed, between create && restoreFromDump stages.", obj.getPath())
-            resolve( obj );
-            return;
-            
-          }
 
-          obj.restoreFromDump( dump,manualParamsMode, $scopeFor ).then( (res) => {
+    let res = obj.restoreFromDump( dump,manualParamsMode, $scopeFor )
+
+    // отправим событие создания объекта
+    // хотя вероятно его стоит запихать в фичи.. но вопрос что это должно быть последним
+    res.then( (res2) => {
             // @exp - тпу когда фичи все из описания применены, и параметры, и дети
             if (!_existingObj) {
               obj.emit("cocreate");
             }; // idea и еще emit("synced");
-            resolve( obj );
-          }).catch( (err) => {
-            reject( err );
-          })
+          });
 
-        }); // фичи восстановились
-    })
+    return res;
   }
   
 
@@ -233,7 +219,7 @@ export default function setup( m ) {
       //console.log("setting param",name,h[name]);
 
       // F-KEEP-EXISTING-PARAMS
-      if (dump.keepExistingParams && obj.hasParam( name )) return;
+      if (dump.keepExistingParams && (obj.hasParam( name ) || obj.hasLinksToParam( name ))) return;
 
       let v = h[name];
 
@@ -361,7 +347,7 @@ export default function setup( m ) {
        if (obj.hasParam(output_param_name) || obj.hasLinksToParam( output_param_name ))
        {
          // вот нам значит уже и не надо этот объект.
-         console.warn("shadowed computing env skipping", output_param_name, dump, obj )
+         //console.warn("shadowed computing env skipping", output_param_name, dump, obj )
          return null;
        }
      }
@@ -382,8 +368,9 @@ export default function setup( m ) {
           if (output_link)
           {
               output_link.on("remove", () => {
-                console.warn("shadowed computing env removed due output link", output_link.params.to, dump, obj )
-                feature_obj.remove()
+                //console.warn("shadowed computing env removed due output link", output_link.params.to, dump, obj )
+                if (!feature_obj)
+                    feature_obj.remove()
               } );
           }
           else {
@@ -562,6 +549,10 @@ export default function setup( m ) {
     Promise.allSettled( feat_arr_0 ).then( () => {
 
         let feat_arr = [];
+
+        // NHACK
+        if (dump.features && dump.features['base_url_tracing'])
+          obj.feature('base_url_tracing', dump.features['base_url_tracing'].params);
 
         for (let fn of Object.keys(dump.features || {})) 
         {
@@ -1110,7 +1101,7 @@ m.chain("create_obj",function( obj, opts ) {
       if (!dump.keepExistingChildren)
           m.removeChildrenByDump( dump, obj, ismanual );
       return m.createChildrenByDump( dump, obj, ismanual, $scopeFor );
-  }  
+  }
 
   
   if (opts.manual) obj.manuallyInserted = true;
