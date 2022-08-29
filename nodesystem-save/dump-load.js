@@ -29,17 +29,19 @@ export default function setup( m ) {
   
   m.createSyncFromDump = function( dump, _existingObj, parent, desiredName, manualParamsMode, $scopeFor )
   {
+    // это из списков.. присобачивать поверх всего что захочут давать..
+    if (dump.$scopeFor) {
+      // но есть случай когда мы это уже учли, и тогда этого делать не надо
+      if (!$scopeFor?.skip_dump_scopes)
+          $scopeFor = dump.$scopeFor;
+    }
+
+    //let scopeFor_param = $scopeFor;
     if (!$scopeFor) {
       //debugger;
       if (_existingObj)
         $scopeFor = _existingObj.$scopes.top();
     }
-    // это из списков.. присобачивать поверх всего что захочут давать..
-    if (dump.$scopeFor) {
-      // но есть случай когда мы это уже учли, и тогда этого делать не надо
-      if (!$scopeFor.skip_dump_scopes)
-          $scopeFor = dump.$scopeFor;
-    }        
 
     // выяснилось что у нас могут на промисах шпарить создание детей вовсю, когда объект уже решили удалить
     if (parent && parent.removed) {
