@@ -63,7 +63,10 @@ function setup_tree(obj, tree_name) {
     cc.forEach((c) => {
       //console.log("removing child ",c.getPath());
       //if (c.ns.name == "object_g_2_2xw709pds") debugger;
-      c.remove();
+      /// оказалось что его могут удалить по другим причинам, 
+      // например insert-children при удалении удаляет созданное им
+      if (!c.removed) 
+         c.remove();
     });
     
     //delete obj.ns;
