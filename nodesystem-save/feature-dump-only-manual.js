@@ -33,7 +33,7 @@ export default function setup(m) {
     });*/
 
     obj.getParamManualFlag = function(name) {
-      return obj.getParamOption(name,"manual");
+      return obj.getParamOption(name,"manual") || obj.getParamOption(name,"always_manual");
     }
 
     obj.setParamManualFlag = function(name,ismanual) {

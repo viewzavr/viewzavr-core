@@ -9,13 +9,17 @@ export default function setup(x) {
     return orig_remove( nama );
   }
   
-  //
 
   var orig = x.addGui;
   x.addGui = function(rec) {
     var orig_fn = rec.fn || function() {};
     var itsme = false;
-    x.trackParam( rec.name, function() {
+
+    let orig_gui_record = x.getGui( rec.name );
+    if (orig_gui_record?.untrack_param)
+        orig_gui_record.untrack_param();    
+
+    rec.untrack_param = x.trackParam( rec.name, function() {
       if (!itsme) {
         itsme = true;
         var v = x.getParam( rec.name );
@@ -88,7 +92,7 @@ export default function setup(x) {
       // x.setParam( rec.name, rec.value ); 
       // надо и похоже выставить значение, и дернуть за веревочку тоже.. 
       // но дергая за веревочку мы вызываем всякие update-ы...
-      x.setParamWithoutEvents( rec.name, rec.value );
+      x.setParamWithoutEvents( rec.name, rec.value, x.getParamManualFlag( rec.name ) );
       //x.params[ rec.name ] = rec.value; // попробуем так
     }
       

@@ -43,7 +43,9 @@ export default function setup(vz, x) {
       if (obj) {
         ref_event_unbinds[ name ] = obj.on("parent_change",() => { // это включает в себя и remove
           // а зачем это вообще?
-          x.setParam( name, ref_values[name] );
+          // ммм... ммм.. ну типа сменился парент.. у объекта на который ссылались... 
+          // и типа мы тут тогда обратно строчку пишем тудысь.. ну ладно... хм...
+          x.setParam( name, ref_values[name], x.getParamManualFlag( name ) );
         });
       } else ref_event_unbinds[ name ] = null;
 
@@ -61,7 +63,10 @@ export default function setup(vz, x) {
     // (так вышло с компалангой почему-то) - надоть отреагировать и тогда
     let curvalue = x.params[name];
     if (typeof(curvalue) == 'string')
-       x.setParamWithoutEvents( name, curvalue, x.getParamManualFlag(name) );
+        //x.setParam( name, curvalue, x.getParamManualFlag(name) ); 
+        // вроде как надо с событием, если там получится.. чтобы всякие get-ы сработали кто на этот параметр опирается
+        // но нет. там сами вышлют событие. так решил. а то setParam не чухает что значение поменялось и тупит
+        x.setParamWithoutEvents( name, curvalue, x.getParamManualFlag(name) );
     
   }
   

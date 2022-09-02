@@ -18,6 +18,17 @@ export default function setup(x) {
     var old = x.params[name];
     x.params[name]=value;
 
+/*
+    x.vz.history.add( 
+        //["link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to, obj.getPath() ]
+        { "info": "set_param",
+          "name": name,
+            "value" : value,
+            "tgt_obj": x.getPath()
+        }
+      );
+*/      
+
     // вот тут мы видим великую засаду теперь...
     // кто угодно может писать в params и мы это не можем отловить..
     // ибо и читающие - x.params.name...
@@ -33,6 +44,8 @@ export default function setup(x) {
     //if (name == "width" && value == "10px") debugger;
 
     //var old = x.getParam()
+    //let param_existed = x.hasParam( name );
+
     var old = x.setParamWithoutEvents( name, value, ...rest );
     
 
@@ -43,7 +56,8 @@ export default function setup(x) {
 */
 
     // iiiiimport. хорошо бы 
-    if (old != value || typeof(old) != typeof(value)) {
+    // если не было ничего - надо явно прописать !param_existed ||
+    if ( old != value || typeof(old) != typeof(value)) {
       
       if (Number.isNaN(old) && Number.isNaN(value))
       {

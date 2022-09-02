@@ -30,8 +30,17 @@ export default function setup( obj ) {
             add_retry( obj, name, value );
             return obj.getParam( name ); // по протоколу setParamWithoutEvents надо старое вернуть
           }
-          else
-            forget_retry( obj, name );
+          else {
+            let under_retry = forget_retry( obj, name );
+
+            //if (!obj.getParam(name)?.setParam) {
+            if (under_retry) {
+              //console.warn("obj ref value found",name, "by path", value,"=",target_obj,"old value was",obj.getParam(name))
+              let k = this.orig( name, target_obj );
+              obj.signalParam( name ); // тут надо вручную еще раз просигналить.. что-то там не меняется..
+              return k;
+            }
+          }
 
           value = target_obj; // будем класть на хранение уже объекты
       }
@@ -69,7 +78,7 @@ function add_retry( obj, paramname, value ) {
     obj.ref_retry_counters[paramname] = obj.ref_retry_counters[paramname]+1;
     
     if (obj.ref_retry_counters[paramname] < 100)
-      obj.setParam( paramname, value );
+      obj.setParam( paramname, value, obj.getParamManualFlag( paramname ) );
     else
       console.error("ref-as-obj: stopped because of retry counter limit.","obj=",obj.getPath(), {paramname,value})
   }, 15 );
@@ -80,6 +89,8 @@ function add_retry( obj, paramname, value ) {
 
 export function forget_retry( obj, paramname ) {
   if (obj.ref_retry_counters) {
+    let k = obj.ref_retry_counters[paramname];
     delete obj.ref_retry_counters[paramname];
+    return k;
   }
 }
