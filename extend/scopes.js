@@ -58,6 +58,24 @@ function vz_add_scopes( vz ) {
           $add: ( name, env ) => {
 
             if (!env?.on) { // мы пока не умеем ссылаться на не-объекты и поэтому сделаем объект для значений
+
+              let existing_obj = newscope[name];
+              if (existing_obj)
+              {
+                // там может быть и канал..
+                if (existing_obj.setParam)
+                    existing_obj.setParam( 0, env );
+                else
+                if (existing_obj.set)  
+                    existing_obj.set( env );
+                return;
+              }
+
+              // todo интересно а как я их чищу? эти созданные объекты?
+              // по идее их надо чистить при удалении скопов.. сообразно надо эти скопы как-то прицеплять к remove..
+              // ну а может они и норм им.. и вообще - проще сделать тут просто ячейки (cell)
+              // todo перевести на ячейки
+
               let param_env = vz.createObj();
               param_env.feature("is_positional_env");
               param_env.setParam( 0, env );
