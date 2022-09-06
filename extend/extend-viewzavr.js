@@ -14,14 +14,8 @@ export default function setup( vz ) {
   vz_add_features_to_new_objs( vz );
   vz_add_host_field_to_new_objects( vz );
 
-  /* оказывается вредно вроде как..
-  vz_activate_features_from_new_obj_params( vz, (o) => o.features );
-  vz_activate_features_from_new_obj_params( vz, (o) => o.feature );
-  vz_activate_features_from_new_obj_params( vz, (o) => o.params?.features );
-  vz_activate_features_from_new_obj_params( vz, (o) => o.params?.feature );
-  vz_activate_features_from_new_obj_params( vz, (o) => o.extend );
-  vz_activate_features_from_new_obj_params( vz, (o) => o.params?.extend );
-  */
+  //vz_track_lifetime( vz );
+
   // потребность "фича object на новых объектах" => можно создавать новые объекты вообще только из фич
   vz_add_feature_object_to_new_objects( vz );
 
@@ -83,6 +77,29 @@ function vz_add_host_field_to_new_objects( vz, f_from_options ) {
     return obj;
   });
 }
+
+// измерение на тему сколько объектов создано и тут же удалено
+function vz_track_lifetime( vz, f_from_options ) {
+  //let orig = vz.create_obj;
+  let total_waste = 0;
+  vz.chain( "create_obj", function (obj,options) {
+    this.orig( obj, options );
+
+    obj.$timestamp = performance.now();
+
+    obj.on("remove",() => {
+        let t = performance.now();
+        let delta = t - obj.$timestamp;
+        if (delta < 100) {
+          total_waste++; 
+          console.log("object short time",delta,"ms",obj.getPath(),"total wasted objs",total_waste)
+        }
+           
+    });
+    
+    return obj;
+  });
+};
 
 function vz_add_feature_object_to_new_objects( vz, f_from_options ) {
   //let orig = vz.create_obj;
