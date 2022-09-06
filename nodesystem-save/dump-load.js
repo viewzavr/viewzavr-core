@@ -43,6 +43,10 @@ export default function setup( m ) {
         $scopeFor = _existingObj.$scopes.top();
     }
 
+    // вроде как не положено ему. он ж ручной, от пользователя.. (из дампа поди пришел страницы)
+    if (dump.manual)
+      $scopeFor = null;
+
     // выяснилось что у нас могут на промисах шпарить создание детей вовсю, когда объект уже решили удалить
     if (parent && parent.removed) {
       return Promise.resolve("parent_removed");
