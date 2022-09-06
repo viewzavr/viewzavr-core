@@ -85,6 +85,12 @@ function vz_add_scopes( vz ) {
          debugger;
       let newscope = {
           $comment: comment,
+          $forget: (name) => {
+              let v = newscope[name];
+              if (v?.$this_is_proxy_by_scopes)
+                 v.remove();
+              delete newscope[name];
+          },
           $add: ( name, env, force_proxy=false ) => {
 
             if (!env?.on || force_proxy) { // мы пока не умеем ссылаться на не-объекты и поэтому сделаем объект для значений
@@ -109,6 +115,7 @@ function vz_add_scopes( vz ) {
               let param_env = vz.createObj();
               param_env.feature("is_positional_env");
               param_env.setParam( 0, env );
+              param_env.$this_is_proxy_by_scopes=true;
               env = param_env;
             } 
 
