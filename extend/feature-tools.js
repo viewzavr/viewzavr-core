@@ -253,7 +253,7 @@ export function add_features_use( env, registry_env ) {
         env.emit(`feature-applied-${name}`);
       else
         env.emit(`feature-unapplied-${name}`);
-    };  
+    };
 
     // todo идея таки писать в параметры - всем проще станет..
     //if (!env.setParam) debugger;

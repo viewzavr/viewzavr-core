@@ -70,6 +70,8 @@ export default function setup( m ) {
            console.error("will create some obj to avoid js errors, but it is not the desired one");
            obj = m.createObj( { parent: parent, name: desiredName || "ehh" });
          }
+         //obj.$vz_created_by_dump = dump; // похраним...
+         //obj.$vz_features_from_dump = dump.features;
       }
     }
     // в dump должно быть поле type, оно нам все и создаст что надо
