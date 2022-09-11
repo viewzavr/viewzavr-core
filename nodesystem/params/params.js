@@ -121,6 +121,10 @@ export default function setup(x) {
     return x.params.hasOwnProperty(name);
   }
 
+  x.paramAssigned = function(name) {
+    return x.hasParam(name) || x.hasLinksToParam(name);
+  }
+
   x.setParams = function(value) {
     x.params = value;
     // тотальненько..

@@ -227,6 +227,8 @@ export default function setup( m ) {
     keys.forEach( function(name) {
       //console.log("setting param",name,h[name]);
 
+      // if (name == "manual_features") return; // проверка
+
       // F-KEEP-EXISTING-PARAMS
       if (dump.keepExistingParams && (obj.hasParam( name ) || obj.hasLinksToParam( name ))) return;
 
@@ -703,6 +705,9 @@ export default function setup( m ) {
   
   // this is made specially so obj.restoreFromDump may be overriden
   m.restoreObjFromDump = function( dump, obj, manualParamsMode, $scopeFor ) {
+    //let k = dump.params.manual_features;
+    //delete dump.params['manual_features'];
+
     m.restoreParams( dump, obj,manualParamsMode,$scopeFor );
     m.restoreLinks( dump, obj,manualParamsMode,$scopeFor );
     let feature_promise = m.restoreFeatures( dump, obj,manualParamsMode,$scopeFor );

@@ -100,12 +100,19 @@ export default function setup(x) {
 
     if (typeof(fn) == 'string')
         fn = eval(fn);
+
+    // todo класть команды не в x[name] а в x.$commands[name]
+    x.$commands ||= {}; 
     
     if (force) {
-      x[name] = fn;  
+      x[name] = fn;
     }
     else
       x[name] ||= fn; // todo расхреначить это
+
+//    if (name == 'open-window')
+      //debugger;
+    //console.log( "addCmd name=",name,"fn=",fn,"force=",force)
 
     // таки это лучше так как - иначе ссылки не узнают про то что команда добавилась..
     x.setParam( name, (...args) => x.callCmd(name,...args));

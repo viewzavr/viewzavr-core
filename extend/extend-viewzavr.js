@@ -146,9 +146,13 @@ function vz_add_cats_as_feature( vz ) {
 
 ///////////////////// 
 function vzf_manual_features( obj ) {
+
+  /*
   obj.trackParam("manual_features", (v) => {
     obj.manual_feature( v );
   })
+  */
+
   obj.manual_feature = (names,...args) => {
     var arr = FT.feature_names_to_arr( names );
     var has_new = false;
