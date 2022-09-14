@@ -44,8 +44,9 @@ export default function setup( m ) {
     }
 
     // вроде как не положено ему. он ж ручной, от пользователя.. (из дампа поди пришел страницы)
-    if (dump.manual)
-      $scopeFor = null;
+    // но выяснилось это противоречит ситуации когда мы пытаемся изобразить действия пользователя а при этом таки опираемся на scope..
+    // например в аргументах make={ |a b| some @a @b } и оно там сохранит эти a b но передать их надо..
+    // if (dump.manual) $scopeFor = null;
 
     // выяснилось что у нас могут на промисах шпарить создание детей вовсю, когда объект уже решили удалить
     if (parent && parent.removed) {
@@ -75,6 +76,9 @@ export default function setup( m ) {
       }
     }
     // в dump должно быть поле type, оно нам все и создаст что надо
+    
+//    if (!$scopeFor)
+//      $scopeFor = obj.$scopes.createScope("createSyncFromDump");
 
     // F-FEAT-PARAMS
     if (dump.feature_of_env) {
@@ -671,7 +675,7 @@ export default function setup( m ) {
                          } );
          if ($scopeFor)
              lobj.$scopes.addScopeRef( $scopeFor );
-          else debugger; 
+          else debugger;  // вроде ничего страшного ж.. или таки мабуть?
 
         if (lrec.locinfo) 
           lobj.$locinfo = lrec.locinfo;
