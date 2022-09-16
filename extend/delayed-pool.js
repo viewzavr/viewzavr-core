@@ -67,6 +67,17 @@ export function delayed( env ) {
   env.timeout = (f,delay=0) => setTimeoutQ( () => {
     if (!(env && env.removed)) f();
    },delay );
+  env.repeat = (f,delay=0) => {
+    let fnew = () => {
+      if (dostop) return;
+      f();
+      env.timeout( fnew, delay );
+    };
+    let starter = env.timeout( fnew, delay );
+    let dostop = false;
+    starter.stop = () => { dostop = true };
+    return starter;
+  };
 }
 
 /////////////////////////////////////////////////////////////////////   
