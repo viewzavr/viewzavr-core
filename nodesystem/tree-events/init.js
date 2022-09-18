@@ -24,12 +24,14 @@ export default function setup(m) {
     var orig = obj[tree_name].appendChild;
 
     obj[tree_name].appendChild = function(cobj, name, rename, pos) {
+      let old_parent = cobj.ns.parent;
+
       var res = orig(cobj, name, rename, pos);
       //obj[tree_name].signalOnTree("appendChildInTree"); // дорого
       obj.signal("appendChild", cobj);
       obj.signal("childrenChanged", cobj);
-      cobj.signal("parent_change");
-      cobj.signal("parentChanged");
+      cobj.signal("parent_change",cobj,obj,old_parent);
+      cobj.signal("parentChanged",cobj,obj,old_parent);
       //obj[tree_name].signalOnTree("change_in_tree"); // дорого
       return res;
     }
@@ -45,8 +47,8 @@ export default function setup(m) {
       //obj[tree_name].signalOnTree("forgetChildInTree");
       obj.signal("forgetChild", cobj);
       obj.signal("childrenChanged", cobj);
-      cobj.signal("parent_change", cobj );
-      cobj.signal("parentChanged", cobj );
+      cobj.signal("parent_change", cobj,null,obj );
+      cobj.signal("parentChanged", cobj,null,obj );
       //obj[tree_name].signalOnTree("change_in_tree");
       return res;
     }
