@@ -20,14 +20,16 @@ function tick() {
   // гипотеза что 1 обхода не хватает и надо побольше. вроде 2 норм (проверял по работе гуи на ноуте)
   // итого нонче задержка 30 это одна секунда (исходя из того что 60 кадров в секунду 
   // но на других мониторах по другому)
+
+  let tstart = performance.now();
   for (let i=0; i<2; i++)
-    process_recs();
+    if (process_recs(tstart)) break;
 
   // console.log("qnext.length",qnext.length) 
   callbacks.forEach( c => c() );
 }
 
-function process_recs() {
+function process_recs(tstart) {
   //if (qnext.length > 0) {
       //console.log("AF.stat",qnext.length);
       //console.log( qnext.map( it => it.funchint ))
@@ -36,15 +38,33 @@ function process_recs() {
   var q = qnext;
   qnext = [];
   
+  // чето браузер плачет если мы тут слишком долго тусуемся в requestAnimationFrame
+  let time_is_out = false;
+
   for (let rec of q) {
     rec.tm --;
-    if (rec.tm < 0) {
+    if (!time_is_out && rec.tm < 0) {
+      //let tbeg = performance.now();  
       if (rec.f)
           rec.f();
+
+      let tnow = performance.now();  
+      // потом поразбираться что это за расчеты
+      //if (tnow - tbeg > 10) console.warn('long task',tnow - tbeg,rec.f)
+
+      if (tnow - tstart > 15)  
+      {
+        time_is_out = true;
+        // по идее то скопировать остаток очереди и все
+        //qnext = qnext.concat( q );
+        //console.log("time_is_out = true;", tnow-tstart)
+      }
     }
     else
       qnext.push( rec );
   }
+
+  return time_is_out;
 }
 
 function setTimeoutQ( func, delay, funchint ) {
