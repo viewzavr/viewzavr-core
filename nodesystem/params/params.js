@@ -44,7 +44,7 @@ export default function setup(x) {
     //if (name == "width" && value == "10px") debugger;
 
     //var old = x.getParam()
-    //let param_existed = x.hasParam( name );
+    let param_existed = x.hasParam( name );
 
     var old = x.setParamWithoutEvents( name, value, ...rest );
     
@@ -57,14 +57,15 @@ export default function setup(x) {
 
     // iiiiimport. хорошо бы 
     // если не было ничего - надо явно прописать !param_existed ||
-    if ( old != value || typeof(old) != typeof(value)) {
+    // попробуем.. будем передавать для записи undefined-значений.. что влияет 
+    // и на compalang let - он начинает работать для всех значений
+    if ( !param_existed || old != value || typeof(old) != typeof(value)) {
       
       if (Number.isNaN(old) && Number.isNaN(value))
       {
           // отдельный случай - эти штуки всегда неравны...
       }
       else
-      
         x.signalTracked( name );
     }
     else {
