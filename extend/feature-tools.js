@@ -161,7 +161,7 @@ export function feature_names_to_arr( names ) {
   */
   // тут у нас идет потеря аргументов фич.. если фичи активировались как
   // obj.feature( { feature1: {params...}, feature2: {params...}})
-  if (Array.isArray(names)) return names;
+  if (Array.isArray(names)) return names.filter( x => !!x );
   return [names];
 }
 
