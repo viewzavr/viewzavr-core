@@ -142,15 +142,15 @@ export default function setup( vz ) {
             // обновление: скрываем только если и нет такого параметра. а если уж он там есть, а вернул ерунду - ну и ладно, передаем
             if (!val_received)
               return;
-            // новое обновление - передаем всегда..
+            // новое обновление - передаем всегда.. + см ниже
         }
         else
         {
           if (!val_received) {
             warn_value_not_found();
             // warn_undef();
-            
-               //console.warn("link: passing undefined value",obj.getPath() );
+           //console.warn("link: passing undefined value",obj.getPath() );
+           return; // новейшее обновление - таки что там передавать если ничего нет. ну?
           }
         }
       }
