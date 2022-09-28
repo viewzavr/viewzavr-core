@@ -315,7 +315,15 @@ export default function setup( m ) {
                 // ибо она часть механики похоже какой-то
             }
             else
-            l.remove();
+            {
+              //console.log("p-removing link:", l.getPath(), "reason - setting param",name )
+              // временный хак. он в том что если выставлено manual_mode это значит что эта ссылка обеспечивает
+              // запись в ручном режиме откуда-то.. и ее стало быть затирать не надобно..
+              if (!l.params.manual_mode)
+              {
+                l.remove();
+              }
+            }
       }
       
     });

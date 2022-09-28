@@ -70,10 +70,13 @@ export default function setup( vz ) {
       console.log("warn val stop", obj.$vz_unique_id )
       w1();
     }
-*/    
+*/
     
     // вызывается когда исходный параметр изменяется
     function qqq() {
+      if (obj.params.debug)
+         debugger;
+
       //console.log("qqq invoked", obj.getPath())
       if (!obj.getParam("enabled")) return;
       if (!currentRefTo) return;
@@ -169,7 +172,7 @@ export default function setup( vz ) {
       if (obj.params.log)
           console.log("link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to,obj);
 
-      // obj.vz.history.add( ["link set value",obj.params.from,])
+      /*
       obj.vz.history.add( 
         //["link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to, obj.getPath() ]
         { "info": "link",
@@ -180,6 +183,7 @@ export default function setup( vz ) {
             "source" : obj.$locinfo
          }
       );
+      */
 
       // feature: set only if val changes; in other case, we will lose manual effect..
       // обновление: чухня все это, надо хреначить. ну мануал эффект можно сохранить выставляя флаг
