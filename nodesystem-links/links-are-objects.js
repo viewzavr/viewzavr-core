@@ -47,13 +47,21 @@ export default function setup( vz ) {
 
     obj.feature("delayed");
     let warn_value_not_found = obj.delayed( () => {
+      // у нас новая доктрина. если нет параметра - то и не страшно, может он появится потом.
+      // правда конечно удобно было то, что было сообщение о том что заведомо нет данных.
+      // попробуем отсекаться по флагу internal - он будет признаком что параметр таки есть, просто ну данных нет
+      
+      if (!currentRefFrom.getParamOption(currentParamNameFrom,"internal"))
+      {
         console.warn("Link: src object exist but no parameter of that name\n",
              currentRefFrom.getPath(),"->",currentParamNameFrom,
              "\n=====>\n",
              currentRefTo.getPath(),"->",currentParamNameTo,
              "\nlink object:",obj,"\nsrc object:",currentRefFrom
               );
-       obj.vz.console_log_diag( obj,true );
+         obj.vz.console_log_diag( obj,true );
+       };
+       
 
     },20);
     //obj.on("remove",warn_value_not_found.stop)
@@ -139,6 +147,15 @@ export default function setup( vz ) {
 
       warn_value_not_found.stop();
 
+      if (!val_received) // стало быть нету там данных то
+      {
+        if (obj.params.soft_mode) 
+            return;
+        warn_value_not_found();
+        return;  
+      }
+
+/*    заканчиваем игру в такого рода вещи. без разницы какое значение. надо передавать.
       if (typeof(val) == "undefined" || val == null) {
         // теперь undefined скрываем только если ссылка добрая/мягкая/необязательная
         if (obj.params.soft_mode) {
@@ -157,6 +174,7 @@ export default function setup( vz ) {
           }
         }
       }
+*/      
       //else warn_undef.stop();
       
       /*

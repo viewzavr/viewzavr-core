@@ -66,7 +66,7 @@ export default function setup( vz ) {
         cobj.$vz_path = undefined;
         vz.get_path( cobj ); 
       });
-    })
+    });
 
     obj.on("parent_change", () => {
       obj.$vz_path = undefined;
