@@ -44,6 +44,28 @@ export default function setup( origobj, nf ) {
     }
     return acc;
   }
+
+  // поиск - обход всех детей с вызовом fn
+  
+  obj.traverse_with_features = function( fn, acc ) {
+    fn( origobj, acc );
+    var cc = obj.getChildNames();
+    for (var i=0; i<cc.length; i++) {
+      var name = cc[i];
+      var cobj = obj.getChildByName( name );
+      // это не надо оно само себя вызовет var res = fn( cobj );
+      nf(cobj).traverse_with_features( fn, acc );
+    }
+    let ee = Object.keys( obj.$feature_list_envs_table || {});
+    for (var i=0; i<ee.length; i++) {
+      var name = ee[i];
+      var cobj = obj.$feature_list_envs_table( name );
+      // это не надо оно само себя вызовет var res = fn( cobj );
+      nf(cobj).traverse_with_features( fn, acc );
+    }  
+    return acc;
+  }
+
   
   obj.findChild = function(name) {
     return obj.find( function(ch) {

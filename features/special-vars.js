@@ -60,12 +60,24 @@ export default function setup( vz ) {
       obj.$vz_path = undefined;
       // короче выяснилось что удобно всегда видеть путь при отладке в браузере
       vz.get_path( obj ); 
+      // но.. теперь надо всем почистить внутрях системы..
+      // а то как выяснилось они тоже запоминают..
+      obj.ns.traverse_with_features( (cobj) => {
+        cobj.$vz_path = undefined;
+        vz.get_path( cobj ); 
+      });
     })
 
     obj.on("parent_change", () => {
       obj.$vz_path = undefined;
       // короче выяснилось что удобно всегда видеть путь при отладке в браузере
       vz.get_path( obj ); 
+      // но.. теперь надо всем почистить внутрях системы..
+      // а то как выяснилось они тоже запоминают..
+      obj.ns.traverse_with_features( (cobj) => {
+        cobj.$vz_path = undefined;
+        vz.get_path( cobj ); 
+      });
     })
 
   };
