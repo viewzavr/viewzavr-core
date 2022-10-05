@@ -117,14 +117,17 @@ function vz_add_scopes( vz ) {
               param_env.setParam( 0, env );
               param_env.$this_is_proxy_by_scopes=true;
               env = param_env;
-            } 
+            }
+
+            //console.log("adding scope name",name)
 
             // функция добавляет объект в скопу. она умная, удалит запись когда объект удалится
             newscope[name]=env;
+
             // но теперь это касается не только окружений а и любых значений
             if (env?.on) 
                 env.on('remove',() => {
-                  //console.log("deleting scope name",name,"due to env remove",env.$vz_unique_id)
+                  // console.log("deleting scope name",name,"due to env remove",env.$vz_unique_id)
                   delete newscope[name]
                 });
           }

@@ -621,14 +621,25 @@ vz.chain("create_obj",function( obj, opts ) {
   obj.hasLinks = function() {
     return (howManyLinksTo( obj ) > 0);
   }
+  /*
   obj.hasLinksToParam = function(pname) {
     return (howManyLinksOfParam( obj,pname,false,true ) > 0);
+  }
+  */
+  obj.hasLinksToParam = function(pname) {
+    return hasLinksOfParam( obj,pname,false,true );
   }
   obj.hasLinksFromParam = function(pname) {
     return (howManyLinksOfParam( obj,pname,true,false ) > 0);
   }
   obj.linksToParam = function(name) {
     return linksOfParam(obj,name,false,true);
+  }
+  obj.linksToObject = function(name) {
+    return getIncomingLinks(obj);
+  }
+  obj.linksToObjectParamsNames = function(name) {
+    return linksToObjectParamsNames(obj);
   }
   obj.linksFromParam = function(name) {
     return linksOfParam(obj,name,true,false);
@@ -705,8 +716,8 @@ function howManyLinksTo( obj ) {
 }
 
 function howManyLinksOfParam( obj,name, needfrom=true, needto=true ) {
-  return (obj.links_to_me || []).filter( function(link) {
-    var i = obj.links_to_me.indexOf( link );
+  return (obj.links_to_me || []).filter( function(link,i) {
+    //var i = obj.links_to_me.indexOf( link ); // так то это n квадрат.. 
     var isFrom = obj.links_to_me_direction[i];
 
     if (isFrom && !needfrom) return;
@@ -719,9 +730,26 @@ function howManyLinksOfParam( obj,name, needfrom=true, needto=true ) {
   } ).length;
 }
 
+function hasLinksOfParam( obj,name, needfrom=true, needto=true ) {
+  return (obj.links_to_me || []).find( function(link,i) {
+    //var i = obj.links_to_me.indexOf( link ); // так то это n квадрат.. 
+    var isFrom = obj.links_to_me_direction[i];
+
+    if (isFrom && !needfrom) return;
+    if (!isFrom && !needto) return;
+
+    var nama = isFrom ? "from" : "to";
+    var arr = (link.getParam(nama) || "").split("->"); 
+    // тоже сплошные n квадраты блин.. надо уже разбить там все.. или заранее просчитать
+    // todo optimize! этот сплит и все сосдение
+    var paramname = arr[1];
+    if (paramname == name) return true;
+  } )
+}
+
 function linksOfParam( obj,name, needfrom=true, needto=true ) {
-  return (obj.links_to_me || []).filter( function(link) {
-    var i = obj.links_to_me.indexOf( link );
+  return (obj.links_to_me || []).filter( function(link,i) {
+    //var i = obj.links_to_me.indexOf( link );
     var isFrom = obj.links_to_me_direction[i];
 
     if (isFrom && !needfrom) return;
@@ -732,6 +760,28 @@ function linksOfParam( obj,name, needfrom=true, needto=true ) {
     var paramname = arr[1];
     return (paramname == name);
   } );
+}
+
+function getIncomingLinks( obj ) {
+  if (!obj.links_to_me) return [];
+
+  let acc = [];
+  for (let i=0; i<obj.links_to_me.length; i++) 
+  {
+    if (obj.links_to_me_direction[i]) continue; // исходящая
+    acc.push( obj.links_to_me[i] );
+  }
+  return acc;
+}
+
+function linksToObjectParamsNames( obj )
+{
+  let arr = getIncomingLinks( obj );
+  return arr.map( (link) => {
+    var arr = (link.getParam("to") || "").split("->");
+    var paramname = arr[1];
+    return paramname;
+  });
 }
 
 
