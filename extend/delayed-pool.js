@@ -7,14 +7,17 @@ export function setup( vz,me ) {
   vz.register_feature_set( me ); // получается вот этот вызов это есть сухожилия. соединение местного с системой. регаем фичи = добавляем в таблицу системы записи.
 }
 
-window.requestAnimationFrame( tick );
+let request_af = typeof(window) !== "undefined" ? window.requestAnimationFrame : setImmediate;
+// https://nodejs.org/ru/docs/guides/timers-in-node/
+
+request_af( tick );
 
 export var qnext = [];
 
 export var callbacks = [];
 
 function tick() {
-  window.requestAnimationFrame( tick );
+  request_af( tick );
   // надо вначале зарядить а то потом по ошибкам повалимся и все цикл остановится
 
   // гипотеза что 1 обхода не хватает и надо побольше. вроде 2 норм (проверял по работе гуи на ноуте)

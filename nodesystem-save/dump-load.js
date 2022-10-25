@@ -976,7 +976,7 @@ export default function setup( m ) {
           else
             return resolv( obj );
         }
-        name = ckeys[i];
+        let name = ckeys[i];
 
         var child_dump = c[name];
 
