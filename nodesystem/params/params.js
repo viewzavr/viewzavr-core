@@ -40,6 +40,7 @@ export default function setup(x) {
   let vz_param_state_counters = {};
 
   x.setParam = function(name,value, ...rest) {
+    //console.log('setParam',name,x.getPath())
     
     //if (name == "width" && value == "10px") debugger;
 

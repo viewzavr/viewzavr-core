@@ -90,6 +90,11 @@ export function delayed( env ) {
   env.timeout = (f,delay=0) => setTimeoutQ( () => {
     if (!(env && env.removed)) f();
    },delay );
+
+  env.timeout_ms = (f,delay=0) => setTimeout( () => {
+    if (!(env && env.removed)) f();
+   },delay );
+
   env.repeat = (f,delay=0) => {
     let fnew = () => {
       if (dostop) return;
