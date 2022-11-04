@@ -87,25 +87,33 @@ function clearTimeoutQ( rec ) {
 export function delayed( env ) {
   env.delayed = (f,delay=0) => _delayed(f,delay,env);
   env.delayed_first = (f,delay=0) => _delayed_first(f,delay,env);
-  env.timeout = (f,delay=0) => setTimeoutQ( () => {
-    if (!(env && env.removed)) f();
-   },delay );
+  env.timeout = (f,delay=0) => {
+    let id = setTimeoutQ( () => {
+         if (!(env && env.removed)) f();
+       },delay );
+    return () => clearTimeoutQ(id);
+  }
 
-  env.timeout_ms = (f,delay=0) => setTimeout( () => {
-    if (!(env && env.removed)) f();
-   },delay );
+  env.timeout_ms = (f,delay=0) => {
+    let id = setTimeout( () => {
+      if (!(env && env.removed)) f();
+     },delay );
+    return () => clearTimeout(id);
+  }
 
-  env.repeat = (f,delay=0) => {
+  env.repeat = (f,delay=0,tfunc) => {
+    tfunc ||= env.timeout;
     let fnew = () => {
       if (dostop) return;
       f();
-      env.timeout( fnew, delay );
+      tfunc( fnew, delay );
     };
-    let starter = env.timeout( fnew, delay );
+    let starter = tfunc( fnew, delay );
     let dostop = false;
     starter.stop = () => { dostop = true };
     return starter;
   };
+
 }
 
 /////////////////////////////////////////////////////////////////////   

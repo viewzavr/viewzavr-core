@@ -74,6 +74,8 @@ function vz_add_host_field_to_new_objects( vz, f_from_options ) {
 
     obj.host = obj;
     
+    obj.toString = () => obj.getPath()
+    
     return obj;
   });
 }
