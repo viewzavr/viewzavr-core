@@ -307,7 +307,7 @@ export default function setup( vz ) {
       // а с объекта. в том смысле что если мы хотим объект по ссылке передать...
       // (конкретно это понадобилось для объекта рендеринга параметров)
       if (arr.length == 1)
-          arr.push("~"); // ссылка просто на объект, обозначаем внутри как .
+          arr.push("~"); // ссылка просто на объект, обозначаем внутри как ~
 
       if (arr.length != 2) {
         console.error("Link: source arr length not 2!",arr );
@@ -386,7 +386,9 @@ export default function setup( vz ) {
       if (enable_qqq) qqq();
       
       if (enable_signal) obj.signal("linksChanged");
-      currentRefFrom.signal( paramname + "Linked" );
+      //console.log( "crf, paramname=",paramname,"params=",obj.params,"arr=",arr )
+      if (currentRefFrom.signal)
+          currentRefFrom.signal( paramname + "Linked" );
 
       return true;
     }

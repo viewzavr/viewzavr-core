@@ -979,6 +979,7 @@ export default function setup( m ) {
         let name = ckeys[i];
 
         var child_dump = c[name];
+        //console.log(name,c)
 
         // если 
         
