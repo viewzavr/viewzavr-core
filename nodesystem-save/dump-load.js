@@ -116,7 +116,7 @@ export default function setup( m ) {
            console.error("scopes: name_for_scope is blank",name_for_scope,obj)
 
         if ($scopeFor[ name_for_scope ]) {
-           console.error("scopes: duplicated name!",name_for_scope,'me=',obj,'existing=',$scopeFor[ name_for_scope ])
+           console.error("scopes: duplicated name!",name_for_scope,'me=',obj,'existing=',$scopeFor[ name_for_scope ],"scope.$comment=",$scopeFor.$comment)
            if (dump.locinfo)
              console.log( dump.locinfo );
         }
@@ -881,8 +881,9 @@ export default function setup( m ) {
   m.callEnvFunction = function( env_list, parent_object, manualParamsMode, scope, ...args)
   {
       if (env_list.env_args) {
-        let newscope = parent_object.$scopes.createAbandonedScope("$vz_children_function");
+        let newscope = parent_object.$scopes.createAbandonedScope( "callEnvFunction" + Math.random());
         newscope.$lexicalParentScope = env_list[0].$scopeFor || scope;
+        newscope.skip_dump_scopes = true;
         //newscope.$lexicalParentScope = env_list[0].$scopeFor || parent_object.$scopes.top();
           //let newscope = scope_env.$scopes.createScope("$vz_children_function");
           //let newscope = scope.createScope("$vz_children_function");
@@ -892,9 +893,13 @@ export default function setup( m ) {
         // в параметрах (т.е. alfa={ some; envs} )
         // и поэтому ее надо каждую перешибить
         //debugger;
+        
+        // вот тут корень ошибки. это все асинхронно выполняется и перемешывается
+        /*
         if (env_list[0].$scopeFor)
         for (let e of env_list)
           e.$scopeFor = newscope;
+        */
         // типа якобы - нам не надо копировать т.к. есть и просто параметр newscope у createObjectsList
 
         return m.createObjectsList( env_list, parent_object, manualParamsMode, newscope );
@@ -907,6 +912,7 @@ export default function setup( m ) {
   // на набор окружений возможно вызываемый с аргументами
   // update - это чухня. надо делать так чтобы был возврат результата годный для insert-children
   // и прочих createObjectsList
+  // update - может и не чюхня. может и норм.
   m.callParamFunction = function( param_value, parent_object, manualParamsMode, scope, ...args) {
     if (typeof(param_value) == "string") {
       let f = eval( param_value );
