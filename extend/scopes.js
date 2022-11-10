@@ -102,8 +102,11 @@ function vz_add_scopes( vz ) {
                 if (existing_obj.setParam)
                     existing_obj.setParam( 0, env );
                 else
-                if (existing_obj.set)  
+                if (existing_obj.set)
                     existing_obj.set( env );
+                // но вообще это какая-то интересная, прикольная история про то что я стал писать туда ячейки
+                // это как бы хорошо но дало обратную сторону - я теперь не могу туда сохранить ячейку ))))
+                // стал  юзать force_proxy посмотрю что будет  
                 return;
               }
 
@@ -119,7 +122,7 @@ function vz_add_scopes( vz ) {
               env = param_env;
             }
 
-            //console.log("adding scope name",name)
+            //console.log("adding scope name",name,env)
 
             // функция добавляет объект в скопу. она умная, удалит запись когда объект удалится
             newscope[name]=env;

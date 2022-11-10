@@ -870,7 +870,8 @@ export default function setup( m ) {
          scope.$add( argname, param_env );
          */
 
-         scope.$add( argname, argvalue );
+         //console.log("scope adding arg", argname, argvalue )
+         scope.$add( argname, argvalue, true );
       }
   }
 

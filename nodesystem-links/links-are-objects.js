@@ -349,6 +349,8 @@ export default function setup( vz ) {
       let is_object = sobj.trackParam ? true : false;
       let is_cell = sobj.is_cell ? true : false;
 
+      //console.log('links from sobj is ',objname, sobj)
+
       // F-LINK-ACCESS-ENV-CONSTS
       if (!is_object)
       {
