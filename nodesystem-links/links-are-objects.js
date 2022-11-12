@@ -29,6 +29,7 @@ export default function setup( vz ) {
     var tracode;
 
     var qqq_is_performing = 0;
+    var qqq_counter = 0;
 
     obj.currentRefFrom = () => currentRefFrom;
     obj.currentRefTo = () => currentRefTo;
@@ -260,6 +261,10 @@ export default function setup( vz ) {
 
        // ну и что что не передала - сработала же..
        obj.passed_value_timestamp = performance.now();
+       //obj.emit('assigned',obj.passed_value_timestamp)
+       //obj.setParam('assigned',obj.passed_value_timestamp)
+       // надо для F-ORDER-22-11
+       obj.setParam('assigned',qqq_counter++);
        // @todo move out
 
 //       else

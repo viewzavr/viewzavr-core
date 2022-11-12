@@ -349,12 +349,65 @@ export default function setup( m ) {
     
   }
 
+
+  // новое F-ORDER-22-11
+  m.importAsParametrizedFeature = function( dump,obj, $scopeFor ) {
+     let r = m.importAsParametrizedFeature1( dump, obj, $scopeFor )
+     if (!r) return r;
+     if (!dump.features.computer) return r;
+     return new Promise( (resolve,reject) => {
+       r.catch( err => reject(err) )
+
+       r.then( (feature_obj) => {
+        //return resolve( feature_obj )
+        //debugger;
+         let output_link = feature_obj.ns.getChildByName("arg_link_to");
+         if (!output_link)
+            console.error("order-22-11 error: no output link");
+         let to_param_name = output_link.params.to.split("->")[1]
+
+         if (!to_param_name)
+            console.error("order-22-11 error: no output link to param name.. to=",output_link.params.to);
+            
+         //obj.trackParam( to_param_name )  ..
+
+         obj.feature( "delayed" );
+         let cleart = obj.timeout( () => {
+           console.warn("order-22-11 warn: still waiting for () parameter",to_param_name)
+           obj.vz.console_log_diag( obj )
+           console.log(obj.params)
+           //console.log(obj.$scopes.top())
+         }, 1000)
+
+         // ссылка сработала - продолжаем разворачивать окружение
+         let uns1 = () => {}
+         uns1 = output_link.onvalue('assigned',(counter) => {
+           uns1(); uns1 = () => {}
+           cleart()
+           //console.log("X, param=",to_param_name, "cnt=",counter, obj.getPath())
+           resolve( feature_obj );
+         })
+         // ссылка удалилась - на всякий случай тыркнем
+         output_link.on("remove", () => {
+           //resolve( feature_obj );
+           cleart()
+           reject(); // ну или так..
+         } );
+         
+         // еще идеи - мониторить параметр.. может ему и так присвоят что-то..
+         // т.е. запустить trackParam + разово проверить что ссылка assigned
+         // это кстати можно сделать по timestamp будет. ну глянем как лушче.
+         
+       })
+     })
+  }
+
   // цель - активировать в окружении новую фичу, определенную в dump
   // отличие в том, что там не просто имя, а целое новое под-окружение
   // и мы не можем создать сначала под-окружение а потом его прицепить
   // потому что при создании происходит активация фич, и им уже надо знать
   // что они активируются в режиме аттача к основному новому окружению..
-  m.importAsParametrizedFeature = function( dump,obj, $scopeFor ) {
+  m.importAsParametrizedFeature1 = function( dump,obj, $scopeFor ) {
      // todo заменить это все на работу с деревом..
      dump.feature_of_env = obj;
      dump.keepExistingChildren = true; // без этой штуки оно начинает стирать своих собственных детей
@@ -394,7 +447,7 @@ export default function setup( m ) {
           {
               output_link.on("remove", () => {
                 //console.warn("shadowed computing env removed due output link", output_link.params.to, dump, obj )
-                if (!feature_obj)
+                if (feature_obj)
                     feature_obj.remove()
               } );
           }
@@ -484,7 +537,8 @@ export default function setup( m ) {
           }
          });
 
-         resolve( feature_obj );
+         resolve( feature_obj );    
+  
        });  
      
      //return feature_obj;
