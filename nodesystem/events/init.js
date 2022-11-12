@@ -31,7 +31,11 @@ export var createNanoEvents = () => ({
           arr = [...rec];
           this.arr_repr[event] = arr;
        }
-       arr.forEach(i => i(...args));
+       arr.forEach(i => {
+         //if (!i.bind) console.error(i)
+         i(...args)
+       });
+       //arr.forEach(i => i(...args));
        //let arr = [...rec];
        //arr.forEach(i => i(...args));
        //for (let i of rec)
@@ -39,6 +43,14 @@ export var createNanoEvents = () => ({
     }
   },
   on(event, cb) {
+    if (!cb) {
+        console.error("on event",event,"empty cb")
+        console.trace()
+    }
+    if (typeof(event) !== "string" && !Number.isInteger(event)) {
+        console.error("on event",event,"is not string")
+        console.trace() 
+    }
     this.events[event] ||= new Set();
     this.events[event].add(cb);
     this.arr_repr[event]=null;

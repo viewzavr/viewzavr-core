@@ -142,8 +142,8 @@ export default function setup(vz) {
     });
     x.addLabel(`status-${name}`);
 
-    x.trackParamOption("crit_fn",setrec);
-    x.trackParamOption("search_root",setrec);
+    x.trackParamOption(name,"crit_fn",setrec);
+    x.trackParamOption(name,"search_root",setrec);
 
     function setrec() {
       // ну так то это неправильно - фиксировать через какое гуи мы тут пойдем
