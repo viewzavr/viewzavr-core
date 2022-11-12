@@ -278,6 +278,7 @@ function setup_params_events(x) {
 
     // monitor_values - мониторит параметры безо всякой проверки их содержимого
     // разово вызывает fn и на старте
+    // но нет. не содержимого. а их наличия. так попробуем.
     x.monitor_values = function(names,fn) {
 
       if (!Array.isArray(names)) names=[names];
@@ -285,9 +286,12 @@ function setup_params_events(x) {
       // вызов
       function fn2() {
          var vals = [];
-         for (let name of names) 
-          vals.push( x.params[name] );
-         //    fn.call( undefined, ...vals ); // зис им перебиваем конеш
+         for (let name of names)  {
+           if (!x.hasParam(name))
+             return
+           vals.push( x.params[name] );
+         }
+         
          // может тут тоже требовать чтобы все было, до кучи уж
          fn( ...vals );
       }
@@ -304,7 +308,8 @@ function setup_params_events(x) {
         acc.forEach( (x) => x() );
       }
 
-      fn2_delayed();
+      //fn2_delayed();
+      fn2()
 
       return resall;
 

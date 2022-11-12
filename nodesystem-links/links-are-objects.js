@@ -644,7 +644,7 @@ vz.chain("create_obj",function( obj, opts ) {
   obj.linksToParam = function(name) {
     return linksOfParam(obj,name,false,true);
   }
-  obj.linksToObject = function(name) {
+  obj.linksToObject = function() {
     return getIncomingLinks(obj);
   }
   obj.linksToObjectParamsNames = function(name) {

@@ -351,10 +351,12 @@ export default function setup( m ) {
 
 
   // новое F-ORDER-22-11
-  m.importAsParametrizedFeature = function( dump,obj, $scopeFor ) {
+  m.importAsParametrizedFeature = function( dump,obj, $scopeFor, parent_dump ) {
      let r = m.importAsParametrizedFeature1( dump, obj, $scopeFor )
      if (!r) return r;
      if (!dump.features.computer) return r;
+     if (parent_dump?.features["or"]) return r;
+
      return new Promise( (resolve,reject) => {
        r.catch( err => reject(err) )
 
@@ -584,7 +586,8 @@ export default function setup( m ) {
       {
          if (!crit_fn(fr)) continue;
          fr.keepExistingParams = dump.keepExistingParams;
-         let r2 = m.importAsParametrizedFeature( fr, obj, $scopeFor );
+
+         let r2 = m.importAsParametrizedFeature( fr, obj, $scopeFor, dump );
          //console.log( "case3 fn=",fr,r2,obj.getPath())
          feat_arr_0.push( Promise.resolve( r2 ) );
       }
@@ -1065,9 +1068,16 @@ export default function setup( m ) {
 
         var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode, $scopeFor );
         // todo вернуть оптимизацию
-        r.then( () => {
-           restore( i+1, priority );
-        });
+
+        // F-PARALLEL-CHILDREN
+        if (priority == 0) 
+        {
+          r.then( () => { // так было для всех
+             restore( i+1, priority );
+          });
+        }
+        else
+           restore( i+1, priority ); // попробуем их параллельно шлепать
         
         // the only way to catch errors is here, allSettled will ignore that error
         r.catch( (err) => {
