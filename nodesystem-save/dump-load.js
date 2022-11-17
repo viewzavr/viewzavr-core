@@ -351,6 +351,7 @@ export default function setup( m ) {
 
 
   // новое F-ORDER-22-11
+  /*
   m.importAsParametrizedFeature = function( dump,obj, $scopeFor, parent_dump ) {
      let r = m.importAsParametrizedFeature1( dump, obj, $scopeFor )
      if (!r) return r;
@@ -375,7 +376,7 @@ export default function setup( m ) {
 
          obj.feature( "delayed" );
          let cleart = obj.timeout( () => {
-           console.warn("order-22-11 warn: still waiting for () parameter",to_param_name)
+           console.warn("order-22-11 warn: still waiting for ()-parameter:",to_param_name)
            obj.vz.console_log_diag( obj )
            console.log(obj.params)
            //console.log(obj.$scopes.top())
@@ -401,15 +402,17 @@ export default function setup( m ) {
          // это кстати можно сделать по timestamp будет. ну глянем как лушче.
          
        })
+    
      })
   }
+  */
 
   // цель - активировать в окружении новую фичу, определенную в dump
   // отличие в том, что там не просто имя, а целое новое под-окружение
   // и мы не можем создать сначала под-окружение а потом его прицепить
   // потому что при создании происходит активация фич, и им уже надо знать
   // что они активируются в режиме аттача к основному новому окружению..
-  m.importAsParametrizedFeature1 = function( dump,obj, $scopeFor ) {
+  m.importAsParametrizedFeature = function( dump,obj, $scopeFor ) {
      // todo заменить это все на работу с деревом..
      dump.feature_of_env = obj;
      dump.keepExistingChildren = true; // без этой штуки оно начинает стирать своих собственных детей
@@ -876,10 +879,16 @@ export default function setup( m ) {
 
         let cobj = null;
         var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode, $scopeFor );
-        // todo вернуть оптимизацию
-        r.then( () => {
-           restore( i+1, priority );
-        });
+        
+        // F-PARALLEL-CHILDREN
+        if (priority == 0) 
+        {
+          r.then( () => { // так было для всех
+             restore( i+1, priority );
+          });
+        }
+        else
+           restore( i+1, priority ); // попробуем их параллельно шлепать
         
         // the only way to catch errors is here, allSettled will ignore that error
         r.catch( (err) => {
@@ -1027,69 +1036,8 @@ export default function setup( m ) {
     }
 
     var c = dump.children || {};
-    var ckeys = Object.keys( c );
 
-    var result_p = new Promise( (resolv, reject) => {
-
-      restore( 0,0 );
-
-      function restore( i, priority ) {
-        if (i == ckeys.length) {
-          if (priority == 0)
-            return restore( 0,1 ); // переходим на второй этап
-          else
-            return resolv( obj );
-        }
-        let name = ckeys[i];
-
-        var child_dump = c[name];
-        //console.log(name,c)
-
-        // если 
-        
-        let feats = child_dump.features || {};
-        let item_priority = (feats.load || feats.when || feats.feature || feats.register_feature) ? 0 : 1
-        if (priority != item_priority)
-          return restore( i+1, priority );
-
-        var cobj = obj.ns.getChildByName( name );
-        if (!c[name].manual && !cobj && !c[name].forcecreate) {
-          // ситуация когда объект должен был быть создан автоматически - но его нет!
-          console.error("load_from_dump: no child of name found! name=",name,"obj=",obj,"dump=",dump);
-          //promises_arr.push( Promise.reject() );
-          return restore( i+1, priority );
-        }
-
-        
-        if (dump.keepExistingChildren)
-            child_dump.keepExistingChildren = dump.keepExistingChildren;
-
-        if (dump.keepExistingChildren) cobj = null; // R-NEW-CHILDREN
-
-        var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode, $scopeFor );
-        // todo вернуть оптимизацию
-
-        // F-PARALLEL-CHILDREN
-        if (priority == 0) 
-        {
-          r.then( () => { // так было для всех
-             restore( i+1, priority );
-          });
-        }
-        else
-           restore( i+1, priority ); // попробуем их параллельно шлепать
-        
-        // the only way to catch errors is here, allSettled will ignore that error
-        r.catch( (err) => {
-          console.error("createChildrenByDump: error! parent=",obj.getPath(),"child_dump=",child_dump,"error=",err );
-          // и че.. по идее надо все-равно вызывать следующих... или вызовется?
-        });        
-
-      }; // функция restore
-
-    });
-    
-    return result_p;
+    return m.createObjectsList( Object.values(c), obj, manualParamsMode, $scopeFor )
   }
   
   m.dumpObj = function( obj ) {
