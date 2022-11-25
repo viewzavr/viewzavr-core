@@ -879,6 +879,14 @@ export default function setup( m ) {
 
         let cobj = null;
         var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode, $scopeFor );
+
+        r.then( () => { // так было для всех
+             restore( i+1, priority );
+        });
+        /* почему закомментил. конечно это быстрее. но надо проверять отдельно.
+           а то будет получаться что что-то создается быстрее, порядок объектов нарушится.
+           а он важен, например для pipe.
+           т.е. надо сначала убедиться в том, что порядок нормальный. (может это и так)
         
         // F-PARALLEL-CHILDREN
         if (priority == 0) 
@@ -889,6 +897,7 @@ export default function setup( m ) {
         }
         else
            restore( i+1, priority ); // попробуем их параллельно шлепать
+        */   
         
         // the only way to catch errors is here, allSettled will ignore that error
         r.catch( (err) => {

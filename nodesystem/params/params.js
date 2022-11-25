@@ -279,6 +279,8 @@ function setup_params_events(x) {
     // monitor_values - мониторит параметры безо всякой проверки их содержимого
     // разово вызывает fn и на старте
     // но нет. не содержимого. а их наличия. так попробуем.
+
+    // todo разобраться что это за функция, как я ее использую, зачем она нужна
     x.monitor_values = function(names,fn) {
 
       if (!Array.isArray(names)) names=[names];
@@ -287,8 +289,8 @@ function setup_params_events(x) {
       function fn2() {
          var vals = [];
          for (let name of names)  {
-           if (!x.hasParam(name))
-             return
+           //if (!x.hasParam(name))
+           //  return
            vals.push( x.params[name] );
          }
          
