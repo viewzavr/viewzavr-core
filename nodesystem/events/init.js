@@ -63,6 +63,7 @@ export var createNanoEvents = () => ({
   }
 })
 
+
 export function setNanoEvents( fn ) {
   createNanoEvents = fn;
 }
@@ -70,12 +71,30 @@ export function setNanoEvents( fn ) {
 export function addEventsTo( x ) {
   x.events_dic = createNanoEvents();
 
+  function mk( name ) {
+    let f0 = x.events_dic[ name ].bind( x.events_dic )
+    let f = (...args) => {
+      if (x?.vz?.verbose)
+          console.log("EVENT",name,...args,x.getPath() );
+      return f0( ...args )
+    }
+    return f
+  }
+
+  /*
   x.track = x.events_dic.on.bind(x.events_dic);
   x.untrack = x.events_dic.off.bind(x.events_dic);
   x.signal = x.events_dic.emit.bind(x.events_dic);
   x.on = x.events_dic.on.bind(x.events_dic);
   x.off = x.events_dic.off.bind(x.events_dic);
   x.emit = x.events_dic.emit.bind(x.events_dic);
+  */
+  x.emit = mk( 'emit' )
+  x.signal = mk( 'emit' )
+  x.on = mk('on')
+  x.off = mk('off')
+  x.track = mk('on')
+  x.untrack = mk('off')
 
   x.once = function( event, cb ) {
     var unbind;

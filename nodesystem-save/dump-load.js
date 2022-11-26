@@ -738,7 +738,8 @@ export default function setup( m ) {
                            from: lrec.from,
                            name: "arg_link_to", 
                            target_host_env: (arr[0] == "."),
-                           soft_mode: lrec.soft_mode
+                           soft_mode: lrec.soft_mode,
+                           stream_mode: lrec.stream_mode
                            
                          } );
          if ($scopeFor)
@@ -766,6 +767,7 @@ export default function setup( m ) {
          else debugger;   
 
         m.setParam("soft_mode",lrec.soft_mode);
+        m.setParam("stream_mode",lrec.stream_mode);
         m.setParam("to",lrec.to);
         m.setParam("from",lrec.from);
 

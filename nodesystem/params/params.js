@@ -40,7 +40,9 @@ export default function setup(x) {
   let vz_param_state_counters = {};
 
   x.setParam = function(name,value, ...rest) {
-    //console.log('setParam',name,x.getPath())
+    if (x.vz.verbose)
+      console.log('SETPARAM',name,x.getPath(),value)
+    //if (name == "assigned") console.trace()
     
     //if (name == "width" && value == "10px") debugger;
 
@@ -48,7 +50,8 @@ export default function setup(x) {
     let param_existed = x.hasParam( name );
 
     var old = x.setParamWithoutEvents( name, value, ...rest );
-    
+
+    x.emit(name + "_assigned",value); // F-PARAMS-STREAM
 
 /*  we still need to track that param exist.. F-PARAM-VALUE-ALWAYS
     if (typeof(value) == "undefined")
@@ -143,7 +146,7 @@ import * as E from "../events/init.js";
 function setup_params_events(x) {
   x.pevents = E.createNanoEvents();
   x.trackParam = x.pevents.on.bind( x.pevents );
-  x.untrackParam = x.pevents.on.bind( x.pevents );
+  x.untrackParam = x.pevents.off.bind( x.pevents );
   x.signalTracked = function(name) {
     if (x.removed) return; // бывали случаи
     

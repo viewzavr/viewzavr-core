@@ -188,8 +188,9 @@ export default function setup( vz ) {
       }
       */
       
-      if (obj.params.log)
-          console.log("link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to,obj);
+      if (obj.params.log || obj.vz.verbose)
+        console.log("LINK-pass-value",obj.params.from, obj.params.stream_mode ? "!" : ""," -------> ",obj.params.to,val);
+          //console.log("link setting value",val,"\n",obj.params.from,"\n -------> \n",obj.params.to,obj);
 
       /*
       obj.vz.history.add( 
@@ -264,7 +265,7 @@ export default function setup( vz ) {
        //obj.emit('assigned',obj.passed_value_timestamp)
        //obj.setParam('assigned',obj.passed_value_timestamp)
        // надо для F-ORDER-22-11
-       obj.setParam('assigned',qqq_counter++);
+       obj.setParam('pass_counter',qqq_counter++);
        // @todo move out
 
 //       else
@@ -291,7 +292,8 @@ export default function setup( vz ) {
 
       
       if (currentRefFrom) {
-        currentRefFrom.untrackParam( currentParamNameFrom,qqq )
+        // вроде как не надо - см вызов unsubFromParamTracking
+        //currentRefFrom.untrackParam( currentParamNameFrom,qqq )
         forgetLinkTracking( currentRefFrom );
         currentRefFrom = undefined;
         currentParamNameFrom = undefined;
@@ -377,11 +379,18 @@ export default function setup( vz ) {
       
       // F-LINK-ACCESS-ENV-CONSTS
       if (sobj && is_object) {
-          unsubFromParamTracking = sobj.trackParam( paramname, qqq );
+          //console.log("link: pname",paramname,"obj.params.stream_mode=",obj.params.stream_mode)
+          if (obj.params.stream_mode) // F-PARAMS-STREAM
+            unsubFromParamTracking = sobj.on( paramname+"_assigned", qqq );
+          else
+            unsubFromParamTracking = sobj.trackParam( paramname, qqq );
       }
 
       if (sobj && is_cell) {
-         unsubFromParamTracking = sobj.on( "changed", qqq );
+         if (obj.params.stream_mode) // F-PARAMS-STREAM
+           unsubFromParamTracking = sobj.on( "assigned", qqq );
+         else 
+           unsubFromParamTracking = sobj.on( "changed", qqq );
       }
   
       currentRefFrom = sobj;
@@ -621,6 +630,7 @@ vz.chain("create_obj",function( obj, opts ) {
     q.setParam( "from", sourcestring, opts.manual );
     q.setParam( "tied_to_parent",true, opts.manual );
     q.setParam( "soft_mode", opts.soft_mode || opts.soft , opts.manual );
+    q.setParam( "stream_mode", opts.stream_mode, opts.manual ); // F-PARAMS-STREAM
     return q;
   }
   obj.linkParam = function( paramname, link_source,soft_mode, manual ) {
