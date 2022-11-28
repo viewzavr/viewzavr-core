@@ -51,7 +51,9 @@ export default function setup(x) {
 
     var old = x.setParamWithoutEvents( name, value, ...rest );
 
+    // важно это делать после установки значения, т.к. ссылки текущая версия почему-то читает из значения (а не из аргумента события)
     x.emit(name + "_assigned",value); // F-PARAMS-STREAM
+    x.emit("param_assigned",name,value); // F-PARAMS-STREAM
 
 /*  we still need to track that param exist.. F-PARAM-VALUE-ALWAYS
     if (typeof(value) == "undefined")
@@ -145,6 +147,15 @@ import * as E from "../events/init.js";
 
 function setup_params_events(x) {
   x.pevents = E.createNanoEvents();
+  // pevents это получается для changed-событий
+  //x.trackParam = x.pevents.on.bind( x.pevents );
+  // F-PARAMS-STREAM-2
+  // была идея - trackParam теперь это assigned, а старое это trackParamChanged
+  // но пока решился трекать отдельно: trackParamAssigned...
+  x.trackParamAssigned = (name,fn) => {
+     return x.on( name + "_assigned", fn)
+  }
+  x.trackParamChanged = x.pevents.on.bind( x.pevents );
   x.trackParam = x.pevents.on.bind( x.pevents );
   x.untrackParam = x.pevents.off.bind( x.pevents );
   x.signalTracked = function(name) {
@@ -284,6 +295,10 @@ function setup_params_events(x) {
     // но нет. не содержимого. а их наличия. так попробуем.
 
     // todo разобраться что это за функция, как я ее использую, зачем она нужна
+
+    // проверка на наличие вынесена в отдельрную функцию monitor_defined
+
+    // вызывает fn а) на старте, б) при изменении параметров
     x.monitor_values = function(names,fn) {
 
       if (!Array.isArray(names)) names=[names];
@@ -320,62 +335,76 @@ function setup_params_events(x) {
 
     };
 
+    // вызывает функцию fn когда все параметры заданы; в т.ч. и на старте запускает fn.
+    x.monitor_defined = function(names,fn) {
+
+      if (!Array.isArray(names)) names=[names];
+
+      // вызов
+      function fn2() {
+         var vals = [];
+         for (let name of names)  {
+           if (!x.hasParam(name))
+             return
+           vals.push( x.params[name] );
+         }
+         
+         // может тут тоже требовать чтобы все было, до кучи уж
+         fn( ...vals );
+      }
+
+      var fn2_delayed = _delayed( fn2,0,x );    
+
+      var acc = [];
+      for (let name of names) {
+        var res = x.trackParam(name,fn2_delayed);
+        acc.push( res );
+      }
+      // всеобщая отписка
+      let resall = () => {
+        acc.forEach( (x) => x() );
+      }
+
+      //fn2_delayed();
+      fn2()
+
+      return resall;
+
+    };    
+
+    // вызывает функцию fn когда какой-либо параметр из списка присваивается
+    x.monitor_assigned = function(names,fn) {
+
+      if (!Array.isArray(names)) names=[names];
+
+      // вызов
+      function fn2() {
+         var vals = [];
+         for (let name of names)  {
+           vals.push( x.params[name] );
+         }
+         // может тут тоже требовать чтобы все было, до кучи уж
+         fn( ...vals );
+      }
+
+      var acc = [];
+      for (let name of names) {
+        var res = x.trackParamAssigned(name,fn2);
+        acc.push( res );
+      }
+      // всеобщая отписка
+      let resall = () => {
+        acc.forEach( (x) => x() );
+      }
+
+      //fn2_delayed();
+      //fn2()
+
+      return resall;
+
+    };
+
   // todo сделать тут setParam?...
 }
 
-
-function setup_params_events_old(x) {
-  // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
-  x.pevents = new EventTarget();
-  
-  // может события заюзать?
-  x.trackParam = function(name,fn) {
-    
-/*    var z = function(e) {
-      fn( e.detail );
-    }
-*/
-    
-    x.pevents.addEventListener(name,fn);
-  }
-  
-  x.untrackParam = function(name,fn) {
-    // find z by fn...
-    x.pevents.removeEventListener(name,fn);
-  }
-  x.signalTracked = function(name) {
-    x.pevents.dispatchEvent( new CustomEvent(name, {detail: x.getParam(name)}) );
-  }
-  x.signalParam = x.signalTracked;
-  // мысль в том что trackParam хорошо бы функцию передавал которая на вход имеет значение параметра
-  // и мб старое значение, а не то что какой-то непонятный event (я не чувствую что он мне нужен если честно)
-  // но смогу ли я отписываться от событий - вот что мне непонятно.
-  // видимо смогу, но надо сохранять отдельно таблицу fn -> newfn
-  
-  /* if we remove pevents, then others may not talk to obj events after obj is removed
-     maybe replace pevents with new EventTarget?..
-  x.chain("remove",function() {
-    this.orig();  
-    x.pevents = undefined; // to help remove things in gc
-  });
-  */  
-}
-
 import {_delayed} from "../../extend/delayed-pool.js";
-// там у нас моднее функция, на тиках сделанная
-
-/*
-function _delayed( f,delay=0 ) {
-  var t;
-
-  var res = function(...args) {
-    if (t) return;
-    t = setTimeout( () => {
-      t=null;
-      f(...args);
-    },delay);
-  }
-
-  return res;
-}
-*/
