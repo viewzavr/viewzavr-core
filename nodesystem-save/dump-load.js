@@ -166,7 +166,13 @@ export default function setup( m ) {
     res.then( (res2) => {
             // @exp - тпу когда фичи все из описания применены, и параметры, и дети
             if (!_existingObj) {
-              obj.emit("cocreate");
+              //obj.emit("cocreate");
+              obj.emit("startup"); // более новое, из Lingua Franca - лучше запоминается
+
+              obj.chain( "remove", function () {
+                obj.emit("shutdown"); // по аналогии с Lingua Franca
+                return this.orig();
+            });
             }; // idea и еще emit("synced");
           });
 
