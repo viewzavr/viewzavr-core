@@ -633,8 +633,8 @@ vz.chain("create_obj",function( obj, opts ) {
     q.setParam( "stream_mode", opts.stream_mode, opts.manual ); // F-PARAMS-STREAM
     return q;
   }
-  obj.linkParam = function( paramname, link_source,soft_mode, manual ) {
-     return obj.createLinkTo( { param: paramname, from: link_source, soft_mode:soft_mode, manual: manual })
+  obj.linkParam = function( paramname, link_source, soft_mode, manual, stream_mode ) {
+     return obj.createLinkTo( { param: paramname, from: link_source, soft_mode:soft_mode, manual: manual, stream_mode: stream_mode })
   }
   
   obj.hasLinks = function() {

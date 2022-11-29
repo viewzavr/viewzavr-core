@@ -298,7 +298,7 @@ function setup_params_events(x) {
 
     // проверка на наличие вынесена в отдельрную функцию monitor_defined
 
-    // вызывает fn а) на старте, б) при изменении параметров
+    // вызывает fn а) на старте, б) при изменении параметров / все это без проверок
     x.monitor_values = function(names,fn) {
 
       if (!Array.isArray(names)) names=[names];
@@ -373,7 +373,7 @@ function setup_params_events(x) {
     };    
 
     // вызывает функцию fn когда какой-либо параметр из списка присваивается
-    x.monitor_assigned = function(names,fn) {
+    x.monitor_assigned = function(names,fn, call_on_start) {
 
       if (!Array.isArray(names)) names=[names];
 
@@ -396,9 +396,9 @@ function setup_params_events(x) {
       let resall = () => {
         acc.forEach( (x) => x() );
       }
-
-      //fn2_delayed();
-      //fn2()
+      
+      if (call_on_start)
+          fn2()
 
       return resall;
 
