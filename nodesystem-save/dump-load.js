@@ -885,7 +885,7 @@ export default function setup( m ) {
         if (priority != item_priority)
           return restore( i+1, priority );
 
-        let cobj = null;
+        let cobj = obj.ns.getChildByName( child_dump.$name );
         var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode, $scopeFor );
 
         r.then( () => { // так было для всех
@@ -1039,10 +1039,17 @@ export default function setup( m ) {
 
   m.createChildrenByDump = function( dump, obj, manualParamsMode,$scopeFor )
   {
+    function copy_names(hash) {
+      for (let name of Object.keys(hash || {})) {
+        hash[name].$name = name;
+      }
+    }
+
     // // F-ENV-ARGS
     obj.$vz_children_function = (...args) => {
       let c = Object.values( dump.children );
       c.env_args = dump.children_env_args;
+      copy_names( dump.children )
 
       m.callEnvFunction( c, obj, manualParamsMode, $scopeFor, ...args )
     };
@@ -1053,6 +1060,7 @@ export default function setup( m ) {
     }
 
     var c = dump.children || {};
+    copy_names( dump.children )
 
     return m.createObjectsList( Object.values(c), obj, manualParamsMode, $scopeFor )
   }
@@ -1106,6 +1114,7 @@ export default function setup( m ) {
       ch.forEach( function(cname,index) {
          var c = obj.ns.getChildByName( cname );
          var r = c.dump();
+         //console.log("dumping ",cname,r)
          if (!r) return; // возможность объекту отказаться от сохранения
          res.children[cname] = r;
          if (res.children[cname].manual)

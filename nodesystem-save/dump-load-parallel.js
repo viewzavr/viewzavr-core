@@ -438,7 +438,7 @@ export default function setup( m ) {
        //console.log("emitting manual-restore for",obj.getPath())
        //obj.emit("manual-restore");
        obj.setParam("manual_restore_performed",true);
-    }    
+    }
 
     return new Promise( (resolve,reject) => {
        feature_promise.then( () => {
