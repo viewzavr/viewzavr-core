@@ -886,6 +886,22 @@ export default function setup( m ) {
           return restore( i+1, priority );
 
         let cobj = obj.ns.getChildByName( child_dump.$name );
+
+        //////////////////////////////////// кусочек старого createChildrenByDump 
+        // todo идея вообще разделить создание по набору и синхронизацию..
+        if (!child_dump.manual && !cobj && !child_dump.forcecreate) {
+          // ситуация когда объект должен был быть создан автоматически и ранее - но его нет!
+          console.error("load_from_dump: no child of name found! name=",name,"obj=",obj,"child_dump=",child_dump);
+          //promises_arr.push( Promise.reject() );
+          return restore( i+1, priority );
+        }
+
+        
+        //if (dump.keepExistingChildren) child_dump.keepExistingChildren = dump.keepExistingChildren;
+        //if (child_dump.keepExistingChildren) cobj = null; // R-NEW-CHILDREN
+        ////////////////////////////////////
+
+
         var r = m.createSyncFromDump( child_dump, cobj, obj, name, manualParamsMode, $scopeFor );
 
         r.then( () => { // так было для всех
@@ -1042,6 +1058,9 @@ export default function setup( m ) {
     function copy_names(hash) {
       for (let name of Object.keys(hash || {})) {
         hash[name].$name = name;
+        // и еще это оказалось
+        //if (dump.keepExistingChildren)
+        //    hash[name].keepExistingChildren = dump.keepExistingChildren;
       }
     }
 
