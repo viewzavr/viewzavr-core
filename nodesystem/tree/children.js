@@ -59,7 +59,7 @@ export default function setup( obj, nf ) {
     return (i >= 0);
   }
 
-  /*
+/*
   obj.indexOfChild = function( cobj ) {
     return obj.children.indexOf( cobj );
   }*/
