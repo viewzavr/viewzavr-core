@@ -307,8 +307,6 @@ function setup_params_events(x) {
       function fn2() {
          var vals = [];
          for (let name of names)  {
-           //if (!x.hasParam(name))
-           //  return
            vals.push( x.params[name] );
          }
          
