@@ -211,7 +211,7 @@ export default function setup( vz ) {
       if (qqq_is_performing > 2) {
         console.error("links: already processing, possible link loop");
         obj.vz.console_log_diag( obj );
-        debugger;
+        //debugger;
         return;
       };
 
@@ -377,6 +377,8 @@ export default function setup( vz ) {
         */
       }
       
+      // obj.params.stream_mode=true ; //qqqKAKAKA
+
       // F-LINK-ACCESS-ENV-CONSTS
       if (sobj && is_object) {
           //console.log("link: pname",paramname,"obj.params.stream_mode=",obj.params.stream_mode)

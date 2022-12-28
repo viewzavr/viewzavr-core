@@ -128,7 +128,15 @@ export default function setup(x) {
     return x.params.hasOwnProperty(name);
   }
 
+  // todo это неправильное название. правильное paramConnected или типа того.
+  // а paramAssigned это именно что x.hasParam. В том смысле что у нас есть состояния 
+  // - прицеплен так или иначен, присвоен (т.е. какое-то значение уже есть)
   x.paramAssigned = function(name) {
+    return x.hasParam(name) || x.hasLinksToParam(name);
+  }
+
+  // присвоена константа либо есть связь (но не факт что есть присвоение) - т.е значение есть либо вероятно скоро будет.
+  x.paramConnected = function(name) {
     return x.hasParam(name) || x.hasLinksToParam(name);
   }
 
