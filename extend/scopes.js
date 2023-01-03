@@ -133,7 +133,7 @@ function vz_add_scopes( vz ) {
                 env.on('remove',() => {
                   // console.log("deleting scope name",name,"due to env remove",env.$vz_unique_id)
                   delete newscope[name]
-                });
+            });
           }
         };
       return newscope;  
