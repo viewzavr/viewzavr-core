@@ -882,7 +882,7 @@ export default function setup( m ) {
         // если 
         
         let feats = child_dump.features || {};
-        let item_priority = (feats.load || feats.when || feats.feature || feats.register_feature) ? 0 : 1
+        let item_priority = (feats.load || feats.when || feats.feature || feats.register_feature || feats.jsfunc) ? 0 : 1
         if (priority != item_priority)
           return restore( i+1, priority );
 
