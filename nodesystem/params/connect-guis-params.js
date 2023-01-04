@@ -92,7 +92,10 @@ export default function setup(x) {
       // x.setParam( rec.name, rec.value ); 
       // надо и похоже выставить значение, и дернуть за веревочку тоже.. 
       // но дергая за веревочку мы вызываем всякие update-ы...
-      x.setParamWithoutEvents( rec.name, rec.value, x.getParamManualFlag( rec.name ) );
+      
+      // странно это все.. если не присвоили значения гуи - то вроде как не надо параметр то выставлять..
+      if (typeof(rec.value) !== "undefined")
+        x.setParamWithoutEvents( rec.name, rec.value, x.getParamManualFlag( rec.name ) );
       //x.params[ rec.name ] = rec.value; // попробуем так
     }
       
