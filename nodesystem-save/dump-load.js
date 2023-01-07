@@ -256,7 +256,6 @@ export default function setup( m ) {
       let bemanual = manualParamsMode;
       if (v?.needLexicalParent) {
 
-
          if (!$scopeFor)
            debugger;
 
@@ -270,14 +269,17 @@ export default function setup( m ) {
             let ea = v.env_args; // F-ENV-ARGS
 
             v = v.map(a => ({...a})); // типо копируем.. ну ок...
+            // todo - перестать копировать! создать над-структуру надо. { scope, items }
 
             if (ea) // F-ENV-ARGS
                 v.env_args = ea;
 
             // updated
             // for (let q of v) q.lexicalParent = obj;
-            for (let q of v) 
+            for (let q of v) {
+                 //if (q.$scopeFor) debugger
                  q.$scopeFor = $scopeFor;
+            }     
 
             //v.this_is_env_list_description = true;  
             bemanual=false;
@@ -1047,8 +1049,11 @@ export default function setup( m ) {
         // в параметрах (т.е. alfa={ some; envs} )
         // и поэтому ее надо каждую перешибить
         if (records[0].$scopeFor)
-          for (let e of records)
+          for (let e of records) {
+            //if (e.$scopeFor)
+                //debugger;
             e.$scopeFor = newscope;
+          }
     }    
 
     return records;

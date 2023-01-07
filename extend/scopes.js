@@ -80,11 +80,14 @@ export function setup( vz )
 // также вручную добавляются $lexicalParentScope
 function vz_add_scopes( vz ) {
 
+  let scopes_id_counter = 0;
+
   vz.createAbandonedScope = ( comment ) => {
   if (!comment)
          debugger;
       let newscope = {
           $comment: comment,
+          $scope_id: (scopes_id_counter++),
           $forget: (name) => {
               let v = newscope[name];
               if (v?.$this_is_proxy_by_scopes)
