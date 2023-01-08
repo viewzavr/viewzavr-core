@@ -884,7 +884,7 @@ export default function setup( m ) {
         // если f
         
         let feats = child_dump.features || {};
-        let item_priority = (feats.load || feats.when || feats.feature || feats.register_feature || feats.fun || feats.jsfunc || feats.cofunc) ? 0 : 1
+        let item_priority = (feats.load || feats.when || feats.feature || feats.register_feature || feats.fun || feats.jsfunc || feats.cofunc || feats.comp) ? 0 : 1
         if (priority != item_priority)
           return restore( i+1, priority );
 
