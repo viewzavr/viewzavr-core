@@ -342,7 +342,7 @@ function setup_params_events(x) {
     };
 
     // вызывает функцию fn когда все параметры заданы; в т.ч. и на старте запускает fn.
-    x.monitor_defined = function(names,fn) {
+    x.monitor_defined = function(names,fn, call_on_start=true) {
 
       if (!Array.isArray(names)) names=[names];
 
@@ -372,7 +372,8 @@ function setup_params_events(x) {
       }
 
       //fn2_delayed();
-      fn2()
+      if (call_on_start)
+          fn2()
 
       return resall;
 
