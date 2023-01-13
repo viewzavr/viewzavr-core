@@ -902,6 +902,9 @@ export default function setup( m ) {
         
         //if (dump.keepExistingChildren) child_dump.keepExistingChildren = dump.keepExistingChildren;
         //if (child_dump.keepExistingChildren) cobj = null; // R-NEW-CHILDREN
+
+        // если объект надо таки создавать то почистим cobj
+        if (child_dump.forcecreate) cobj = null;
         ////////////////////////////////////
 
 
@@ -1016,6 +1019,7 @@ export default function setup( m ) {
   // update - это чухня. надо делать так чтобы был возврат результата годный для insert-children
   // и прочих createObjectsList
   // update - может и не чюхня. может и норм.
+  // ну короче это просто удобняшка
   m.callParamFunction = function( param_value, parent_object, manualParamsMode, scope, ...args) {
     if (typeof(param_value) == "string") {
       let f = eval( param_value );
