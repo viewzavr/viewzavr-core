@@ -5,6 +5,8 @@
 
 export function setup( vz,me ) {
   vz.register_feature_set( me ); // получается вот этот вызов это есть сухожилия. соединение местного с системой. регаем фичи = добавляем в таблицу системы записи.
+
+  //vz.register_feature_map({"viewzavr-object":"delayed"}); // всем delayed
 }
 
 let request_af = typeof(window) !== "undefined" ? window.requestAnimationFrame : setImmediate;
@@ -85,8 +87,11 @@ function clearTimeoutQ( rec ) {
 
 
 export function delayed( env ) {
+  
   env.delayed = (f,delay=0) => _delayed(f,delay,env);
+
   env.delayed_first = (f,delay=0) => _delayed_first(f,delay,env);
+
   env.timeout = (f,delay=0) => {
     let id = setTimeoutQ( () => {
          if (!(env && env.removed)) f();

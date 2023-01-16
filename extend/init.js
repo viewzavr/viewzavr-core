@@ -18,7 +18,7 @@ export default function setup( vz ) {
 
   AH.setup( vz, AH );
 
-  LC.setup( vz, LC )
+  LC.setup( vz, LC );
 
   //L.setup( vz, L );
 }
