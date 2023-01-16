@@ -316,6 +316,7 @@ export default function setup( m ) {
       // и с учетом что у нас все снизу вверх теперь раскрывается - это сработает
       // и плюс уже учтено keepExistingParams
       if (obj.hasLinksToParam( name )) {
+          debugger  // linksToParam то не раобтает уже
           let larr = obj.linksToParam( name );
           for (let l of larr)
             if (l.params.manual_mode)
@@ -454,28 +455,37 @@ export default function setup( m ) {
 
         // если это у нас ()-вычислителный объект, и удаляют ссылку результата
         // то и этот объект надо удалить.
+        // но если введены новые ссылки ($connection_dic) то не надо..
         if (dump.features.computer) {
           
           // F-AUTO-LINKS поменять следующее
 
-          let output_link = feature_obj.ns.getChildByName("arg_link_to");
-          if (output_link)
+          if (feature_obj.$connection_dic)
           {
-              output_link.on("remove", () => {
-                //console.warn("shadowed computing env removed due output link", output_link.params.to, dump, obj )
-                if (feature_obj)
-                    feature_obj.remove()
-              } );
+            // todo: если меняется целевая ссылка, значит это окружение не нужно, и его надо удалить
           }
-          else {
-            // короче если там нет уже ссылки - значит ее потерли
-            // и значим нам наше вычисление тож надо потереть
-            // ппц.
+          else
+          {
 
-            debugger;
-            feature_obj.remove();
-            reject();
-            return;
+            let output_link = feature_obj.ns.getChildByName("arg_link_to");
+            if (output_link)
+            {
+                output_link.on("remove", () => {
+                  //console.warn("shadowed computing env removed due output link", output_link.params.to, dump, obj )
+                  if (feature_obj)
+                      feature_obj.remove()
+                } );
+            }
+            else {
+              // короче если там нет уже ссылки - значит ее потерли
+              // и значим нам наше вычисление тож надо потереть
+              // ппц.
+
+              debugger;
+              feature_obj.remove();
+              reject();
+              return;
+            }
           }
         }
 
@@ -724,6 +734,7 @@ export default function setup( m ) {
               // и с учетом что у нас все снизу вверх теперь раскрывается - это сработает
               // и плюс уже учтено keepExistingParams
               if (obj.hasLinksToParam( arr[1] )) {
+
                   let larr = obj.linksToParam( arr[1] );
                   for (let l of larr)
                     if (l.params.manual_mode)
@@ -765,20 +776,22 @@ export default function setup( m ) {
                            name: "arg_link_to", 
                            target_host_env: (arr[0] == "."),
                            soft_mode: lrec.soft_mode,
-                           stream_mode: lrec.stream_mode
-                           
+                           stream_mode: lrec.stream_mode,
+                           $scopeFor: $scopeFor,
+                           locinfo: lrec.locinfo
                          } );
-         if ($scopeFor)
+         /*if ($scopeFor)
              lobj.$scopes.addScopeRef( $scopeFor );
           else debugger;  // вроде ничего страшного ж.. или таки мабуть?
+          */
 
-        if (lrec.locinfo) 
-          lobj.$locinfo = lrec.locinfo;
-
+        //if (lrec.locinfo) 
+        //  lobj.$locinfo = lrec.locinfo;
   
       }
       else
       {
+        debugger // что это за ссылки такие интересно..
         //console.log("arg-link-to",lrec, obj.getPath())
         let lobj = m.createLink( {parent: obj, name: "arg_link" });
          if ($scopeFor)        
