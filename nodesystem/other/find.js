@@ -134,7 +134,7 @@ export default function setup( vz ) {
 
     if (scopeobj)
     {
-      let scope = scopeobj.$scopes.top();
+      let scope = scopeobj.$add ? scopeobj : scopeobj.$scopes.top();
       if (scope && scope[name])
          return scope[ name ];
 

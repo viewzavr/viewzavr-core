@@ -455,7 +455,9 @@ export default function setup( m ) {
         // если это у нас ()-вычислителный объект, и удаляют ссылку результата
         // то и этот объект надо удалить.
         if (dump.features.computer) {
-          //debugger;
+          
+          // F-AUTO-LINKS поменять следующее
+
           let output_link = feature_obj.ns.getChildByName("arg_link_to");
           if (output_link)
           {
@@ -469,11 +471,11 @@ export default function setup( m ) {
             // короче если там нет уже ссылки - значит ее потерли
             // и значим нам наше вычисление тож надо потереть
             // ппц.
+
             debugger;
             feature_obj.remove();
             reject();
             return;
-            //debugger;
           }
         }
 
@@ -709,7 +711,8 @@ export default function setup( m ) {
           // особый режим сохранения уже существующих параметров
           // проблема что hasLinksToParam заработает только при активации ссылки, которая у нас отложенная...
           // F-LINKS-OVERWRITE
-          if (obj.hasLinksToParam( arr[1] ) || obj.hasParam( arr[1] )) {
+          //if (obj.hasLinksToParam( arr[1] ) || obj.hasParam( arr[1] )) {
+          if (obj.paramConnected( arr[1] )) {
               //console.log("orig link is kept - keepExistingParams")
               continue;
           }
@@ -733,6 +736,8 @@ export default function setup( m ) {
                       l.remove();
                     }
               };
+
+              //if (obj.is_connected( arr[1]))
         };
         // разделяем ситуацию куда же нам направить местную ссылку - на себя (на фичу) или на главное окружение
 
@@ -741,7 +746,19 @@ export default function setup( m ) {
         if (arr[0] == ".") {
            obj.host.setParam( arr[1], undefined );
         }
-*/        
+
+
+*/
+
+        // замысел этой движухи - не создавать объектов ссылок. ибо объект - это дорого.
+        // а ссылка - это банальность.
+
+        // F-AUTO-LINKS
+/*
+        let tgt_obj = obj.vz.find_by_path( obj, arr[0], obj );
+        tgt_obj.connect_source( arr[1], lrec.from, obj, $scopeFor )
+*/
+
 
         let lobj = obj.createLinkTo( {param: arr[1], 
                            from: lrec.from,
@@ -757,15 +774,8 @@ export default function setup( m ) {
 
         if (lrec.locinfo) 
           lobj.$locinfo = lrec.locinfo;
-          //lobj.setParam('locinfo',lrec.locinfo);
 
-/*
-        if (lrec.to == ".->crit")
-          lobj.on("remove",() => {
-            lobj;
-            debugger;
-          })  
-*/          
+  
       }
       else
       {
@@ -773,7 +783,7 @@ export default function setup( m ) {
         let lobj = m.createLink( {parent: obj, name: "arg_link" });
          if ($scopeFor)        
              lobj.$scopes.addScopeRef( $scopeFor );
-         else debugger;   
+         else debugger;
 
         m.setParam("soft_mode",lrec.soft_mode);
         m.setParam("stream_mode",lrec.stream_mode);

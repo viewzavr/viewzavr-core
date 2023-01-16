@@ -9,7 +9,7 @@ export default function setup( vz ) {
     FT.add_feature_map( vz );
 
   FT.add_features_use( vz, vz );
-  FT.add_create_env( vz, vz );
+  //FT.add_create_env( vz, vz );
   
   vz_add_features_to_new_objs( vz );
   vz_add_host_field_to_new_objects( vz );
@@ -30,10 +30,12 @@ export default function setup( vz ) {
   vz.register_feature_set({viewzavr_object_uniq_ids});
   vz.feature( "viewzavr_object_uniq_ids"); // под вопросом.. может достаточно и просто стыковки с объектом..
 
-  vz.register_feature_set({viewzar_translate});
-  vz.feature( "viewzar_translate"); // может на уровне обьекта это тоже?
+  // vz.register_feature_set({viewzar_translate});
+  // vz.feature( "viewzar_translate"); // может на уровне обьекта это тоже?
 
   // //vz.register_feature_map({"viewzavr-object":{append:[vzf_manual_features]}})
+
+  viewzavr_connect( vz )
 }
 
 
@@ -41,7 +43,7 @@ function vz_add_features_to_new_objs( vz ) {
   vz.chain( "create_obj", function (obj,options) {
     // setup
     FT.add_features_use( obj, vz );
-    FT.add_create_env( obj, vz );
+    // вроде как не надо FT.add_create_env( obj, vz );
     // call constructor
     this.orig( obj, options );
     return obj;
@@ -215,4 +217,116 @@ function viewzavr_object_translate_text( env ) {
       return env.vz.translate_text( key );
     return key;
   }
+}
+
+///////////////////
+
+
+function viewzavr_connect( vz ) {
+  vz.register_feature_set({viewzavr_object_connect})
+  vz.register_feature_map({"viewzavr-object":"viewzavr_object_connect"});
+  //viewzar_translate
+}
+
+function viewzavr_object_connect( env ) {
+  env.$connection_dic = {}
+  env.connect_param = function ( name, src, type='assigned' ) {
+    if (src) {
+      let existing = env.$connection_dic[ name ]
+      if (existing) existing()
+
+      if (!src.is_cell) {
+        delete env.$connection_dic[ name ]
+        //console.warn("connect_param: src is not cell",src,"me=",env)
+        env.setParam( name, src ) // чисто значенье
+        return 
+      }
+
+      let unsub = src.on( type, (v) => {
+        env.setParam( name, v )
+      });
+      /*
+      let unsub = () => {
+        unsub0()
+        console.log("unsubbed from",name)
+      }
+      */
+
+      unsub.src = src; // так чисто..
+
+      env.$connection_dic[ name ] = unsub; // а если там уже есть
+
+      //console.log("subbed to",name)
+
+      if (src.is_value_assigned()) 
+          env.setParam( name, src.get() )
+
+      // todo нужна ли отписка при удалении целевого канала?
+    }
+    else {
+      delete env.$connection_dic[ name ]      
+    }
+  }
+  env.is_connected = function( name, src ) {
+    return env.$connection_dic.hasOwnProperty( name )
+  }
+  
+  env.on("remove",() => {
+    for (let k of Object.values(env.$connection_dic)) k(); // отпишемся..
+    env.$connection_dic = {}  
+  })
+
+  env.connected_param_names = () => {
+    return Object.keys( env.$connection_dic )
+  }
+
+  env.params_with_incoming_links = () => {
+    return env.linksToObjectParamsNames().concat( Object.keys( env.$connection_dic ) )
+  }
+
+  // тут прям алгоритм поиска исходного канала по src_string. лучшее из links-are-objects взято.
+  env.connect_source = function( name, src_string, src_base_obj, use_scope, type, retry_counter=100 ) {
+    // src_base_obj - от кого отсчитывать ссылки в src_string
+
+    if (!use_scope)
+        use_scope = src_base_obj.$scopes.top() // захапаем текущий top
+    
+    let src_arr = src_string.split("->")
+    let src_obj = env.vz.find_by_path( src_base_obj, src_arr[0], use_scope )
+    //if (src_obj == env)
+      //debugger
+    if (!src_obj) {
+       env.feature("delayed")
+       env.timeout( () => {
+        if (retry_counter < 0) 
+        {
+          console.warn("connect_source: not found",src_string, env, name)
+        }
+        else env.connect_source( name, src_string, src_base_obj, use_scope, type, retry_counter-1 )
+       },2)
+
+       // надо запомнить - чтобы имя хранилось, для connected_param_names
+       if (env.$connection_dic[ name ]) env.$connection_dic[ name ]()
+       env.$connection_dic[ name ] = () => {}
+       return
+    } 
+
+    // F-POSITIONAL-ENVS и F-POSITIONAL-ENVS-OUTPUT
+    // F-LINK-ACCESS-ENV-CONSTS
+    let src_param_name = src_arr[1]
+    if (src_obj.trackParam && (src_param_name == "." || src_param_name == null)) { 
+      if (src_obj.is_feature_applied("is_positional_env"))  {
+        src_param_name = 0;
+      }
+    }
+
+    let src_channel = src_obj.is_cell || src_param_name == null || src_param_name == "." ? src_obj : src_obj.get_param_cell( src_param_name )
+
+    //let tgt_obj = obj.vz.find_by_path( obj, arr[0], obj );
+    env.connect_param( name,src_channel );
+
+    //console.log("connect_source",name,src_string)
+  }
+
+        
 }
