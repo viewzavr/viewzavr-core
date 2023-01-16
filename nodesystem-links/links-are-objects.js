@@ -25,6 +25,8 @@ export default function setup( vz ) {
     var obj = vz.createObj( opts );
     obj.is_link = true;
 
+    //debugger; //что мы тут делаем?
+
     var currentRefFrom;
     var currentRefTo;
 

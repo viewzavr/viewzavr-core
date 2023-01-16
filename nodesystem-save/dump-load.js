@@ -714,7 +714,7 @@ export default function setup( m ) {
       var lrec = dump.links[lname];
       var arr = lrec.to.split("->");
       if (arr[0] == "." || arr[0] == "~") { // ссылка на поля объекта
-        //console.log("cre-link-to",lrec, obj.getPath()) 
+        //console.log("cre-link-to",lname,lrec, obj.getPath(), obj) 
         //console.log("cre-link-to",arr[1], lrec,obj.getPath()) 
 
         //if (arr[1] == "input_kv")
@@ -725,10 +725,19 @@ export default function setup( m ) {
           // проблема что hasLinksToParam заработает только при активации ссылки, которая у нас отложенная...
           // F-LINKS-OVERWRITE
           //if (obj.hasLinksToParam( arr[1] ) || obj.hasParam( arr[1] )) {
-          if (obj.paramConnected( arr[1] )) {
-              //console.log("orig link is kept - keepExistingParams")
-              continue;
+          if (obj.host) {
+            let chk_obj = (arr[0] == "~") ? obj : arr[0] == "." ? obj.host : console.err("whatsup",obj,lrec)
+            if (chk_obj.paramConnected( arr[1] )) {
+                //console.log("orig link is kept - keepExistingParams")
+                continue;
+            }
           }
+          else {
+            if (obj.paramConnected( arr[1] )) {
+                //console.log("orig link is kept - keepExistingParams")
+                continue;
+            }
+          }  
         }
         else
         {
