@@ -207,3 +207,7 @@ env.feature( somefunc );
 Чтобы работало
 env.feature( feature-object );
 где в feature-object в поле output записана фиче-функция.
+
+# F-NO-OBJREF
+obj.addObjRef / obj.setReference(name) признано очень дорогой вещью (срабатывает на каждом setParam проверка), в среднем обычно не нужной.
+Ее признано сообразно при необходимости уносить на уровень какого-то объекта (реализации).
