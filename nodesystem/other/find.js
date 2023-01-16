@@ -35,23 +35,19 @@ export default function setup( vz ) {
     }
     
     if (path[0] == "." && path[1] == "." && path[2] == "/") {    // example: ../camera
-      return vz.find_by_path( obj.ns.parent || obj.host.ns.parent, path.substring(3), scope_obj );
+      return vz.find_by_path( obj.ns.parent || obj.host, path.substring(3), scope_obj );
     }
     if (path == "..") {    // example: ..
       // F-FEAT-PARAMS
-      if (obj.host.ns.parent)
-        return obj.host.ns.parent;
-
-      if (obj.host.host != obj.host) // ну вот так вот.. смысл чтобы как-то выходить из вложенных окружений..
-        return obj.host.host;
+      if (obj.hosted)
+        return obj.host;
       
-      return null;
+      return obj.ns.parent;
       //return obj.host.ns.parent;
       //return obj.lexicalParent || obj.ns.parent || obj.master_env;
     }
     if (path == ".") { // example: .
-      //return obj;
-      return obj.host;
+      return obj;      
     }
     if (path == "")
       return obj;

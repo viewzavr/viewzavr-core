@@ -53,11 +53,14 @@ function viewzavr_object_connect( env ) {
   // opts: param, from, target_host_env
   // target_host_env значит что надо цепляться не к объекту а к его хосту.. 
   env.createLinkTo = function( opts ) {
+    if (env.hosted && (opts.from[0] == "." && opts.from[1] != "."))
+        console.warn(". is ok?", opts.from, opts, env)
     //if (!opts.locinfo) 
         //debugger
     //let tgt_obj = env.vz.find_by_path( env, arr[0], obj );
-    let tgt_env = opts.target_host_env && env.host ? env.host : env
-    return connect_source( tgt_env, opts.param, opts.from, env, opts.$scopeFor, opts.locinfo )
+    //let tgt_env = opts.target_host_env && env.hosted ? env.host : env
+    let tgt_env = env // усе никаких больше ~
+    return connect_source( tgt_env, opts.param, opts.from, opts.from_base_obj || env, opts.$scopeFor, opts.locinfo )
   }
         
 }

@@ -433,7 +433,7 @@ export default function setup( m ) {
      // не надо восстанливать ()-окружения
      // F-LINKS-OVERWRITE
      
-     if (dump.features.computer && dump.keepExistingParams) {
+     if ((dump.features.computer || dump.features.inline_computer) && dump.keepExistingParams) {
        let links = Object.values( dump.links );
        let link = links[0];
        if (links.length > 1)
@@ -782,11 +782,11 @@ export default function setup( m ) {
         tgt_obj.connect_source( arr[1], lrec.from, obj, $scopeFor )
 */
 
-
+        
         let lobj = obj.createLinkTo( {param: arr[1], 
                            from: lrec.from,
                            name: "arg_link_to", 
-                           target_host_env: (arr[0] == "."),
+                           //target_host_env: (arr[0] == "."),
                            soft_mode: lrec.soft_mode,
                            stream_mode: lrec.stream_mode,
                            $scopeFor: $scopeFor,
@@ -802,7 +802,26 @@ export default function setup( m ) {
   
       }
       else
+      if (arr[0] == "..") {
+        // родителю
+        let parent_obj = obj.hosted ? obj.host : obj.ns.parent
+        //console
+        //debugger
+        parent_obj.createLinkTo( {param: arr[1], 
+                           from: lrec.from,
+                           name: "arg_link_to",
+                           from_base_obj: obj, 
+                           $scopeFor: $scopeFor,
+                           locinfo: lrec.locinfo
+                         } );
+        // todo так-то тоже надо бы проверять keepExistingParams.. ? или ниннада?
+        // вообще открытый вопрос, как у нас сделана проверка что ()-окружение не создается если у родителя уже стоит целевая ссылка? 
+        // importAsParametrizedFeature см
+      }
+      else
       {
+
+
         debugger // что это за ссылки такие интересно..
         //console.log("arg-link-to",lrec, obj.getPath())
         let lobj = m.createLink( {parent: obj, name: "arg_link" });
