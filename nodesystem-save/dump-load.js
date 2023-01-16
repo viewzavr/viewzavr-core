@@ -435,8 +435,9 @@ export default function setup( m ) {
      
      if ((dump.features.computer || dump.features.inline_computer) && dump.keepExistingParams) {
        let links = Object.values( dump.links );
-       let link = links[0];
-       if (links.length > 1)
+
+       let link = links.find( l => l.from == ".->output")
+       if (!link)
         debugger;
        
        let output_param_name = link.to.split("->")[1];
@@ -459,7 +460,7 @@ export default function setup( m ) {
         // если это у нас ()-вычислителный объект, и удаляют ссылку результата
         // то и этот объект надо удалить.
         // но если введены новые ссылки ($connection_dic) то не надо..
-        if (dump.features.computer) {
+        if (dump.features.computer || dump.features.inline_computer) {
           
           // F-AUTO-LINKS поменять следующее
 
@@ -782,7 +783,7 @@ export default function setup( m ) {
         tgt_obj.connect_source( arr[1], lrec.from, obj, $scopeFor )
 */
 
-        
+
         let lobj = obj.createLinkTo( {param: arr[1], 
                            from: lrec.from,
                            name: "arg_link_to", 
