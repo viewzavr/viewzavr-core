@@ -1,6 +1,6 @@
 // кандидат на вылет. идея заменить на что-то гораздо более простое, благо у нас теперь есть createLinkTo на каналах
 // причем createLink нигде не вызывается из js - это чисто компаланговский тип объекта
-// а его можно более простым заменить на компаланге (find-object + createLinkTo)
+// а его можно более простым заменить на компаланге У(find-object + createLinkTo)
 
 // вводим понятие "ссылка" в духе Дениса Перевалова
 
@@ -487,7 +487,7 @@ export default function setup( vz ) {
       if (setupFromLink(false, may_retry_from, false)) // 1st false => do not set param value, 3rd true => do not signal
           setupToLink(true, may_retry_to, true);       // 1st true => set param value if all ok, 3rd true => signal if ok
     }
-    obj.setupLinksDelayed = obj.delayed( obj.setupLinks, 3 );
+    obj.setupLinksDelayed = obj.delayed( obj.setupLinks, 1 );
 
     //var references_obj = obj.getParam("tied_to_parent") ? obj.ns.parent : obj;
     var references_obj = obj.ns.parent;
@@ -496,8 +496,11 @@ export default function setup( vz ) {
     var setupFromLink_DELAYED = obj.delayed( () => setupFromLink(true) );
     var setupToLink_DELAYED = obj.delayed( () => setupToLink(true) );
 
-    obj.addParamRef("from","",filter_from,setupFromLink_DELAYED, references_obj ); // R-LINKS-FROM-OBJ
-    obj.addParamRef("to","",filter_to,setupToLink_DELAYED, references_obj ); // R-LINKS-FROM-OBJ
+    //obj.addParamRef("from","",filter_from,setupFromLink_DELAYED, references_obj ); // R-LINKS-FROM-OBJ
+    //obj.addParamRef("to","",filter_to,setupToLink_DELAYED, references_obj ); // R-LINKS-FROM-OBJ
+    obj.onvalue( "from", setupFromLink_DELAYED)
+    obj.onvalue( "to", setupToLink_DELAYED)
+
     obj.setParamOption( "to","is_outgoing",true);
     // note: we set here obj.ns.parent as desired parent for params pathes. probably it is only the case for tied_to_parent version
 
