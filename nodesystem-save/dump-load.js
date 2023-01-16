@@ -316,7 +316,8 @@ export default function setup( m ) {
       // и с учетом что у нас все снизу вверх теперь раскрывается - это сработает
       // и плюс уже учтено keepExistingParams
       if (obj.hasLinksToParam( name )) {
-          debugger  // linksToParam то не раобтает уже
+          //debugger  // linksToParam то не раобтает уже
+          console.warn("incoming links",name,obj)
           let larr = obj.linksToParam( name );
           for (let l of larr)
             if (l.params.manual_mode)
