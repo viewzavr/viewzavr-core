@@ -33,8 +33,12 @@ function viewzavr_object_connect( env ) {
 
   /////////////// а теперь встраиваемся в апи системы
   
-  env.getConnectedParamsNames = () => {
+  env.getLinkedParamsNames = () => {
     return env.linksToObjectParamsNames().concat( Object.keys( env.$connection_dic ) )
+  }
+
+  env.getConnectedParamsNames = () => {
+    return env.getParamsNames().concat( env.linksToObjectParamsNames() ).concat( Object.keys( env.$connection_dic ) ) 
   }
 
 /*
