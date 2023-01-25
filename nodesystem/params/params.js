@@ -307,7 +307,7 @@ function setup_params_events(x) {
     // проверка на наличие вынесена в отдельрную функцию monitor_defined
 
     // вызывает fn а) на старте, б) при изменении параметров / все это без проверок
-    x.monitor_values = function(names,fn) {
+    x.monitor_values = function(names,fn,call_on_start=true) {
 
       if (!Array.isArray(names)) names=[names];
 
@@ -335,11 +335,14 @@ function setup_params_events(x) {
       }
 
       //fn2_delayed();
-      fn2()
+      if (call_on_start)
+          fn2()
 
       return resall;
 
     };
+    // x.monitor_changed = x.monitor_values; // по идее так должно называться
+    // вообще идея - а) ченжед или ассигнед, б) проверка всех параметров - без проверки, определены (defined), ненулевые
 
     // вызывает функцию fn когда все параметры заданы; в т.ч. и на старте запускает fn.
     x.monitor_defined = function(names,fn, call_on_start=true) {
