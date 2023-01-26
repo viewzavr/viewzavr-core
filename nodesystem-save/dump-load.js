@@ -726,19 +726,12 @@ export default function setup( m ) {
           // проблема что hasLinksToParam заработает только при активации ссылки, которая у нас отложенная...
           // F-LINKS-OVERWRITE
           //if (obj.hasLinksToParam( arr[1] ) || obj.hasParam( arr[1] )) {
-          if (obj.host) {
-            let chk_obj = (arr[0] == "~") ? obj : arr[0] == "." ? obj.host : console.err("whatsup",obj,lrec)
-            if (chk_obj.paramConnected( arr[1] )) {
-                //console.log("orig link is kept - keepExistingParams")
-                continue;
-            }
+
+          if (obj.paramConnected( arr[1] )) {
+              //console.log("orig link is kept - keepExistingParams")
+              continue;
           }
-          else {
-            if (obj.paramConnected( arr[1] )) {
-                //console.log("orig link is kept - keepExistingParams")
-                continue;
-            }
-          }  
+
         }
         else
         {
