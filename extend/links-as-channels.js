@@ -117,6 +117,7 @@ function is_connected( env,src ) {
   }  
 
 function connect_param( env, name, src, locinfo, type='assigned' ) {
+
     if (src) {
       let existing = env.$connection_dic[ name ]
       if (existing) existing()

@@ -11,6 +11,8 @@ export function param_alias(obj) {
 				obj.setParam(toname, obj.params[fromname]);
 			})
 			obj.setParamOption(fromname, "internal", true);
+      if (obj.hasParam(fromname))
+        obj.setParam( toname, obj.getParam(fromname))
 		}
 
 }
