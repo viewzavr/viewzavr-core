@@ -23,6 +23,59 @@ export default function setup( vz ) {
   vz.createLink = function( opts ) {
     opts.name ||= "link";
     var obj = vz.createObj( opts );
+    obj.feature("link");
+    return obj;
+  }
+  vz.addItemType("link","Link between params",vz.createLink, {hidegui: true} );
+
+  vz.register_feature( "link", link )
+
+
+vz.chain("create_obj",function( obj, opts ) {
+    // вот следующее апи надо абстрагировать от конкретно этой реализации потому что я уже ввожу links-as-channels и оно должно поддерживать это же апи
+    
+    obj.hasLinks = function() {
+      return (howManyLinksTo( obj ) > 0);
+    }
+    /*
+    obj.hasLinksToParam = function(pname) {
+      return (howManyLinksOfParam( obj,pname,false,true ) > 0);
+    }
+    */
+    obj.hasLinksToParam = function(pname) {
+      return hasLinksOfParam( obj,pname,false,true );
+    }
+    //obj.hasLinksFromParam = function(pname) {
+    //  return (howManyLinksOfParam( obj,pname,true,false ) > 0);
+    // }
+    obj.linksToParam = function(name) {
+      return linksOfParam(obj,name,false,true);
+    }
+    obj.linksToObject = function() {
+      return getIncomingLinks(obj);
+    }
+    obj.linksToObjectParamsNames = function(name) {
+      return linksToObjectParamsNames(obj);
+    }
+    obj.linksFromParam = function(name) {
+      return linksOfParam(obj,name,true,false);
+    }
+    obj.getLinkedParamsNames = obj.linksToObjectParamsNames;
+
+    this.orig( obj, opts );
+
+    return obj;
+  } ); // create_obj
+
+  
+
+}
+
+
+////////////////////////////////////////////// фича links
+
+function link( obj ) {
+
     obj.is_link = true;
 
     //debugger; //что мы тут делаем?
@@ -585,118 +638,9 @@ export default function setup( vz ) {
     //console.warn("created link",obj)
 
     return obj;
-  }
-
-vz.chain("create_obj",function( obj, opts ) {
-
-  // createLinkTo( { param: "someparam", from: sourcestring})
-
-  // создание ссылки локальной для объекта
-  obj.createLinkTo = function( opts ) {
-    //console.log("CLT called,.opts=",opts);
-    var paramname = opts.param;
-    var sourcestring = opts.from;
-    opts.parent = obj;
-    opts.type = "link";
-    //var q = vz.createLink( opts );
-
-    var q;
-    // используем существующие, заодно удалим дубликаты
-    // todo здесь уже конфликт появился - если мы ставим target_host_env
-    // то и там надо вычищать, у мастера
-
-    // оч важно тут различать цель и искать existing в правильном месте - у себя или у хоста
-
-    var existing = (opts.target_host_env ? obj.host : obj).linksToParam( paramname );
-
-    // но вообще конечно.. с дубликами.. может они и не дубликаты вовсе?...
-    if (existing[0]) {
-      var toremove = existing;
-      // обработаем такой случай, что не будем пересоздавать встроенную ссылку.. зачем-то
-      // а заюзаем существующий экземпляр
-
-      // как выясняется это плохой случай. потому что та уже существующая ссылка это может быть
-      // совершенно посторонняя ссылка.. у которой может быть еще и управляемый параметр по другой ссылке
-      // и получится так что та другая управляющая ссылка начнет тут вдруг нами рулить
-      // лучше уж все стереть. или хотя бы подавить, enabled false выставить
-      /*
-      if (existing[0].params.tied_to_parent && existing[0].ns.parent == obj) {
-        q = existing[0];
-        toremove = existing.slice(1);
-      }
-      */
-      
-
-      toremove.map( (e) => {
-        //console.log("removing existing link", e.getPath(), "for param",paramname)
-         e.remove()
-      } )
-    }
-    
-    if (!q) q = vz.createObjByType( {...opts} );
-
-    if (paramname && paramname.length > 0) {
-        let prefix = opts.target_host_env ? ".->" : "~->"; // вообще это было дурной идеей.. лучше уж ..-> да и все.. я сделал очередную удобняшку и огреб
-        q.setParam( "to", prefix + paramname, opts.manual );
-      }
-        //q.setParam( "to", obj.getPath() + "->" + paramname, opts.manual );
-        //q.setParamWithoutEvents( "to", obj.getPath() + "->" + paramname, opts.manual ); // will emit events on 'from'?
-    q.setParam( "from", sourcestring, opts.manual );
-    q.setParam( "tied_to_parent",true, opts.manual );
-    q.setParam( "soft_mode", opts.soft_mode || opts.soft , opts.manual );
-    q.setParam( "stream_mode", opts.stream_mode, opts.manual ); // F-PARAMS-STREAM
-
-    if (opts.$scopeFor)
-       q.$scopes.addScopeRef( opts.$scopeFor );
-    if (opts.locinfo)  
-       q.$locinfo = opts.locinfo;
-
-
-
-    return q;
-  }
-  obj.linkParam = function( paramname, link_source, soft_mode, manual, stream_mode ) {
-     return obj.createLinkTo( { param: paramname, from: link_source, soft_mode:soft_mode, manual: manual, stream_mode: stream_mode })
-  }
-
-  // вот следующее апи надо абстрагировать от конкретно этой реализации потому что я уже ввожу links-as-channels и оно должно поддерживать это же апи
-  
-  obj.hasLinks = function() {
-    return (howManyLinksTo( obj ) > 0);
-  }
-  /*
-  obj.hasLinksToParam = function(pname) {
-    return (howManyLinksOfParam( obj,pname,false,true ) > 0);
-  }
-  */
-  obj.hasLinksToParam = function(pname) {
-    return hasLinksOfParam( obj,pname,false,true );
-  }
-  //obj.hasLinksFromParam = function(pname) {
-  //  return (howManyLinksOfParam( obj,pname,true,false ) > 0);
-  // }
-  obj.linksToParam = function(name) {
-    return linksOfParam(obj,name,false,true);
-  }
-  obj.linksToObject = function() {
-    return getIncomingLinks(obj);
-  }
-  obj.linksToObjectParamsNames = function(name) {
-    return linksToObjectParamsNames(obj);
-  }
-  obj.linksFromParam = function(name) {
-    return linksOfParam(obj,name,true,false);
-  }
-  obj.getLinkedParamsNames = obj.linksToObjectParamsNames;
-
-  this.orig( obj, opts );
-
-  return obj;
-} ); // create_obj
-
-vz.addItemType("link","Link between params",vz.createLink, {hidegui: true} );
-
 }
+
+//////////////////////////////////////////////
 
 // это для отслеживания если объект удалился
 function addLinkTracking( obj, link, isFrom ) {

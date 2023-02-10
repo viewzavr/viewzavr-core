@@ -53,6 +53,9 @@ function viewzavr_object_connect( env ) {
   env.hasLinksToParam = function(pname) {
     return (orig( pname ) || is_connected( env, pname ))
   }
+  env.linkParam = function( paramname, link_source, soft_mode, manual, stream_mode ) {
+     return env.createLinkTo( { param: paramname, from: link_source, soft_mode:soft_mode, manual: manual, stream_mode: stream_mode })
+  }  
 
   // opts: param, from, target_host_env
   // target_host_env значит что надо цепляться не к объекту а к его хосту.. 
